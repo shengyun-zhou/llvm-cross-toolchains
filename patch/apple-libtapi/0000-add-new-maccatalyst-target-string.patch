@@ -1,0 +1,12 @@
+diff --git a/src/llvm/projects/libtapi/lib/Core/Target.cpp b/src/llvm/projects/libtapi/lib/Core/Target.cpp
+index 700c3d8..595159c 100644
+--- a/src/llvm/projects/libtapi/lib/Core/Target.cpp
++++ b/src/llvm/projects/libtapi/lib/Core/Target.cpp
+@@ -34,6 +34,7 @@ Expected<Target> Target::create(StringRef target) {
+                  .Case("watchos", Platform::watchOS)
+                  .Case("ios-macabi", Platform::macCatalyst)
+                  .Case("ios-maccatalyst", Platform::macCatalyst)
++                 .Case("maccatalyst", Platform::macCatalyst)
+                  .Case("ios-simulator", Platform::iOSSimulator)
+                  .Case("tvos-simulator", Platform::tvOSSimulator)
+                  .Case("watchos-simulator", Platform::watchOSSimulator)

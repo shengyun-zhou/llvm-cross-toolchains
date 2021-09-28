@@ -1,0 +1,23 @@
+FROM ubuntu:20.04
+
+# Replace apt mirros
+ENV DEBIAN_FRONTEND=noninteractive
+RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
+RUN apt update && apt install -y gcc g++ clang git wget curl patch unzip cmake ninja-build make python3 zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev llvm-dev
+WORKDIR /root
+ARG GITHUB_MIRROR_DOMAIN=github.com
+RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/26ebac26899650b12b99de86ebbde785de6ca173.tar.gz" -o osxcross.tar.gz && mkdir -p osxcross && \
+    cd osxcross && tar xf ../osxcross.tar.gz --strip 1 && rm -f ../osxcross.tar.gz && sed -i -e "s/github.com/${GITHUB_MIRROR_DOMAIN}/g" build.sh build_compiler_rt.sh tools/tools.sh && \
+    curl -L https://${GITHUB_MIRROR_DOMAIN}/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz -o tarballs/MacOSX11.3.sdk.tar.xz
+RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf build
+RUN apt update && apt install -y --no-install-recommends texinfo
+ENV PATH="/root/osxcross/target/bin:${PATH}" \
+    HOST_CC=x86_64-apple-darwin20.4-cc HOST_CXX=x86_64-apple-darwin20.4-c++ HOST_STRIP=x86_64-apple-darwin20.4-strip \
+    HOST_CPP="x86_64-apple-darwin20.4-cc --driver-mode=cpp" \
+    HOST_CFLAGS="-arch x86_64 -arch arm64" HOST_CXXFLAGS="-arch x86_64 -arch arm64" HOST_LDFLAGS="-arch x86_64 -arch arm64" \
+    HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_SYSROOT=/root/osxcross/target/SDK/MacOSX11.3.sdk -DCMAKE_SYSTEM_VERSION=11.3 -DCMAKE_OSX_ARCHITECTURES=x86_64;arm64 \
+        -DCMAKE_FIND_ROOT_PATH=/root/osxcross/target/SDK/MacOSX11.3.sdk" \
+    HOST_CONFIGURE_ARGS="--host=x86_64-apple-darwin20.4" CROSS_HOST=Darwin

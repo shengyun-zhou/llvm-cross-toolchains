@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# Simple PlistBuddy tool for building LLVM compiler-rt
+
+import argparse
+import plistlib
+import sys
+
+def print_indent(indent, is_root):
+    return '    ' * indent if is_root else ''
+    
+
+def print_plist_object(obj, indent, is_root):
+    ret_str = ''
+    if isinstance(obj, dict):
+        ret_str += print_indent(indent, is_root) + 'Dict {\n'
+        for k, v in obj.items():
+            ret_str += print_indent(indent + 1, True) + str(k) + ' = ' + \
+                print_plist_object(v, indent + 1, False) + '\n'
+        ret_str += print_indent(indent, True) + '}'
+    elif isinstance(obj, list):
+        ret_str += print_indent(indent, is_root) + 'Array {\n'
+        for item in obj:
+            ret_str += print_plist_object(item, indent + 1, True) + '\n'
+        ret_str += print_indent(indent, True) + '}'
+    else:
+        ret_str += print_indent(indent, is_root) + str(obj)
+    return ret_str
+
+
+def process_print_command(plist_root_obj, print_path):
+    print_path_split = print_path.split(':')
+    result_root_obj = plist_root_obj
+    while len(print_path_split) > 0:
+        cur_node_name = print_path_split[0].strip()
+        if cur_node_name:
+            if not isinstance(result_root_obj, dict):
+                result_root_obj = None
+                break
+            result_root_obj = result_root_obj.get(cur_node_name)
+            if result_root_obj is None:
+                break
+        print_path_split = print_path_split[1:]
+    if result_root_obj is None:
+        sys.stderr.write('Invalid key path: %s\n' % print_path)
+        return False
+    print(print_plist_object(result_root_obj, 0, True))
+    return True
+
+
+if __name__ == '__main__':
+    arg_parser = argparse.ArgumentParser(description='Simple PlistBuddy tool for building LLVM compiler-rt')
+    arg_parser.add_argument('-c', type=str, default='Print', help='command to be executed')
+    arg_parser.add_argument('FILE', type=str, help='path to the plist file')
+    argv = vars(arg_parser.parse_args())
+    command = argv['c'].strip()
+    with open(argv['FILE'], 'rb') as fp:
+        pl_root_dict = plistlib.load(fp)
+    command_split = str(command).split(' ', maxsplit=2)
+    if command_split[0] == 'Print':
+        print_path = ''
+        if len(command_split) > 1:
+            print_path = command_split[1].strip()
+        exit(0 if process_print_command(pl_root_dict, print_path) else 1)
+    else:
+        sys.stderr.write('Unknown command: %s\n' % command_split[0])
+        exit(1)
+

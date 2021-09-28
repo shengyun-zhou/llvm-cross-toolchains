@@ -1,0 +1,13 @@
+diff --git a/cctools/configure b/cctools/configure
+index 06e7668..171e176 100755
+--- a/cctools/configure
++++ b/cctools/configure
+@@ -18693,7 +18693,7 @@ then :
+             fi
+ 
+             LTO_DEF=-DLTO_SUPPORT
+-            LTO_LIB="-L${LLVM_LIB_DIR} -lLTO"
++            LTO_LIB="-L${LLVM_LIB_DIR} $("$LLVM_CONFIG" --link-static --libs lto)"
+ 
+             if test "x$rpathlink" = "xyes"; then
+               LTO_RPATH="-Wl,-rpath,$LLVM_LIB_DIR,--enable-new-dtags"

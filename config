@@ -1,0 +1,124 @@
+#!/bin/bash
+
+source version
+source tools.sh
+# SOURCE_DIR and OUTPUT_DIR must be full path
+export SOURCE_DIR="$(pwd)/.src-tarballs"
+export OUTPUT_DIR="$(pwd)/output"
+export PATCH_DIR="$(pwd)/patch"
+export CROSS_TARGETS=(
+    # Linux musl-libc
+    "mipsel-linux-muslsf"
+    "mips64el-linux-musl"
+    "armv7a-linux-musleabihf"
+    "aarch64-linux-musl"
+    "i686-linux-musl"
+    "x86_64-linux-musl"
+    "riscv64-linux-musl"
+
+    # Linux glibc
+    "armv7a-linux-gnueabihf"
+    "aarch64-linux-gnu"
+    "i686-linux-gnu"
+    "x86_64-linux-gnu"
+
+    # Android 
+    "armv7a-linux-androideabi${ANDROID_API}"
+    "aarch64-linux-android${ANDROID_API}"
+    "i686-linux-android${ANDROID_API}"
+    "x86_64-linux-android${ANDROID_API}"
+
+    # Windows MinGW
+    "armv7a-w64-mingw32"
+    "aarch64-w64-mingw32"
+    "i686-w64-mingw32"
+    "x86_64-w64-mingw32"
+
+    # Windows MSVC
+    "armv7a-windows-msvc"
+    "aarch64-windows-msvc"
+    "i686-windows-msvc"
+    "x86_64-windows-msvc"
+
+    # MacOSX
+    "aarch64-apple-macosx"
+    "arm64-apple-macosx"    # Synonym for aarch64-apple-macosx
+    "arm64e-apple-macosx"
+    "x86_64-apple-macosx"
+    "x86_64h-apple-macosx"
+
+    # Mac Catalyst
+    "aarch64-apple-ios-macabi"
+    "arm64-apple-ios-macabi"    # Synonym for aarch64-apple-ios-macabi
+    "arm64e-apple-ios-macabi"
+    "x86_64-apple-ios-macabi"
+    "x86_64h-apple-ios-macabi"
+
+    # iOS
+    "armv7-apple-ios"
+    "armv7s-apple-ios"
+    "aarch64-apple-ios"
+    "arm64-apple-ios"       # Synonym for aarch64-apple-ios
+    "arm64e-apple-ios"
+    "x86_64-apple-ios-simulator"
+
+    # Apple TVOS
+    "aarch64-apple-tvos"
+    "arm64-apple-tvos"      # Synonym for aarch64-apple-tvos
+    "x86_64-apple-tvos-simulator"
+
+    # Apple WatchOS
+    "armv7k-apple-watchos"
+    "i386-apple-watchos-simulator"
+)
+export __CMAKE_WRAPPER="$(pwd)/cmake-target-wrapper.sh"
+
+unset EXEC_SUFFIX CROSS_EXEC_SUFFIX
+unset SCRIPT_SUFFIX
+unset BUILD_HOST
+unset MSYS_HOST
+__os_name="$(uname -s)"
+case "$__os_name" in
+    CYGWIN*|MINGW*|MSYS*)
+        export BUILD_HOST=Windows
+        export EXEC_SUFFIX=".exe"
+        export SCRIPT_SUFFIX=".cmd"
+        if [[ $__os_name == "CYGWIN"* ]]; then
+            export CYGWIN=winsymlinks:native
+        else
+            export MSYS=winsymlinks:native
+            if [ -z "$__MSYS" ]; then
+                # Force MinGW64
+                export MSYSTEM=MINGW64
+                export PATH=/mingw64/bin:/mingw64/sbin:$PATH
+                export HOST_CFLAGS="$HOST_CFLAGS -static"
+                export HOST_CXXFLAGS="$HOST_CXXFLAGS -static"
+                # Add dependent libs for libxml2
+                export HOST_LDFLAGS="$HOST_LDFLAGS -static -llzma -lz -liconv -lws2_32"
+                export LLVM_CMAKE_FLAGS="$LLVM_CMAKE_FLAGS -DLLVM_BUILD_STATIC=1 -DLIBCLANG_BUILD_STATIC=ON"
+                export CONFIGURE_ARGS="$CONFIGURE_ARGS --build=x86_64-w64-mingw32" 
+            else
+                export MSYS_HOST=1
+                export MSYSTEM=MSYS
+                export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
+            fi
+        fi
+        ;;
+    Linux*)
+        export BUILD_HOST=Linux
+        ;;
+    Darwin*)
+        export BUILD_HOST=Darwin
+        export HOST_CFLAGS="$HOST_CFLAGS -mmacosx-version-min=10.9"
+        export HOST_CXXFLAGS="$HOST_CXXFLAGS -mmacosx-version-min=10.9 -std=c++11"
+        export HOST_LDFLAGS="$HOST_LDFLAGS -mmacosx-version-min=10.9"
+        ;;
+esac
+unset __os_name
+export CROSS_HOST=${CROSS_HOST:-${BUILD_HOST}}
+if [[ $CROSS_HOST == "Windows" ]]; then
+    CROSS_EXEC_SUFFIX=".exe"
+fi
+
+# For xcrun, codesign, etc
+export PATH="$(pwd)/build-tools:$(pwd)/build-tools/win32-wrapper:$PATH"

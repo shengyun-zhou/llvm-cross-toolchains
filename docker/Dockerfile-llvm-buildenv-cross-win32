@@ -1,0 +1,36 @@
+FROM tobix/pywine:3.9
+
+# Replace apt mirros
+RUN echo 'Acquire::PDiffs "false";' >> /etc/apt/apt.conf && rm -f /etc/apt/sources.list && rm -f /etc/apt/sources.list.d/*.sources && echo 'deb http://mirrors.ustc.edu.cn/debian/ buster main contrib non-free' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian/ buster-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
+RUN apt update && apt install -y --no-install-recommends \
+    gcc g++ git wget curl ca-certificates patch unzip xz-utils bzip2 file ninja-build make python3 python3-pip python3-setuptools \
+    autoconf automake zlib1g-dev libssl-dev libffi-dev liblzma-dev libbz2-dev
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.18.4
+
+WORKDIR /root
+ARG GITHUB_MIRROR_DOMAIN=github.com
+RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/mstorsjo/llvm-mingw/releases/download/20210816/llvm-mingw-20210816-msvcrt-ubuntu-18.04-x86_64.tar.xz" -o llvm-mingw.tar.xz && \
+    mkdir llvm-mingw && tar xvf llvm-mingw.tar.xz -C llvm-mingw --strip 1 && rm -f llvm-mingw.tar.xz
+ENV TOOLCHAIN_ROOT=/root/llvm-mingw CROSS_PREFIX=x86_64-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root   
+
+ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
+    HOST_CC=${CROSS_PREFIX}-cc HOST_CXX=${CROSS_PREFIX}-c++ HOST_STRIP=llvm-strip HOST_RC=${CROSS_PREFIX}-windres \
+    HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
+    HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
+    HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
+    HOST_LDFLAGS="-Qunused-arguments -L$BUILD_DEPS_ROOT/lib -lunwind" \
+    HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_TARGET=${CROSS_PREFIX}" \
+    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libc++.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libwinpthread-1.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libunwind.dll" \
+    HOST_CONFIGURE_ARGS="--host=${CROSS_PREFIX}" CROSS_HOST=Windows
+
+RUN ln -sf llvm-readobj "${TOOLCHAIN_ROOT}/bin/llvm-readelf" && wine pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+ADD build-dep-libs.sh /root
+RUN SKIP_BUILD_LIBCXX=1 OPENSSL_TARGET=mingw64 ./build-dep-libs.sh
+RUN apt update && apt install -y --no-install-recommends texinfo
+ENV READELF=llvm-readelf EMBED_PYTHON_CONFIGURE_ARGS="--enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
+    HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz -liconv -lws2_32" HOST_CPP="${CROSS_PREFIX}-cc --driver-mode=cpp" \
+    LLVM_CMAKE_FLAGS="-DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON"

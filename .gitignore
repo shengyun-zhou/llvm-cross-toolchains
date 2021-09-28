@@ -1,0 +1,52 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+output*/
+.vscode/
+.idea/
+.build*/
+.src-tarballs/
+prebuilt-bionic/*.gz
+!prebuilt-libgcc-crt/**
+prebuilt-darwin-sdk/*.xz
+prebuilt-glibc/*.gz
+prebuilt-cctools/*.gz
+prebuilt-linux-header/*.gz
+prebuilt-harmonyos/*.gz
+prebuilt-msvc-sdk/*.gz
+prebuilt-msvc-sdk/.temp_sdk_dir/
+__pycache__/
+win32-toolchain-extractor/*.tar.*
+win32-toolchain-extractor/*.spec
+win32-toolchain-extractor/build
+win32-toolchain-extractor/dist

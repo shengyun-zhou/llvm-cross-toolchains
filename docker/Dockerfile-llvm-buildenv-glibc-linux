@@ -1,0 +1,27 @@
+FROM frolvlad/alpine-glibc:alpine-3.13_glibc-2.32
+
+# Replace mirrors
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+RUN apk update && apk add bash xz bzip2 gettext file cmake make autoconf automake ninja unzip zip libarchive-tools git git-lfs curl wget rsync file patch \
+    clang llvm binutils lld compiler-rt compiler-rt-static python3 py3-setuptools texinfo
+
+WORKDIR /root
+ENV BUILD_DEPS_ROOT=/root/build-deps-root
+# Add glibc 2.17 sysroot
+RUN mkdir ${BUILD_DEPS_ROOT} && cd "${BUILD_DEPS_ROOT}" && \
+    curl -L "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/noarch/sysroot_linux-64-2.17-h4a8ded7_12.tar.bz2" -o glibc-sysroot.tar.bz2 && \
+    curl -L "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/noarch/kernel-headers_linux-64-3.10.0-h4a8ded7_12.tar.bz2" -o linux-kernel.tar.gz && \
+    tar xvf glibc-sysroot.tar.bz2 && tar xvf linux-kernel.tar.gz && rm -rf info glibc-sysroot.tar.bz2 linux-kernel.tar.gz
+ENV PATH="${BUILD_DEPS_ROOT}/bin:${PATH}" \
+    HOST_CC=clang HOST_CXX=clang++ \
+    HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot" \
+    HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot" \
+    HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot -stdlib=libc++ -nostdinc++ -isystem ${BUILD_DEPS_ROOT}/include/c++/v1" \
+    HOST_LDFLAGS="-Qunused-arguments -pthread -fuse-ld=lld -L$BUILD_DEPS_ROOT/lib -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot -rtlib=compiler-rt -stdlib=libc++ -Wl,-rpath,'\$\${ORIGIN}/../lib'" \
+    HOST_RUNTIME_LIBS="$BUILD_DEPS_ROOT/lib/libc++.so.1"\
+    HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT" \
+    LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
+ADD build-dep-libs.sh /root
+RUN OPENSSL_TARGET=linux-x86_64 ./build-dep-libs.sh
+ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
+    HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz" HOST_CPP=clang-cpp

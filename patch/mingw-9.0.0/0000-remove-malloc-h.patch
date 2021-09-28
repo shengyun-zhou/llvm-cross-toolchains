@@ -1,0 +1,24 @@
+diff --git a/mingw-w64-tools/genidl/src/genidl_cfg.h b/mingw-w64-tools/genidl/src/genidl_cfg.h
+index 30d4ada..8d4f667 100644
+--- a/mingw-w64-tools/genidl/src/genidl_cfg.h
++++ b/mingw-w64-tools/genidl/src/genidl_cfg.h
+@@ -26,7 +26,6 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <malloc.h>
+ #include <memory.h>
+ #include <stdarg.h>
+ #include <stdint.h>
+diff --git a/mingw-w64-tools/genidl/src/genidl_typinfo.c b/mingw-w64-tools/genidl/src/genidl_typinfo.c
+index 61cdf8c..2b1fb6c 100644
+--- a/mingw-w64-tools/genidl/src/genidl_typinfo.c
++++ b/mingw-w64-tools/genidl/src/genidl_typinfo.c
+@@ -21,7 +21,6 @@
+ #include "genidl_cfg.h"
+ #include "genidl_typeinfo.h"
+ #include "genidl_typinfo.h"
+-#include <malloc.h>
+ #include <string.h>
+ #include <memory.h>
+ 

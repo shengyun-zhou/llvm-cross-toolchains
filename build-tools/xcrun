@@ -1,0 +1,86 @@
+#!/bin/bash
+# Fake xcrun to build LLVM libs
+
+set -e
+cd "$(dirname "$0")/.."
+source config
+
+show_sdk_path=false
+show_sdk_version=false
+sdk_name="macosx"
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        *-sdk)
+            sdk_name="$2"
+            shift
+            shift
+            ;;
+        *-show-sdk-path)
+            show_sdk_path=true
+            shift
+            ;;
+        *-show-sdk-version)
+            show_sdk_version=true
+            shift
+            ;;
+        *)
+            echo "xcrun error: unknown argument: $key" 1>&2
+            exit 1
+            ;;
+    esac
+done
+
+case $sdk_name in
+    macosx*)
+        SDK_PATH="$OUTPUT_DIR/MacOSX-SDK"
+        SDK_VERSION="$MACOSX_VERSION"
+        ;;
+    iphonesimulator*)
+        SDK_PATH="$OUTPUT_DIR/iPhoneSimulator-SDK"
+        SDK_VERSION="$IOS_VERSION"
+        ;;
+    iphoneos*)
+        SDK_PATH="$OUTPUT_DIR/iPhoneOS-SDK"
+        SDK_VERSION="$IOS_VERSION"
+        ;;
+    appletvsimulator*)
+        SDK_PATH="$OUTPUT_DIR/AppleTVSimulator-SDK"
+        SDK_VERSION="$APPLE_TVOS_VERSION"
+        ;;
+    appletvos*)
+        SDK_PATH="$OUTPUT_DIR/AppleTVOS-SDK"
+        SDK_VERSION="$APPLE_TVOS_VERSION"
+        ;;
+    watchsimulator*)
+        SDK_PATH="$OUTPUT_DIR/WatchSimulator-SDK"
+        SDK_VERSION="$APPLE_WATCHOS_VERSION"
+        ;;
+    watchos*)
+        SDK_PATH="$OUTPUT_DIR/WatchOS-SDK"
+        SDK_VERSION="$APPLE_WATCHOS_VERSION"
+        ;;
+    *)
+        echo "xcrun error: unknown SDK: $sdk_name" 1>&2
+        exit 1
+        ;;
+esac
+if [[ ! -d "$SDK_PATH" ]]; then
+    echo "xcrun error: unknown SDK: $sdk_name" 1>&2
+    exit 1
+fi
+
+if [[ $BUILD_HOST == "Windows" && -n "$SDK_PATH" ]]; then
+    SDK_PATH="$(cygpath -w "$SDK_PATH")"
+fi
+if [ $show_sdk_path = true ]; then
+    if [[ -z "$SDK_PATH" ]]; then
+        echo "xcrun error: cannot find path for SDK $sdk_name" 1>&2
+        exit 1
+    fi
+    echo "$SDK_PATH"
+fi
+if [ $show_sdk_version = true ]; then
+    echo "$SDK_VERSION"
+fi

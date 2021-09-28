@@ -1,0 +1,4 @@
+#!/bin/bash
+# Fake Apple codesign for building compiler-rt
+
+exit 0
