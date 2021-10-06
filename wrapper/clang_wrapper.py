@@ -28,21 +28,21 @@ def main(target, exec_name):
             clang_args += ['-no-pie']
     elif arch.startswith('aarch64') or arch.startswith('arm64'):
         if 'android' in target:
-            clang_args += ['-isystem', os.path.join(sysroot_dir, 'include/aarch64-linux-android')]
+            clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/aarch64-linux-android')]
     elif arch.startswith('arm'):
         clang_args += ['-mthumb']
         if 'android' in target:
-            clang_args += ['-isystem', os.path.join(sysroot_dir, 'include/arm-linux-androideabi')]
+            clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/arm-linux-androideabi')]
     elif fnmatch.fnmatch(arch, 'i*86'):
         if 'musl' in target:
             if '-static' not in sys.argv[1:]:
                 # Fix linker path
                 clang_args += ['-Wl,-dynamic-linker=/lib/ld-musl-i386.so.1']
         elif 'android' in target:
-            clang_args += ['-isystem', os.path.join(sysroot_dir, 'include/i686-linux-android')]
+            clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/i686-linux-android')]
     elif arch.startswith('x86_64'):
         if 'android' in target:
-            clang_args += ['-isystem', os.path.join(sysroot_dir, 'include/x86_64-linux-android')]
+            clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/x86_64-linux-android')]
     elif arch.startswith('riscv'):
         # TODO: Use LLD after it has implemented linker relaxation for RISC-V
         fuse_ld = 'ld'
@@ -144,8 +144,6 @@ def main(target, exec_name):
         ]
 
     if cplusplus_mode and 'msvc' not in target:
-        clang_args += ['--driver-mode=g++']
-        if '-nostdinc++' not in sys.argv[1:]:
-            clang_args += ['-stdlib=libc++', '-nostdinc++', '-isystem', os.path.join(sysroot_dir, 'include/c++/v1')]
+        clang_args += ['--driver-mode=g++', '-stdlib=libc++']
 
     exit(subprocess.run([clang_exec] + clang_args + input_args).returncode)

@@ -26,19 +26,19 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
 
     CXXFLAGS="$LIBUNWIND_CXXFLAGS" "$__CMAKE_WRAPPER" $target .. \
-        -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR/$target" \
+        -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
         -DLIBUNWIND_ENABLE_SHARED=OFF
     cmake --build . --target install/strip -- -j$(cpu_count)
     cd ..
     # Copy header files
-    cp include/libunwind.h include/__libunwind_config.h "$OUTPUT_DIR/$target/include"
+    cp include/libunwind.h include/__libunwind_config.h "$(target_install_prefix $target)/include"
     # Merge libunwind into compiler-rt builtins
-    if [[ -f "$OUTPUT_DIR/$target/lib/libunwind.a" ]]; then
+    if [[ -f "$(target_install_prefix $target)/lib/libunwind.a" ]]; then
         builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
         if [[ -f "$builtins_lib" ]]; then
-            "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" "$OUTPUT_DIR/$target/lib/libunwind.a"
+            "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" "$(target_install_prefix $target)/lib/libunwind.a"
         fi
     fi
 done

@@ -24,12 +24,12 @@ for target in "${CROSS_TARGETS[@]}"; do
         CFLAGS="-O3" ../configure $CONFIGURE_ARGS --host=$target --target=$target --prefix=/ --disable-optimize --disable-wrapper
         if [ -n "$LIBC_STARTFILE_STAGE" ]; then
             echo "Install MUSL header and start files for target $target"
-            make DESTDIR="$OUTPUT_DIR/$target" install-headers -j$(cpu_count)
+            make DESTDIR="$(target_install_prefix $target)" install-headers -j$(cpu_count)
         else
             echo "Install MUSL for target $target"
-            make DESTDIR="$OUTPUT_DIR/$target" install -j$(cpu_count)
+            make DESTDIR="$(target_install_prefix $target)" install -j$(cpu_count)
             # Convert /lib/ld-* symlinks to relative paths
-            for f in `find "$OUTPUT_DIR/$target/lib" -type l -name "ld-musl*"`  
+            for f in `find "$(target_install_prefix $target)/lib" -type l -name "ld-musl*"`  
             do
                 ln -sf libc.so "$f"
             done

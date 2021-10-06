@@ -28,3 +28,11 @@ function cpu_count {
     fi
     echo "$NCPU"
 }
+
+function target_install_prefix {
+    if [[ "$1" == *"mingw"* || "$1" == *"windows"* ]]; then
+        echo "$OUTPUT_DIR/$1"
+    else
+        echo "$OUTPUT_DIR/$1/usr"
+    fi
+}

@@ -23,7 +23,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         if [ -n "$LIBC_STARTFILE_STAGE" ]; then
             echo "Install MinGW header and start files for target $target"
             cd mingw-w64-headers && mkdir build-$target && cd build-$target
-            ../configure $CONFIGURE_ARGS --prefix="$OUTPUT_DIR/$target" --enable-idl --with-default-win32-winnt=0x601 --with-default-msvcrt=msvcrt
+            ../configure $CONFIGURE_ARGS --prefix="$(target_install_prefix $target)" --enable-idl --with-default-win32-winnt=0x601 --with-default-msvcrt=msvcrt
             make -j$(cpu_count)
             make install
             MINGW_CRT_CONFIG_FLAGS=""
@@ -42,14 +42,14 @@ for target in "${CROSS_TARGETS[@]}"; do
                 ;;
             esac
             cd ../../mingw-w64-crt && mkdir build-$target && cd build-$target
-            ../configure $CONFIGURE_ARGS --prefix="$OUTPUT_DIR/$target" --host=$target --with-default-msvcrt=msvcrt $MINGW_CRT_CONFIG_FLAGS
+            ../configure $CONFIGURE_ARGS --prefix="$(target_install_prefix $target)" --host=$target --with-default-msvcrt=msvcrt $MINGW_CRT_CONFIG_FLAGS
             make -j$(cpu_count)
             make install
             cd ../../
         else
             cd mingw-w64-libraries/winpthreads && mkdir build-$target && cd build-$target
             echo "Install MinGW libraries for target $target"
-            ../configure $CONFIGURE_ARGS --host=$target --prefix="$OUTPUT_DIR/$target" --disable-shared
+            ../configure $CONFIGURE_ARGS --host=$target --prefix="$(target_install_prefix $target)" --disable-shared
             make -j$(cpu_count)
             make install
             cd ../../../

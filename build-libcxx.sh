@@ -19,9 +19,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         continue
     fi
     # Clean installed C++ headers
-    if [ -d "$OUTPUT_DIR/$target/include/c++" ]; then
-        rm -rf "$OUTPUT_DIR/$target/include/c++"
-    fi
+    rm -rf "$(target_install_prefix $target)/include/c++" || true
 
     cd libcxx && mkdir build-$target && cd build-$target
     LIBCXX_CMAKE_FLAGS=""
@@ -31,7 +29,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_WIN32_THREAD_API=ON"
     fi
     "$__CMAKE_WRAPPER" $target .. \
-        -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR/$target" \
+        -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
         -DLIBCXX_ENABLE_SHARED=OFF \
@@ -46,7 +44,7 @@ for target in "${CROSS_TARGETS[@]}"; do
 
     cd ../../libcxxabi && mkdir build-$target && cd build-$target
     "$__CMAKE_WRAPPER" $target .. \
-        -DCMAKE_INSTALL_PREFIX="$OUTPUT_DIR/$target" \
+        -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
         -DLIBCXXABI_ENABLE_SHARED=OFF \

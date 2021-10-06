@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")"
 source config
 
-# bash ./build-llvm.sh
+bash ./build-llvm.sh
 bash ./install-wrapper.sh
 bash ./install-prebuilt-stuff.sh
 bash ./build-gnu-binutils.sh
