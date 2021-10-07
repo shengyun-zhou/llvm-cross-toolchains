@@ -9,6 +9,7 @@ export PATCH_DIR="$(pwd)/patch"
 export CROSS_TARGETS=(
     # Linux musl-libc
     "mipsel-linux-muslsf"
+    "mipsel-linux-musl"
     "mips64el-linux-musl"
     "armv7a-linux-musleabihf"
     "aarch64-linux-musl"
