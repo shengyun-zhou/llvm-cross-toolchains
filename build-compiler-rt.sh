@@ -31,23 +31,11 @@ for target in "${CROSS_TARGETS[@]}"; do
             target="apple-darwin"
         fi
     fi
-    if [[ -n "$COMPILER_RT_FULL_BUILD" ]]; then
-        if [[ $target == *"musl"* ]]; then
-            # Santinizers cannot be built on MUSL now
+    if [[ -z "$COMPILER_RT_FULL_BUILD" ]]; then        
+        if [[ $target == *"msvc"* ]]; then
+            # No need to build builtins for MSVC
             continue
-        elif [[ $target == *"mingw"* || $target == *"windows"* ]]; then
-            # Santinizers on Windows only support x86 now
-            case $target in
-            i*86*|x86_64*)
-                ;;
-            *)
-                continue
-                ;;
-            esac
         fi
-    elif [[ $target == *"msvc"* ]]; then
-        # No need to build builtins for MSVC
-        continue
     fi
     mkdir build-$target && cd build-$target
     COMPILER_RT_COMPILER_TARGET=$target
@@ -79,6 +67,20 @@ for target in "${CROSS_TARGETS[@]}"; do
     else
         COMPILER_RT_SRC_DIR=".."
         COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_BUILTINS=OFF -DSANITIZER_CXX_ABI=libc++"
+        if [[ $target == *"musl"* ]]; then
+            # Santinizers can not built on MUSL now
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF -DLIBCXX_HAS_MUSL_LIBC=ON"
+        elif [[ $target == *"mingw"* || $target == *"windows"* ]]; then
+            # Santinizers on Windows only support x86 now
+            case $target in
+            i*86*|x86_64*)
+                ;;
+            *)
+                COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF"
+                ;;
+            esac
+        fi
+        
         if [[ $target != *"apple"* ]]; then
             if [[ $target != *"msvc"* ]]; then
                 COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE"
@@ -120,7 +122,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             fi
         fi
         normalized_triple=$("$OUTPUT_DIR/bin/$target-clang" --print-target-triple)
-        if [[ "$normalized_triple" != "$target" ]]; then
+        if [[ "$normalized_triple" != "$target" && -d "$COMPILER_RT_INSTALL_PREFIX/lib/$target" ]]; then
             ln -sfn $target "$COMPILER_RT_INSTALL_PREFIX/lib/$normalized_triple"
         fi
     fi
