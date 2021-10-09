@@ -53,8 +53,9 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [ -z "$COMPILER_RT_FULL_BUILD" ]; then
         if [[ $target == *"-mingw"* ]]; then
             COMPILER_RT_SRC_DIR="../lib/builtins"
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=OFF"
         else
-            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_LIBFUZZER=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF -DCOMPILER_RT_BUILD_PROFILE=OFF"
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=OFF -DCOMPILER_RT_BUILD_LIBFUZZER=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF -DCOMPILER_RT_BUILD_PROFILE=OFF"
             COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_ORC=OFF"
             COMPILER_RT_SRC_DIR=".."
             if [[ $target == *"linux"* ]]; then
@@ -125,6 +126,11 @@ for target in "${CROSS_TARGETS[@]}"; do
         if [[ "$normalized_triple" != "$target" && -d "$COMPILER_RT_INSTALL_PREFIX/lib/$target" ]]; then
             ln -sfn $target "$COMPILER_RT_INSTALL_PREFIX/lib/$normalized_triple"
         fi
+    fi
+    if [[ -z "$COMPILER_RT_FULL_BUILD" && $target != *"apple"* && $target != *"msvc"* ]]; then
+        # Put a fake empty libatomic.a in sysroot
+        mkdir -p "$(target_install_prefix $target)/lib"
+        touch "$(target_install_prefix $target)/lib/libatomic.a"
     fi
     cd ..
 done

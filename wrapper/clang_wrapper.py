@@ -34,11 +34,7 @@ def main(target, exec_name):
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/arm-linux-androideabi')]
     elif fnmatch.fnmatch(arch, 'i*86'):
-        if 'musl' in target:
-            if '-static' not in sys.argv[1:]:
-                # Fix linker path
-                clang_args += ['-Wl,-dynamic-linker=/lib/ld-musl-i386.so.1']
-        elif 'android' in target:
+        if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/i686-linux-android')]
     elif arch.startswith('x86_64'):
         if 'android' in target:

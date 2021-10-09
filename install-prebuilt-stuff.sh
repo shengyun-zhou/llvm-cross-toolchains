@@ -9,9 +9,6 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [ -f "prebuilt-libgcc-crt/crt_$target.tar.gz" ]; then
         mkdir -p "$CLANG_RESOURCE_DIR/lib/$target"
         tar_extractor.py "prebuilt-libgcc-crt/crt_$target.tar.gz" -C "$CLANG_RESOURCE_DIR/lib/$target"
-        if [[ -f "$CLANG_RESOURCE_DIR/lib/$target/libatomic.a" ]]; then
-            mkdir -p "$(target_install_prefix $target)/lib" && mv "$CLANG_RESOURCE_DIR/lib/$target/libatomic.a" "$(target_install_prefix $target)/lib"
-        fi
         normalized_triple=$("$OUTPUT_DIR/bin/$target-clang" --print-target-triple)
         if [[ "$normalized_triple" != "$target" ]]; then
             ln -sfn $target "$CLANG_RESOURCE_DIR/lib/$normalized_triple"
