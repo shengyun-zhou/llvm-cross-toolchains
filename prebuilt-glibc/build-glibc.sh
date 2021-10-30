@@ -20,6 +20,7 @@ export PATH="$GCC_CROSS_INSTALL_PREFIX/bin:$PATH"
 
 # Prepare binutils
 SOURCE_TARBALL=binutils-$BINUTILS_VERSION.tar.gz
+mkdir -p "$SOURCE_DIR"
 if [ ! -f "$SOURCE_DIR/$SOURCE_TARBALL" ]; then
     curl -sSL "http://mirrors.ustc.edu.cn/gnu/binutils/$SOURCE_TARBALL" -o "$SOURCE_DIR/$SOURCE_TARBALL.tmp"
     mv "$SOURCE_DIR/$SOURCE_TARBALL.tmp" "$SOURCE_DIR/$SOURCE_TARBALL"

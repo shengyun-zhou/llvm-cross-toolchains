@@ -12,6 +12,7 @@ mkdir -p $BUILD_DIR && cd $BUILD_DIR
 
 GCC_CROSS_INSTALL_PREFIX="$(pwd)/gcc-cross-install"
 SOURCE_TARBALL=gcc-$GCC_VERSION.tar.gz
+mkdir -p "$SOURCE_DIR"
 if [ ! -f "$SOURCE_DIR/$SOURCE_TARBALL" ]; then
     curl -sSL "http://mirrors.ustc.edu.cn/gnu/gcc/gcc-$GCC_VERSION/$SOURCE_TARBALL" -o "$SOURCE_DIR/$SOURCE_TARBALL.tmp"
     mv "$SOURCE_DIR/$SOURCE_TARBALL.tmp" "$SOURCE_DIR/$SOURCE_TARBALL"
@@ -23,7 +24,6 @@ cd build-gcc
 export CC="${HOST_CC:-cc} $HOST_CFLAGS -w $HOST_LDFLAGS"
 export CXX="${HOST_CXX:-c++} $HOST_CXXFLAGS -w $HOST_LDFLAGS"
 unset CPP CPPFLAGS CFLAGS CXXFLAGS
-export CPP_FOR_BUILD="cpp"
 export CC_FOR_BUILD="cc"
 export CXX_FOR_BUILD="c++"
 export CFLAGS_FOR_BUILD=" "

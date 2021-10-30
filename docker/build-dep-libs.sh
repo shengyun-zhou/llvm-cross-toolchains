@@ -10,11 +10,14 @@ CMAKE_FLAGS="-G Ninja -DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_BUILD_TYPE=Release -DCM
 if [[ $CROSS_HOST != "Windows" ]]; then
     export CFLAGS="$CFLAGS -fPIC" CXXFLAGS="$CXXFLAGS -fPIC"
 fi
+if [[ -n "$CROSS_PREFIX" ]]; then
+    export AR=$CROSS_PREFIX-ar RANLIB=$CROSS_PREFIX-ranlib
+fi
 
 # Build libgmp
 curl -L "http://mirrors.ustc.edu.cn/gnu/gmp/gmp-6.2.1.tar.xz" -o gmp.tar.xz
 mkdir gmp-build && cd gmp-build && tar xvf ../gmp.tar.xz --strip 1
-CC="$CC $LDFLAGS" CC_FOR_BUILD="cc" ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared
+CC="$CC $LDFLAGS" CC_FOR_BUILD="cc" ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared --disable-assembly
 make install -j$(nproc)
 cd "$ROOT_DIR/build"
 
@@ -101,7 +104,7 @@ cd "$ROOT_DIR/build"
 
 # Build openssl
 curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/o/openssl/openssl_1.1.1j.orig.tar.gz" -o openssl.tar.gz && mkdir openssl-build && \
-cd openssl-build && tar xvf ../openssl.tar.gz --strip 1 && ./Configure $OPENSSL_TARGET no-dso no-shared no-tests --prefix="$BUILD_DEPS_ROOT" && make -j$(nproc) && make install_sw
+cd openssl-build && tar xvf ../openssl.tar.gz --strip 1 && ./Configure $OPENSSL_TARGET no-asm no-dso no-shared no-tests --prefix="$BUILD_DEPS_ROOT" && make -j$(nproc) && make install_sw
 cd "$ROOT_DIR/build"
 
 cd "$ROOT_DIR" && rm -rf build

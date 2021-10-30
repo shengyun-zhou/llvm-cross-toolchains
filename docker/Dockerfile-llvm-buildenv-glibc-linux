@@ -23,6 +23,6 @@ ENV PATH="${BUILD_DEPS_ROOT}/bin:${PATH}" \
     LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
 
 ADD build-dep-libs.sh /root
-RUN OPENSSL_TARGET=linux-x86_64 ./build-dep-libs.sh
+RUN OPENSSL_TARGET=linux-generic64 ./build-dep-libs.sh
 ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
     HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz" HOST_CPP=clang-cpp
