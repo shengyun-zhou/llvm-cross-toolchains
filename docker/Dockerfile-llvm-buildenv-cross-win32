@@ -12,14 +12,14 @@ RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple &&
 
 WORKDIR /root
 ARG GITHUB_MIRROR_DOMAIN=github.com
-RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/mstorsjo/llvm-mingw/releases/download/20210816/llvm-mingw-20210816-msvcrt-ubuntu-18.04-x86_64.tar.xz" -o llvm-mingw.tar.xz && \
+RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-msvcrt-ubuntu-18.04-x86_64.tar.xz" -o llvm-mingw.tar.xz && \
     mkdir llvm-mingw && tar xvf llvm-mingw.tar.xz -C llvm-mingw --strip 1 && rm -f llvm-mingw.tar.xz
 ENV TOOLCHAIN_ROOT=/root/llvm-mingw CROSS_PREFIX=x86_64-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root   
 
 ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=${CROSS_PREFIX}-cc HOST_CXX=${CROSS_PREFIX}-c++ HOST_STRIP=llvm-strip HOST_RC=${CROSS_PREFIX}-windres \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
+    HOST_CFLAGS="-Wno-unused-arguments -I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
     HOST_LDFLAGS="-Qunused-arguments -L$BUILD_DEPS_ROOT/lib -lunwind" \
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_TARGET=${CROSS_PREFIX}" \

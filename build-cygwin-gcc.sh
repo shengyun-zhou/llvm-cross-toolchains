@@ -20,12 +20,15 @@ mkdir build-gcc && tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C build-gcc -
 cd build-gcc
 
 # LDFLAGS may not work for libtool, append it to CC
-export CPP="$HOST_CPP"
-export CC="${HOST_CC:-cc} -w $HOST_LDFLAGS"
-export CXX="${HOST_CXX:-c++} -w $HOST_LDFLAGS"
-export CPPFLAGS="$HOST_CPPFLAGS"
-export CFLAGS="$HOST_CFLAGS"
-export CXXFLAGS="$HOST_CXXFLAGS"
+export CC="${HOST_CC:-cc} $HOST_CFLAGS -w $HOST_LDFLAGS"
+export CXX="${HOST_CXX:-c++} $HOST_CXXFLAGS -w $HOST_LDFLAGS"
+unset CPP CPPFLAGS CFLAGS CXXFLAGS
+export CPP_FOR_BUILD="cpp"
+export CC_FOR_BUILD="cc"
+export CXX_FOR_BUILD="c++"
+export CFLAGS_FOR_BUILD=" "
+export CXXFLAGS_FOR_BUILD=" "
+export LDFLAGS_FOR_BUILD=" "
 unset LDFLAGS
 
 for target in "${CROSS_TARGETS[@]}"; do
@@ -33,11 +36,10 @@ for target in "${CROSS_TARGETS[@]}"; do
         mkdir build-$target && cd build-$target
         ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$GCC_CROSS_INSTALL_PREFIX" --enable-languages=c \
             --disable-libgomp --disable-libmudflap --disable-libmpx --disable-libquadmath-support --disable-libquadmath --disable-shared \
-            --enable-linker-build-id --disable-libstdcxx-pch
-        make -j$(cpu_count) all-gcc
-        make -j$(cpu_count) install-gcc
+            --enable-linker-build-id --disable-libstdcxx-pch --disable-bootstrap --disable-werror --disable-multilib
+        make -j$(cpu_count) all-gcc || true
 
-        GCC_BIN_FILE="$GCC_CROSS_INSTALL_PREFIX/bin/$target-gcc${CROSS_EXEC_SUFFIX}"
+        GCC_BIN_FILE="gcc/xgcc${CROSS_EXEC_SUFFIX}"
         "${HOST_STRIP:-strip}" "$GCC_BIN_FILE"
         if [[ -n "$HOST_RPATH" ]]; then
             # Fix rpath

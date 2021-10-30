@@ -52,7 +52,7 @@ def main(target, exec_name):
                 '--sysroot', sysroot_dir,
                 '-B', os.path.join(DIR, '%s-' % target),
                 '-L' + os.path.join(sysroot_dir, 'usr/lib/w32api'),
-                '-static-libgcc', '-v'
+                '-static-libgcc',
             ]
             if cplusplus_mode:
                 gcc_ld_args += ['-lc++']
