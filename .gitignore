@@ -44,6 +44,8 @@ prebuilt-cctools/*.gz
 prebuilt-linux-header/*.gz
 prebuilt-harmonyos/*.gz
 prebuilt-msvc-sdk/*.gz
+prebuilt-cygwin/*.gz
+prebuilt-cygwin/.cygwin-sysroot*/
 prebuilt-msvc-sdk/.temp_sdk_dir/
 __pycache__/
 win32-toolchain-extractor/*.tar.*

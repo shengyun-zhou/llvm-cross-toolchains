@@ -7,6 +7,7 @@ bash ./build-llvm.sh
 bash ./install-wrapper.sh
 bash ./install-prebuilt-stuff.sh
 bash ./build-gnu-binutils.sh
+bash ./build-cygwin-gcc.sh
 LIBC_STARTFILE_STAGE=1 bash ./build-musl.sh
 LIBC_STARTFILE_STAGE=1 bash ./build-mingw.sh
 bash ./build-compiler-rt.sh

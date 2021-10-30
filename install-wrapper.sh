@@ -23,7 +23,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     done
     ln -sf toolchain-wrapper${CROSS_EXEC_SUFFIX} $target-ld${CROSS_EXEC_SUFFIX}
     ln -sf llvm-cxxfilt${CROSS_EXEC_SUFFIX} $target-c++filt${CROSS_EXEC_SUFFIX}
-    if [[ $target == *"-mingw"* || $target == *"windows"* ]]; then
+    if [[ $target == *"-mingw"* || $target == *"windows"* || $target == *"cygwin"* ]]; then
         ln -sf llvm-dlltool${CROSS_EXEC_SUFFIX} $target-dlltool${CROSS_EXEC_SUFFIX}
         ln -sf llvm-windres${CROSS_EXEC_SUFFIX} $target-windres${CROSS_EXEC_SUFFIX}
         if [[ $target == *"msvc"* ]]; then

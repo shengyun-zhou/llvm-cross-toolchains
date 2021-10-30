@@ -28,6 +28,11 @@ for target in "${CROSS_TARGETS[@]}"; do
         mkdir -p "$(target_install_prefix $target)"
         tar_extractor.py prebuilt-glibc/glibc-${GLIBC_VERSION}_$target.tar.gz -C "$(target_install_prefix $target)" --strip 1
         ln -sfn usr/lib "$(target_install_prefix $target)/../lib"
+    elif [[ $target == *"cygwin"* ]]; then
+        mkdir -p "$(target_install_prefix $target)"
+        tar_extractor.py prebuilt-cygwin/cygwin-sysroot-${CYGWIN_VERSION}_$target.tar.gz -C "$(target_install_prefix $target)" --strip 1
+        # Merge libgcc_eh.a into libgcc.a
+        "$OUTPUT_DIR/bin/llvm-ar" qcsL "$(target_install_prefix $target)/lib/libgcc.a" "$(target_install_prefix $target)/lib/libgcc_eh.a"
     elif [[ $target == *"apple"* ]]; then
         DARWIN_SDK_NAME=""
         case "$target" in

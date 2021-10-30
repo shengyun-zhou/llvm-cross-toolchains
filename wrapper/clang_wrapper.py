@@ -43,10 +43,27 @@ def main(target, exec_name):
         # TODO: Use LLD after it has implemented linker relaxation for RISC-V
         fuse_ld = 'ld'
 
-    if not 'mingw' in target and not 'windows' in target:
+    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target:
         clang_args += ['-fPIC']
 
-    if 'apple' in target:
+    if 'cygwin' in target:
+        if '__GCC_AS_LD' in os.environ:
+            gcc_ld_args = [
+                '--sysroot', sysroot_dir,
+                '-B', os.path.join(DIR, '%s-' % target),
+                '-L' + os.path.join(sysroot_dir, 'usr/lib/w32api'),
+                '-static-libgcc', '-v'
+            ]
+            if cplusplus_mode:
+                gcc_ld_args += ['-lc++']
+            exit(subprocess.run([os.path.join(DIR, '%s-gcc-ld' % target)] + sys.argv[1:] + gcc_ld_args).returncode)
+        else:
+            fuse_ld = ''
+            clang_args += ['-D_GNU_SOURCE']
+            if cplusplus_mode:
+                clang_args += ['-D_LIBCPP_OBJECT_FORMAT_COFF', '-D_LIBCPP_HAS_THREAD_API_PTHREAD']
+            os.environ['__GCC_AS_LD'] = '1'     # Clang may call gcc as linker later
+    elif 'apple' in target:
         # TODO: Use LLD if it's mature enough for Apple
         fuse_ld = 'ld'
         sdk_min_version_arg = {
@@ -105,8 +122,9 @@ def main(target, exec_name):
             elif '-arch' not in sys.argv[1:]:
                 clang_args += ['-arch', 'x86_64']
 
+    if fuse_ld:
+        clang_args += ['-fuse-ld=%s' % fuse_ld]
     clang_args += [
-        '-fuse-ld=%s' % fuse_ld,
         '-target', clang_target,
         '-Qunused-arguments'
     ]

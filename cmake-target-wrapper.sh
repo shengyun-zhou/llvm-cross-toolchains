@@ -26,6 +26,9 @@ case $TARGET in
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Darwin "-DCMAKE_LIBTOOL=$OUTPUT_DIR/bin/llvm-libtool-darwin${EXEC_SUFFIX}")
         CMAKE_ARGS+=("-DCMAKE_LIPO=$OUTPUT_DIR/bin/llvm-lipo${EXEC_SUFFIX}")
         ;;
+    *cygwin*)
+        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
+        ;;
     *)
         echo "Unrecognized target $TARGET for CMake wrapper"
         exit 1

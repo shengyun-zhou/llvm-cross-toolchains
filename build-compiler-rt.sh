@@ -24,6 +24,9 @@ fi
 unset APPLE_BUILT
 COMPILER_RT_INSTALL_PREFIX="$("$OUTPUT_DIR/bin/clang" --print-resource-dir)"
 for target in "${CROSS_TARGETS[@]}"; do
+    if [[ $target == *"cygwin"* ]]; then
+        # compiler-rt does not support Cygwin now
+    fi
     if [[ $target == *"apple"* ]]; then
         if [[ -n "$APPLE_BUILT" ]]; then
             continue

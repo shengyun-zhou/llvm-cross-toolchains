@@ -14,9 +14,10 @@ apply_patch llvm-$LLVM_VERSION
 cd libunwind
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"apple"* || $target == *"msvc"* ]]; then
+    if [[ $target == *"apple"* || $target == *"msvc"* || $target == *"cygwin"* ]]; then
         # Apple: Use libunwind in the SDK
         # MSVC: Do not use it now
+        # Cygwin: use unwind in libgcc
         continue
     fi
     mkdir build-$target && cd build-$target

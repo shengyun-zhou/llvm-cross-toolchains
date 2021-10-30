@@ -41,6 +41,10 @@ export CROSS_TARGETS=(
     "i686-windows-msvc"
     "x86_64-windows-msvc"
 
+    # Windows Cygwin
+    "i686-pc-cygwin"
+    "x86_64-pc-cygwin"
+
     # MacOSX
     "aarch64-apple-macosx"
     "arm64-apple-macosx"    # Synonym for aarch64-apple-macosx

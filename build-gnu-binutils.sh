@@ -24,7 +24,7 @@ export CXXFLAGS="$HOST_CXXFLAGS"
 export LDFLAGS="$HOST_LDFLAGS"
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == "riscv"*"-linux-"* ]]; then
+    if [[ $target == "riscv"*"-linux-"* || $target == *"cygwin"* ]]; then
         mkdir build-$target && cd build-$target
         ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
         make -j$(cpu_count)
