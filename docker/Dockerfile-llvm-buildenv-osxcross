@@ -28,3 +28,4 @@ ENV PATH="/root/osxcross/target/bin:${PATH}" \
 
 ADD build-dep-libs.sh /root
 RUN SKIP_BUILD_LIBCXX=1 OPENSSL_TARGET=darwin64-x86_64-cc ./build-dep-libs.sh
+RUN apt update && apt install -y git-lfs
