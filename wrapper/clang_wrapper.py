@@ -54,7 +54,7 @@ def main(target, exec_name):
                 '-L' + os.path.join(sysroot_dir, 'usr/lib/w32api'),
                 '-static-libgcc',
             ]
-            if cplusplus_mode:
+            if cplusplus_mode and os.path.exists(os.path.join(sysroot_dir, 'usr/lib/libc++.a')):
                 gcc_ld_args += ['-lc++']
             exit(subprocess.run([os.path.join(DIR, '%s-gcc-ld' % target)] + sys.argv[1:] + gcc_ld_args).returncode)
         else:
