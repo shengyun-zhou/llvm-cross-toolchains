@@ -29,6 +29,9 @@ case $TARGET in
     *cygwin*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
         ;;
+    *freebsd*)
+        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=FreeBSD)
+        ;;
     *)
         echo "Unrecognized target $TARGET for CMake wrapper"
         exit 1

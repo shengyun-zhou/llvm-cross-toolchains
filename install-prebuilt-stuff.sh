@@ -38,6 +38,18 @@ for target in "${CROSS_TARGETS[@]}"; do
         tar_extractor.py prebuilt-cygwin/cygwin-sysroot-${CYGWIN_VERSION}_$cygwin_arch.tar.gz -C "$(target_install_prefix $target)" --strip 1
         # Merge libgcc_eh.a into libgcc.a
         "$OUTPUT_DIR/bin/llvm-ar" qcsL "$(target_install_prefix $target)/lib/libgcc.a" "$(target_install_prefix $target)/lib/libgcc_eh.a"
+    elif [[ $target == *"freebsd"* ]]; then
+        mkdir -p "$(target_install_prefix $target)"
+        freebsd_arch=''
+        case "$target" in
+        aarch64*|arm64*) freebsd_arch=arm64 ;;
+        arm*) freebsd_arch=arm ;;
+        i*86*) freebsd_arch=i386 ;;
+        x86_64*) freebsd_arch=amd64 ;;
+        esac
+        tar_extractor.py prebuilt-freebsd/freebsd-sysroot-${FREEBSD_VERSION}_$freebsd_arch.tar.gz -C "$OUTPUT_DIR/$target" --strip 1
+        # Create dummy libgcc.a, use libgcc_s.so util libunwind is built and merged into compiler-rt
+        touch "$(target_install_prefix $target)/lib/libgcc.a"
     elif [[ $target == *"apple"* ]]; then
         DARWIN_SDK_NAME=""
         case "$target" in

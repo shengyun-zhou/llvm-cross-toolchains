@@ -40,6 +40,9 @@ for target in "${CROSS_TARGETS[@]}"; do
         builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
         if [[ -f "$builtins_lib" ]]; then
             "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" "$(target_install_prefix $target)/lib/libunwind.a"
+            if [[ $target == *"freebsd"* ]]; then
+                cp "$builtins_lib" "$(target_install_prefix $target)/lib/libgcc.a"
+            fi
         fi
     fi
 done

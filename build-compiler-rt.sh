@@ -75,8 +75,8 @@ for target in "${CROSS_TARGETS[@]}"; do
         if [[ $target == *"musl"* ]]; then
             # Santinizers can not built on MUSL now
             COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF -DLIBCXX_HAS_MUSL_LIBC=ON"
-        elif [[ $target == *"mingw"* || $target == *"windows"* ]]; then
-            # Santinizers on Windows only support x86 now
+        elif [[ $target == *"mingw"* || $target == *"windows"* || $target == *"bsd"* ]]; then
+            # Santinizers on Windows/BSD only support x86 now
             case $target in
             i*86*|x86_64*)
                 ;;
@@ -87,7 +87,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         fi
         
         if [[ $target != *"apple"* ]]; then
-            if [[ $target != *"msvc"* ]]; then
+            if [[ $target != *"msvc"* && $target != *"freebsd"* ]]; then
                 COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE"
             fi
             if [[ $target != $COMPILER_RT_COMPILER_TARGET ]]; then
