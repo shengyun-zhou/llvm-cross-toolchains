@@ -47,3 +47,47 @@ index 97e33f3..8bee76b 100644
  #  define _LIBCPP_SAFE_STATIC __attribute__((__require_constant_initialization__))
  #else
  #  define _LIBCPP_SAFE_STATIC
+diff --git a/libcxxabi/src/CMakeLists.txt b/libcxxabi/src/CMakeLists.txt
+index f07d433..44ac464 100644
+--- a/libcxxabi/src/CMakeLists.txt
++++ b/libcxxabi/src/CMakeLists.txt
+@@ -36,7 +36,7 @@ else()
+   )
+ endif()
+ 
+-if (LIBCXXABI_ENABLE_THREADS AND (UNIX OR FUCHSIA) AND NOT (APPLE OR CYGWIN)
++if (LIBCXXABI_ENABLE_THREADS AND (UNIX OR FUCHSIA) AND NOT APPLE
+     AND NOT (${CMAKE_SYSTEM_NAME} MATCHES "AIX"))
+   list(APPEND LIBCXXABI_SOURCES
+     cxa_thread_atexit.cpp
+diff --git a/libcxxabi/src/cxa_thread_atexit.cpp b/libcxxabi/src/cxa_thread_atexit.cpp
+index a940eaf..4b0d4d8 100644
+--- a/libcxxabi/src/cxa_thread_atexit.cpp
++++ b/libcxxabi/src/cxa_thread_atexit.cpp
+@@ -112,9 +112,12 @@ extern "C" {
+ #ifdef HAVE___CXA_THREAD_ATEXIT_IMPL
+     return __cxa_thread_atexit_impl(dtor, obj, dso_symbol);
+ #else
++#if !(defined __CYGWIN__ || defined _WIN32)
+     if (__cxa_thread_atexit_impl) {
+       return __cxa_thread_atexit_impl(dtor, obj, dso_symbol);
+-    } else {
++    } else
++#endif
++    {
+       // Initialize the dtors std::__libcpp_tls_key (uses __cxa_guard_*() for
+       // one-time initialization and __cxa_atexit() for destruction)
+       static DtorsManager manager;
+diff --git a/libcxxabi/include/__cxxabi_config.h b/libcxxabi/include/__cxxabi_config.h
+index cffedb8..f25f864 100644
+--- a/libcxxabi/include/__cxxabi_config.h
++++ b/libcxxabi/include/__cxxabi_config.h
+@@ -66,7 +66,7 @@
+  #endif
+ #endif
+ 
+-#if defined(_LIBCXXABI_COMPILER_MSVC)
++#if defined(_LIBCXXABI_COMPILER_MSVC) || defined(__CYGWIN__)
+ #define _LIBCXXABI_WEAK
+ #else
+ #define _LIBCXXABI_WEAK __attribute__((__weak__))
