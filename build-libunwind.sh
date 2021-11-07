@@ -42,6 +42,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" "$(target_install_prefix $target)/lib/libunwind.a"
             if [[ $target == *"freebsd"* ]]; then
                 cp "$builtins_lib" "$(target_install_prefix $target)/lib/libgcc.a"
+                ln -sf libunwind.a "$(target_install_prefix $target)/lib/libgcc_eh.a"
             fi
         fi
     fi
