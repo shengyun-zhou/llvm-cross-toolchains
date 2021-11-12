@@ -43,6 +43,9 @@ def extract_tar(tar_file, directory='.', strip_component_count=0, verbose_output
             break
         # Drop original UID and GID to make all files belong to current user and group
         tar_member_info.uid = tar_member_info.gid = 0
+        if tar_member_info.path.startswith('/'):
+            # Do not allow absolute path
+            tar_member_info.path = tar_member_info.path[1:]
         if strip_component_count > 0:
             path_split = tar_member_info.path.split('/', maxsplit=strip_component_count)
             if len(path_split) <= strip_component_count:
@@ -54,6 +57,8 @@ def extract_tar(tar_file, directory='.', strip_component_count=0, verbose_output
             tar_member_info.name = tar_member_info.name.replace(':', '_')
             tar_member_info.linkname = tar_member_info.linkname.replace(':', '_')
         if tar_member_info.islnk() or tar_member_info.issym():
+            if tar_member_info.linkname.startswith('/'):
+                tar_member_info.linkname = tar_member_info.linkname[1:]
             if isinstance(verbose_output_cb, Callable):
                 verbose_output_cb('Enqueue link: %s -> %s' %(tar_member_info.name, tar_member_info.linkname))
             tar_link_members.append(tar_member_info)
@@ -109,6 +114,6 @@ if __name__ == '__main__':
     arg_parser.add_argument('TAR_FILE', type=str, help='Input tar file')
     arg_parser.add_argument('-C', '--directory', metavar='DIR', type=str, default='.', help='Change to directory DIR')
     arg_parser.add_argument('--strip', '--strip-components', metavar='N', type=int, default=0, help='Strip N leading components from file')
-    arg_parser.add_argument("-v", '--verbose', help="Verbose output", action='store_true')
+    arg_parser.add_argument('-v', '--verbose', help="Verbose output", action='store_true')
     argv = vars(arg_parser.parse_args())
     extract_tar(argv['TAR_FILE'], directory=argv['directory'], strip_component_count=argv['strip'], verbose_output_cb=None if not argv['verbose'] else print)
