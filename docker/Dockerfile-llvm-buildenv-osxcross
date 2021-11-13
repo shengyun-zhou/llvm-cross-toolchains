@@ -13,8 +13,10 @@ RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/26eba
     cd osxcross && tar xf ../osxcross.tar.gz --strip 1 && rm -f ../osxcross.tar.gz && sed -i -e "s/github.com/${GITHUB_MIRROR_DOMAIN}/g" build.sh build_compiler_rt.sh tools/tools.sh && \
     curl -L https://${GITHUB_MIRROR_DOMAIN}/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz -o tarballs/MacOSX11.3.sdk.tar.xz
 RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf build
-RUN apt update && apt install -y autoconf
-ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=x86_64-apple-darwin20.4
+RUN apt update && apt install -y autoconf git-lfs
+
+ARG CROSS_ARCH=x86_64
+ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=${CROSS_ARCH}-apple-darwin20.4
 ENV PATH="/root/osxcross/target/bin:${PATH}" \
     HOST_CC=$CROSS_PREFIX-cc HOST_CXX=$CROSS_PREFIX-c++ HOST_STRIP=$CROSS_PREFIX-strip \
     HOST_CPP="$CROSS_PREFIX-cc --driver-mode=cpp" \
@@ -27,7 +29,6 @@ ENV PATH="/root/osxcross/target/bin:${PATH}" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root
-RUN SKIP_BUILD_LIBCXX=1 OPENSSL_TARGET=darwin64-x86_64-cc ./build-dep-libs.sh
-RUN apt update && apt install -y git-lfs
+RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
 ENV HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz -liconv"
 

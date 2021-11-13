@@ -10,6 +10,16 @@ CMAKE_FLAGS="-G Ninja -DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_BUILD_TYPE=Release -DCM
 if [[ $CROSS_HOST != "Windows" ]]; then
     export CFLAGS="$CFLAGS -fPIC" CXXFLAGS="$CXXFLAGS -fPIC"
 fi
+if [[ $CROSS_HOST == "Windows" ]]; then
+    OPENSSL_TARGET=mingw64
+elif [[ $CROSS_HOST == "Linux" ]]; then
+    OPENSSL_TARGET=linux-generic64
+elif [[ $CROSS_HOST == "Darwin" ]]; then
+    OPENSSL_TARGET=darwin64-x86_64-cc
+    if [[ $CROSS_PREFIX == "aarch64"* || $CROSS_PREFIX == "arm64"* ]]; then
+        OPENSSL_TARGET=darwin64-arm64-cc
+    fi
+fi
 if [[ -n "$CROSS_PREFIX" ]]; then
     export AR=$CROSS_PREFIX-ar RANLIB=$CROSS_PREFIX-ranlib
 fi
@@ -98,13 +108,16 @@ cd libxml2-build && tar xvf ../libxml2.tar.gz --strip 1 && ./configure $HOST_CON
 cd "$ROOT_DIR/build"
 
 # Build libffi
-curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/libf/libffi/libffi_3.3.orig.tar.gz" -o libffi.tar.gz
+curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/libf/libffi/libffi_3.4.2.orig.tar.gz" -o libffi.tar.gz
 mkdir libffi-build && cd libffi-build && tar xvf ../libffi.tar.gz --strip 1 && ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared && make install -j$(nproc)
 cd "$ROOT_DIR/build"
 
 # Build openssl
 curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/o/openssl/openssl_1.1.1j.orig.tar.gz" -o openssl.tar.gz && mkdir openssl-build && \
-cd openssl-build && tar xvf ../openssl.tar.gz --strip 1 && ./Configure $OPENSSL_TARGET no-asm no-dso no-shared no-tests --prefix="$BUILD_DEPS_ROOT" && make -j$(nproc) && make install_sw
+cd openssl-build && tar xvf ../openssl.tar.gz --strip 1
+# Patch configuration file
+sed -i '/rcflag/d' Configurations/10-main.conf
+./Configure $OPENSSL_TARGET no-asm no-dso no-shared no-tests --prefix="$BUILD_DEPS_ROOT" && make -j$(nproc) && make install_sw
 cd "$ROOT_DIR/build"
 
 cd "$ROOT_DIR" && rm -rf build

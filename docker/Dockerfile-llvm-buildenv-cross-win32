@@ -14,7 +14,11 @@ WORKDIR /root
 ARG GITHUB_MIRROR_DOMAIN=github.com
 RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-msvcrt-ubuntu-18.04-x86_64.tar.xz" -o llvm-mingw.tar.xz && \
     mkdir llvm-mingw && tar xvf llvm-mingw.tar.xz -C llvm-mingw --strip 1 && rm -f llvm-mingw.tar.xz
-ENV TOOLCHAIN_ROOT=/root/llvm-mingw CROSS_PREFIX=x86_64-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root   
+RUN ln -sf llvm-readobj "${TOOLCHAIN_ROOT}/bin/llvm-readelf" && wine pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+RUN apt update && apt install -y --no-install-recommends texinfo git-lfs
+
+ARG CROSS_ARCH=x86_64
+ENV TOOLCHAIN_ROOT=/root/llvm-mingw CROSS_PREFIX=${CROSS_ARCH}-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root   
 
 ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=${CROSS_PREFIX}-cc HOST_CXX=${CROSS_PREFIX}-c++ HOST_STRIP=llvm-strip HOST_RC=${CROSS_PREFIX}-windres \
@@ -26,11 +30,8 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libc++.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libwinpthread-1.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libunwind.dll" \
     HOST_CONFIGURE_ARGS="--host=${CROSS_PREFIX}" CROSS_HOST=Windows
 
-RUN ln -sf llvm-readobj "${TOOLCHAIN_ROOT}/bin/llvm-readelf" && wine pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
 ADD build-dep-libs.sh /root
-RUN SKIP_BUILD_LIBCXX=1 OPENSSL_TARGET=mingw64 ./build-dep-libs.sh
-RUN apt update && apt install -y --no-install-recommends texinfo git-lfs
+RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
 ENV READELF=llvm-readelf EMBED_PYTHON_CONFIGURE_ARGS="--enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
     HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz -liconv -lws2_32" HOST_CPP="${CROSS_PREFIX}-cc --driver-mode=cpp" \
     LLVM_CMAKE_FLAGS="-DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON"
