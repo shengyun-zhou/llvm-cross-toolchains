@@ -80,6 +80,9 @@ export CROSS_TARGETS=(
     "aarch64-pc-freebsd${FREEBSD_VERSION%.*}"
     "i686-pc-freebsd${FREEBSD_VERSION%.*}"
     "x86_64-pc-freebsd${FREEBSD_VERSION%.*}"
+
+    # Emscripten
+    "wasm32-emscripten"
 )
 export __CMAKE_WRAPPER="$(pwd)/cmake-target-wrapper.sh"
 
@@ -107,6 +110,7 @@ case "$__os_name" in
                 export HOST_LDFLAGS="$HOST_LDFLAGS -static -llzma -lz -liconv -lws2_32"
                 export LLVM_CMAKE_FLAGS="$LLVM_CMAKE_FLAGS -DLLVM_BUILD_STATIC=1 -DLIBCLANG_BUILD_STATIC=ON"
                 export CONFIGURE_ARGS="$CONFIGURE_ARGS --build=x86_64-w64-mingw32" 
+                export BINARYEN_STATIC_BUILD=1
             else
                 export MSYS_HOST=1
                 export MSYSTEM=MSYS

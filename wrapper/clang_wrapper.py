@@ -42,8 +42,13 @@ def main(target, exec_name):
     elif arch.startswith('riscv'):
         # TODO: Use LLD after it has implemented linker relaxation for RISC-V
         fuse_ld = 'ld'
+    elif arch.startswith('wasm') and 'emscripten' in target:
+        sys.path.append(os.path.join(DIR, '../emscripten'))
+        import emcc
+        # Just forward to emcc
+        exit(emcc.run(sys.argv))
 
-    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target:
+    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target and not target.startswith('wasm'):
         clang_args += ['-fPIC']
 
     if 'cygwin' in target:

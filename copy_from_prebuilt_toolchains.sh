@@ -7,6 +7,7 @@ source config
 declare -A APPLE_INSTALLED_SDK
 mkdir -p "$OUTPUT_DIR/lib/clang/$LLVM_VERSION/lib"
 unset MSVC_SDK_INSTALLED
+unset EMSCRIPTEN_INSTALLED
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"apple"* ]]; then
         DARWIN_SDK_NAME=""
@@ -32,6 +33,11 @@ for target in "${CROSS_TARGETS[@]}"; do
         fi
         if [[ -d "$LLVM_CROSS_TOOLCHAINS_ROOT/$target" ]]; then
             cp -r "$LLVM_CROSS_TOOLCHAINS_ROOT/$target" "$OUTPUT_DIR"
+        fi
+    elif [[ $target == *"emscripten"* ]]; then
+        if [[ -z "$EMSCRIPTEN_INSTALLED" ]]; then
+            cp -r "$LLVM_CROSS_TOOLCHAINS_ROOT/emscripten" "$OUTPUT_DIR/emscripten" 
+            EMSCRIPTEN_INSTALLED=1
         fi
     else
         cp -r "$LLVM_CROSS_TOOLCHAINS_ROOT/$target" "$OUTPUT_DIR"
