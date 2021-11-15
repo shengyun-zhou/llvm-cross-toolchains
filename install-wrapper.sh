@@ -14,6 +14,8 @@ ${HOST_CC:-cc} -O2 $HOST_CFLAGS $HOST_LDFLAGS native-wrapper/toolchain-wrapper.c
 
 PRE_PWD="$(pwd)"
 cd "$OUTPUT_DIR/bin"
+# Download CA certificates
+curl -sSL "https://curl.se/ca/cacert.pem" -o cacert.pem
 for target in "${CROSS_TARGETS[@]}"; do
     for exec in clang clang++ gcc g++ cc c++ as; do
         ln -sf toolchain-wrapper${CROSS_EXEC_SUFFIX} $target-$exec${CROSS_EXEC_SUFFIX}

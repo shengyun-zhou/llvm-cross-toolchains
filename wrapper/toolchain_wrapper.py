@@ -4,6 +4,8 @@ from sys import exit
 
 if __name__ == '__main__':
     os.environ['PATH'] = os.path.dirname(__file__) + os.path.pathsep + os.environ['PATH']
+    # Set path of CA certs
+    os.environ['SSL_CERT_FILE'] = os.path.join(os.path.dirname(__file__), 'cacert.pem')
     if '__ARG0' in os.environ:
         sys.argv[0] = os.environ['__ARG0']
 
