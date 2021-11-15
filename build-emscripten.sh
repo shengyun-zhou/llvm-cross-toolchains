@@ -20,12 +20,8 @@ cd $BUILD_DIR
 touch _emscripten_config_stub.py
 cp ../build-tools/emscripten_env .emscripten
 NODE_ENV=production npm install --no-optional
-export EM_LLVM_ROOT="$OUTPUT_DIR/bin"
-export EM_BINARYEN_ROOT="$OUTPUT_DIR"
-./embuilder build SYSTEM
 
 # Clean
-rm -rf cache/build || true
 rm -rf tests || true
 rm -rf site || true
 rm -rf "$OUTPUT_DIR/emscripten" || true
