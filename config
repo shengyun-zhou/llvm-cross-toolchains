@@ -1,89 +1,12 @@
 #!/bin/bash
 
 source version
+source cross-targets
 source tools.sh
 # SOURCE_DIR and OUTPUT_DIR must be full path
 export SOURCE_DIR="$(pwd)/.src-tarballs"
 export OUTPUT_DIR="$(pwd)/output"
 export PATCH_DIR="$(pwd)/patch"
-export CROSS_TARGETS=(
-    # Linux musl-libc
-    "mipsel-linux-muslsf"
-    "mipsel-linux-musl"
-    "mips64el-linux-musl"
-    "armv7a-linux-musleabihf"
-    "aarch64-linux-musl"
-    "i686-linux-musl"
-    "x86_64-linux-musl"
-    "riscv64-linux-musl"
-
-    # Linux glibc
-    "armv7a-linux-gnueabihf"
-    "aarch64-linux-gnu"
-    "i686-linux-gnu"
-    "x86_64-linux-gnu"
-
-    # Android 
-    "armv7a-linux-androideabi${ANDROID_API}"
-    "aarch64-linux-android${ANDROID_API}"
-    "i686-linux-android${ANDROID_API}"
-    "x86_64-linux-android${ANDROID_API}"
-
-    # Windows MinGW
-    "armv7a-w64-mingw32"
-    "aarch64-w64-mingw32"
-    "i686-w64-mingw32"
-    "x86_64-w64-mingw32"
-
-    # Windows MSVC
-    "armv7a-windows-msvc"
-    "aarch64-windows-msvc"
-    "i686-windows-msvc"
-    "x86_64-windows-msvc"
-
-    # Windows Cygwin
-    "i686-pc-cygwin"
-    "x86_64-pc-cygwin"
-
-    # MacOSX
-    "aarch64-apple-macosx"
-    "arm64-apple-macosx"    # Synonym for aarch64-apple-macosx
-    "arm64e-apple-macosx"
-    "x86_64-apple-macosx"
-    "x86_64h-apple-macosx"
-
-    # Mac Catalyst
-    "aarch64-apple-ios-macabi"
-    "arm64-apple-ios-macabi"    # Synonym for aarch64-apple-ios-macabi
-    "arm64e-apple-ios-macabi"
-    "x86_64-apple-ios-macabi"
-    "x86_64h-apple-ios-macabi"
-
-    # iOS
-    "armv7-apple-ios"
-    "armv7s-apple-ios"
-    "aarch64-apple-ios"
-    "arm64-apple-ios"       # Synonym for aarch64-apple-ios
-    "arm64e-apple-ios"
-    "x86_64-apple-ios-simulator"
-
-    # Apple TVOS
-    "aarch64-apple-tvos"
-    "arm64-apple-tvos"      # Synonym for aarch64-apple-tvos
-    "x86_64-apple-tvos-simulator"
-
-    # Apple WatchOS
-    "armv7k-apple-watchos"
-    "i386-apple-watchos-simulator"
-
-    # FreeBSD
-    "aarch64-pc-freebsd${FREEBSD_VERSION%.*}"
-    "i686-pc-freebsd${FREEBSD_VERSION%.*}"
-    "x86_64-pc-freebsd${FREEBSD_VERSION%.*}"
-
-    # Emscripten
-    "wasm32-emscripten"
-)
 export __CMAKE_WRAPPER="$(pwd)/cmake-target-wrapper.sh"
 
 unset EXEC_SUFFIX CROSS_EXEC_SUFFIX

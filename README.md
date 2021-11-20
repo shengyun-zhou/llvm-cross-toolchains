@@ -58,9 +58,9 @@ The toolchain itself works on Linux, Windows and MacOSX now.
 
 The file `version` contains the versions of some important toolchain components, such as LLVM, glibc, musl-libc and so on.
 
-The array variable `CROSS_TARGETS` in the file `config` defines all cross target triples to be built.
+The array variable `CROSS_TARGETS` in the file `cross-targets` defines all cross target triples to be built.
 
-You can change `version` and `config` based on your need.
+You can change `version` and `cross-targets` based on your need.
 
 #### Prepare stuff
 
