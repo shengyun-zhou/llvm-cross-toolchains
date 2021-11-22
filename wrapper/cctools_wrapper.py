@@ -56,9 +56,7 @@ def main(target, exec_name):
     target_exec = os.path.join(DIR, 'cctools-' + exec_name)
     run_args = []
     shell_eval_args = []
-    if sys.platform not in ('win32', 'cygwin'):
-        shell_eval_args += [target_exec]
-    else:
+    if sys.platform in ('win32', 'cygwin'):
         run_args += ['wsl']
         wsl_distro = os.environ.get('LLVM_CROSS_WSL_DISTRO')
         if wsl_distro:
@@ -71,7 +69,7 @@ def main(target, exec_name):
         shell_eval_args += handle_cmdline_arg(target_exec, arg)
 
     if sys.platform not in ('win32', 'cygwin'):
-        exit(subprocess.run(run_args + shell_eval_args).returncode)
+        os.execv(target_exec, [target_exec] + run_args + shell_eval_args)
     else:
         quote_args = [shlex.quote(arg) for arg in shell_eval_args]
         shell_eval_cmdline_bytes = (' '.join(quote_args)).encode('utf-8')

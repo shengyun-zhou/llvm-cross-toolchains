@@ -61,7 +61,8 @@ def main(target, exec_name):
             ]
             if cplusplus_mode and os.path.exists(os.path.join(sysroot_dir, 'usr/lib/libc++.a')):
                 gcc_ld_args += ['-lc++']
-            exit(subprocess.run([os.path.join(DIR, '%s-gcc-ld' % target)] + sys.argv[1:] + gcc_ld_args).returncode)
+            exec_prog = os.path.join(DIR, '%s-gcc-ld' % target)
+            os.execv(exec_prog, [exec_prog] + sys.argv[1:] + gcc_ld_args)
         else:
             fuse_ld = ''
             clang_args += ['-D_GNU_SOURCE']
@@ -165,4 +166,4 @@ def main(target, exec_name):
     if cplusplus_mode and 'msvc' not in target:
         clang_args += ['--driver-mode=g++', '-stdlib=libc++']
 
-    exit(subprocess.run([clang_exec] + clang_args + input_args).returncode)
+    os.execv(clang_exec, [clang_exec] + clang_args + input_args)

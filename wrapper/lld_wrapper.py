@@ -20,4 +20,6 @@ def main(target, exec_name):
             # Invoke lld-link via clang frontend to get MSVC lib path
             lld_name = '%s-clang' % target
             args = ['/clang:-Wl,' + arg for arg in args ]
-    exit(subprocess.run([os.path.join(DIR, lld_name)] + args).returncode)
+    
+    exec_prog = os.path.join(DIR, lld_name)
+    os.execv(exec_prog, [exec_prog] + args)
