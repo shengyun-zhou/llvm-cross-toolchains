@@ -13,7 +13,7 @@ def main(target, exec_name):
     elif 'wasm' in target:
         lld_name = 'wasm-ld'
     elif 'msvc' in target:
-        if args[0].lower() == '/lib':
+        if len(args) > 0 and args[0].lower() == '/lib':
             # Generate static lib, act as lib.exe. It must be the first argument
             lld_name = 'lld-link'
         else:
