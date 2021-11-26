@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 from sys import exit
+import toolchain_wrapper_tools
 
 DIR=os.path.dirname(__file__)
 
@@ -22,4 +23,4 @@ def main(target, exec_name):
             args = ['/clang:-Wl,' + arg for arg in args ]
     
     exec_prog = os.path.join(DIR, lld_name)
-    os.execv(exec_prog, [exec_prog] + args)
+    toolchain_wrapper_tools.exec_subprocess([exec_prog] + args)

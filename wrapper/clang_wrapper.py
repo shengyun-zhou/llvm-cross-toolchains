@@ -2,6 +2,7 @@ import os
 import sys
 import fnmatch
 import subprocess
+import toolchain_wrapper_tools
 from sys import exit
 
 DIR=os.path.dirname(__file__)
@@ -62,7 +63,7 @@ def main(target, exec_name):
             if cplusplus_mode and os.path.exists(os.path.join(sysroot_dir, 'usr/lib/libc++.a')):
                 gcc_ld_args += ['-lc++']
             exec_prog = os.path.join(DIR, '%s-gcc-ld' % target)
-            os.execv(exec_prog, [exec_prog] + sys.argv[1:] + gcc_ld_args)
+            toolchain_wrapper_tools.exec_subprocess([exec_prog] + sys.argv[1:] + gcc_ld_args)
         else:
             fuse_ld = ''
             clang_args += ['-D_GNU_SOURCE']
@@ -166,4 +167,4 @@ def main(target, exec_name):
     if cplusplus_mode and 'msvc' not in target:
         clang_args += ['--driver-mode=g++', '-stdlib=libc++']
 
-    os.execv(clang_exec, [clang_exec] + clang_args + input_args)
+    toolchain_wrapper_tools.exec_subprocess([clang_exec] + clang_args + input_args)

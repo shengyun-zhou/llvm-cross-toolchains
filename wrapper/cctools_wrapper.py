@@ -3,6 +3,7 @@ import sys
 import subprocess
 import shlex
 from sys import exit
+import toolchain_wrapper_tools
 
 DIR=os.path.dirname(__file__)
 
@@ -69,7 +70,7 @@ def main(target, exec_name):
         shell_eval_args += handle_cmdline_arg(target_exec, arg)
 
     if sys.platform not in ('win32', 'cygwin'):
-        os.execv(target_exec, [target_exec] + run_args + shell_eval_args)
+        toolchain_wrapper_tools.exec_subprocess([target_exec] + run_args + shell_eval_args)
     else:
         quote_args = [shlex.quote(arg) for arg in shell_eval_args]
         shell_eval_cmdline_bytes = (' '.join(quote_args)).encode('utf-8')
