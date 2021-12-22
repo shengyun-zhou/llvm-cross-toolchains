@@ -7,9 +7,13 @@ Supported target platforms:
 + Linux: musl-libc, glibc
 
 + Android
-+ Windows: MinGW, MSVC(Experiment)
++ Windows: MinGW, MSVC(Experiment), Cygwin
 
 + Darwin: MacOSX, Mac-Catalyst, iOS, tvOS, watchOS
+
++ BSD: FreeBSD
+
++ WebAssembly(WASM): Emscripten
 
 The toolchain itself works on Linux, Windows and MacOSX now.
 
@@ -164,6 +168,27 @@ Build cctools:
 
 ```shell
 ./prebuilt-cctools/build-cctools.sh
+```
+
+##### MSVC
+
+1. Enter Visual Studio Developer Command Prompt first, then enter MSYS2/Cygwin shell.
+2. Excute the shell script:
+
+```shell
+./prebuilt-msvc-sdk/extract_sdk_from_msvc.sh
+```
+
+##### Cygwin
+
+```shell
+./prebuilt-cygwin/prepare_sysroot.sh
+```
+
+##### FreeBSD
+
+```shell
+./prebuilt-freebsd/prepare_sysroot.sh
 ```
 
 #### Build and Assemble toolchain
