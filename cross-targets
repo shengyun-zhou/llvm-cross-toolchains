@@ -77,4 +77,7 @@ export CROSS_TARGETS=(
 
     # Emscripten
     "wasm32-emscripten"
+
+    # WASI
+    "wasm32-wamr-wasi"
 )

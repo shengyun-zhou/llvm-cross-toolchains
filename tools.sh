@@ -30,7 +30,7 @@ function cpu_count {
 }
 
 function target_install_prefix {
-    if [[ "$1" == *"mingw"* || "$1" == *"windows"* ]]; then
+    if [[ "$1" == *"mingw"* || "$1" == *"windows"* || "$1" == "wasm"* ]]; then
         echo "$OUTPUT_DIR/$1"
     else
         echo "$OUTPUT_DIR/$1/usr"

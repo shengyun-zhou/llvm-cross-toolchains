@@ -1,0 +1,23 @@
+diff --git a/dlmalloc/src/dlmalloc.c b/dlmalloc/src/dlmalloc.c
+index 331536b..72c0fc1 100644
+--- a/dlmalloc/src/dlmalloc.c
++++ b/dlmalloc/src/dlmalloc.c
+@@ -4,6 +4,10 @@
+ #include <stddef.h>
+ #include <malloc.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ // Define configuration macros for dlmalloc.
+ 
+ // WebAssembly doesn't have mmap-style memory allocation.
+@@ -96,3 +100,7 @@ size_t malloc_usable_size(void *ptr) {
+ void *__libc_malloc(size_t) __attribute__((alias("malloc")));
+ void __libc_free(void *) __attribute__((alias("free")));
+ void *__libc_calloc(size_t nmemb, size_t size) __attribute__((alias("calloc")));
++
++#ifdef __cplusplus
++}
++#endif

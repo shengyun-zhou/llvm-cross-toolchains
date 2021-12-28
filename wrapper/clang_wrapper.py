@@ -43,11 +43,25 @@ def main(target, exec_name):
     elif arch.startswith('riscv'):
         # TODO: Use LLD after it has implemented linker relaxation for RISC-V
         fuse_ld = 'ld'
-    elif arch.startswith('wasm') and 'emscripten' in target:
-        sys.path.append(os.path.join(DIR, '../emscripten'))
-        import emcc
-        # Just forward to emcc
-        exit(emcc.run(sys.argv))
+    elif arch.startswith('wasm'):
+        if 'emscripten' in target:
+            sys.path.append(os.path.join(DIR, '../emscripten'))
+            import emcc
+            # Just forward to emcc
+            exit(emcc.run(sys.argv))
+        else:
+            clang_args += ['-L%s' % os.path.join(sysroot_dir, 'lib')]
+            if 'wamr' in target:
+                if cplusplus_mode:
+                    clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']
+                clang_args += [
+                    '-Wl,--shared-memory',
+                    '-Wl,--max-memory=16777216',
+                    '-Wl,--no-check-features',
+                    '-Wl,--export=__heap_base,--export=__data_end',
+                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/defined-symbols.txt'),
+                ]
+
 
     if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target and not target.startswith('wasm'):
         clang_args += ['-fPIC']

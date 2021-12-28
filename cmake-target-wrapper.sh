@@ -2,6 +2,7 @@
 set -e
 PRE_PWD="$(pwd)"
 cd "$(dirname "$0")"
+ROOT_DIR="$(pwd)"
 source config
 cd "$PRE_PWD"
 
@@ -31,6 +32,9 @@ case $TARGET in
         ;;
     *freebsd*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=FreeBSD)
+        ;;
+    *wasi*)
+        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=WASI -DCMAKE_MODULE_PATH="$ROOT_DIR/cmake")
         ;;
     *)
         echo "Unrecognized target $TARGET for CMake wrapper"

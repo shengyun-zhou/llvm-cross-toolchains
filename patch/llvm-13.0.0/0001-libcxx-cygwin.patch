@@ -43,7 +43,7 @@ index 97e33f3..8bee76b 100644
  #endif
  
 -#if __has_attribute(require_constant_initialization)
-+#if !defined(__CYGWIN__) && __has_attribute(require_constant_initialization)
++#if !defined(__CYGWIN__) && !defined(__wasm__) && __has_attribute(require_constant_initialization)
  #  define _LIBCPP_SAFE_STATIC __attribute__((__require_constant_initialization__))
  #else
  #  define _LIBCPP_SAFE_STATIC

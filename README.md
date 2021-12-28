@@ -1,6 +1,6 @@
 ## LLVM Cross Toolchain
 
-A single cross toolchain based on LLVM with multi architectures and platforms support.
+A cross toolchain collection based on LLVM with multi architecture and platform support.
 
 Supported target platforms:
 
