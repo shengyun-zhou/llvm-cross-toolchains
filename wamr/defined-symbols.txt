@@ -24,7 +24,3 @@ pthread_key_delete
 pthread_once
 pthread_cond_broadcast
 pthread_mutex_trylock
-_pthread_mutex_initializer
-_pthread_rwlock_initializer
-_pthread_cond_initializer
-_pthread_once_init

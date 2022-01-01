@@ -59,10 +59,10 @@ extern "C" {
 #define PTHREAD_PROCESS_SHARED 1
 
 
-#define PTHREAD_MUTEX_INITIALIZER (_pthread_mutex_initializer())
-#define PTHREAD_RWLOCK_INITIALIZER (_pthread_rwlock_initializer())
-#define PTHREAD_COND_INITIALIZER (_pthread_cond_initializer())
-#define PTHREAD_ONCE_INIT (_pthread_once_init())
+#define PTHREAD_MUTEX_INITIALIZER (0)
+#define PTHREAD_RWLOCK_INITIALIZER (0)
+#define PTHREAD_COND_INITIALIZER (0)
+#define PTHREAD_ONCE_INIT (0)
 
 
 #define PTHREAD_CANCEL_ENABLE 0
@@ -90,10 +90,8 @@ pthread_t pthread_self(void);
 
 #define pthread_equal(x, y) ((x)==(y))
 
-pthread_once_t _pthread_once_init() __attribute__((nothrow));
 int pthread_once(pthread_once_t *, void (*)(void));
 
-pthread_mutex_t _pthread_mutex_initializer() __attribute__((nothrow));
 int pthread_mutex_init(pthread_mutex_t *__restrict, const pthread_mutexattr_t *__restrict);
 int pthread_mutex_lock(pthread_mutex_t *);
 int pthread_mutex_unlock(pthread_mutex_t *);
@@ -101,7 +99,6 @@ int pthread_mutex_trylock(pthread_mutex_t *);
 int pthread_mutex_timedlock(pthread_mutex_t *__restrict, const struct timespec *__restrict);
 int pthread_mutex_destroy(pthread_mutex_t *);
 
-pthread_cond_t _pthread_cond_initializer() __attribute__((nothrow));
 int pthread_cond_init(pthread_cond_t *__restrict, const pthread_condattr_t *__restrict);
 int pthread_cond_destroy(pthread_cond_t *);
 int pthread_cond_wait(pthread_cond_t *__restrict, pthread_mutex_t *__restrict);
@@ -109,7 +106,6 @@ int pthread_cond_timedwait(pthread_cond_t *__restrict, pthread_mutex_t *__restri
 int pthread_cond_broadcast(pthread_cond_t *);
 int pthread_cond_signal(pthread_cond_t *);
 
-pthread_rwlock_t _pthread_rwlock_initializer() __attribute__((nothrow));
 int pthread_rwlock_init(pthread_rwlock_t *__restrict, const pthread_rwlockattr_t *__restrict);
 int pthread_rwlock_destroy(pthread_rwlock_t *);
 int pthread_rwlock_rdlock(pthread_rwlock_t *);

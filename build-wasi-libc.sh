@@ -31,9 +31,9 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"wamr"* ]]; then
         cp -r ../wamr/include/* "$OUTPUT_DIR/$target/include" || true
         cat ../wamr/defined-symbols.txt >> "$OUTPUT_DIR/$target/share/wasm32-wasi/defined-symbols.txt"
-        "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -DNDEBUG ../wamr/src/pthread.c -o wamr-pthread.o
+        "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -DNDEBUG ../wamr/src/wamr_libc.c -o wamr_libc.o
         # Recompile dlmalloc with thread-safety support
-        "$OUTPUT_DIR/bin/$target-clang++" -c -v -O2 -DNDEBUG -DUSE_LOCKS=1 -DUSE_SPIN_LOCKS=0 dlmalloc/src/dlmalloc.c -o dlmalloc.o
-        "$OUTPUT_DIR/bin/llvm-ar" rs "$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a" dlmalloc.o wamr-pthread.o
+        "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -DNDEBUG -DUSE_LOCKS=1 -DUSE_SPIN_LOCKS=0 dlmalloc/src/dlmalloc.c -o dlmalloc.o
+        "$OUTPUT_DIR/bin/llvm-ar" rs "$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a" dlmalloc.o wamr_libc.o
     fi
 done

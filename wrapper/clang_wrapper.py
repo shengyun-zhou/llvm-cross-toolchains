@@ -55,6 +55,8 @@ def main(target, exec_name):
                 if cplusplus_mode:
                     clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']
                 clang_args += [
+                    '-D_WASI_EMULATED_MMAN',
+                    '-femulated-tls',
                     '-Wl,--shared-memory',
                     '-Wl,--max-memory=16777216',
                     '-Wl,--no-check-features',

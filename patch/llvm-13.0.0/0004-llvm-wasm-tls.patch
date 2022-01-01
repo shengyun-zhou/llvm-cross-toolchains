@@ -1,0 +1,20 @@
+diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
+index 62c53c0..cbac333 100644
+--- a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
++++ b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
+@@ -1509,13 +1509,13 @@ WebAssemblyTargetLowering::LowerGlobalTLSAddress(SDValue Op,
+   // is possible.
+   // TODO: remove this and implement proper TLS models once Emscripten
+   // supports dynamic linking with threads.
+-  if (GV->getThreadLocalMode() != GlobalValue::LocalExecTLSModel &&
++  /*if (GV->getThreadLocalMode() != GlobalValue::LocalExecTLSModel &&
+       !Subtarget->getTargetTriple().isOSEmscripten()) {
+     report_fatal_error("only -ftls-model=local-exec is supported for now on "
+                        "non-Emscripten OSes: variable " +
+                            GV->getName(),
+                        false);
+-  }
++  }*/
+ 
+   auto GlobalGet = PtrVT == MVT::i64 ? WebAssembly::GLOBAL_GET_I64
+                                      : WebAssembly::GLOBAL_GET_I32;

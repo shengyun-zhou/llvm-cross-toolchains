@@ -2,9 +2,20 @@
 #include <pthread.h>
 #include <string.h>
 
+/* pthread */
+
 int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
     memset(attr, 0, sizeof(pthread_mutexattr_t));
     return 0;
+}
+
+int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
+    attr->__attr = type;
+    return 0;
+}
+
+int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int* out_type) {
+    *out_type = attr->__attr;
 }
 
 int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
