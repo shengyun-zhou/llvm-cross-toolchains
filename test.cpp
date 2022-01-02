@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <atomic>
 #include <cstdint>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <memory>
@@ -10,6 +11,8 @@ thread_local int g = 0;
 
 void thread_msg(int idx, const std::string& msg) {
     std::cout << "thread " << idx << " says: " << msg << std::endl;
+    g++;
+    std::cout << "TLS var g of thread " << idx << " is: " << g << std::endl;
 }
 
 int main() {

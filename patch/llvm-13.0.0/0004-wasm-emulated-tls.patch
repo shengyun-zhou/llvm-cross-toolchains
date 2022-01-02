@@ -1,0 +1,34 @@
+diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
+index 62c53c0..8dd3689 100644
+--- a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
++++ b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
+@@ -1493,8 +1493,11 @@ SDValue WebAssemblyTargetLowering::LowerFRAMEADDR(SDValue Op,
+ SDValue
+ WebAssemblyTargetLowering::LowerGlobalTLSAddress(SDValue Op,
+                                                  SelectionDAG &DAG) const {
+-  SDLoc DL(Op);
+   const auto *GA = cast<GlobalAddressSDNode>(Op);
++  if (DAG.getTarget().useEmulatedTLS())
++    return LowerToTLSEmulatedModel(GA, DAG);
++
++  SDLoc DL(Op);
+   MVT PtrVT = getPointerTy(DAG.getDataLayout());
+ 
+   MachineFunction &MF = DAG.getMachineFunction();
+diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
+index 388c0f9..c7fa177 100644
+--- a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
++++ b/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
+@@ -892,6 +892,12 @@ void llvm::getLibcallSignature(const WebAssemblySubtarget &Subtarget,
+                                StringRef Name,
+                                SmallVectorImpl<wasm::ValType> &Rets,
+                                SmallVectorImpl<wasm::ValType> &Params) {
++  if (Name == "__emutls_get_address") {
++    wasm::ValType PtrTy = Subtarget.hasAddr64() ? wasm::ValType::I64 : wasm::ValType::I32;
++    Rets.push_back(PtrTy);
++    Params.push_back(PtrTy);
++    return;
++  }
+   auto &Map = LibcallNameMap->Map;
+   auto Val = Map.find(Name);
+ #ifndef NDEBUG
