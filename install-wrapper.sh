@@ -10,6 +10,7 @@ for target in "${CROSS_TARGETS[@]}"; do
 done
 
 cp wrapper/* "$OUTPUT_DIR/bin"
+cp -r cmake "$OUTPUT_DIR"
 ${HOST_CC:-cc} -O2 $HOST_CFLAGS $HOST_LDFLAGS native-wrapper/toolchain-wrapper.c -o "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
 
 PRE_PWD="$(pwd)"
