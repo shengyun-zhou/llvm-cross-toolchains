@@ -59,6 +59,7 @@ def main(target, exec_name):
                     '-D_WASI_EMULATED_SIGNAL',
                     '-D_WASI_EMULATED_PROCESS_CLOCKS',
                     '-D_WASI_EMULATED_MMAN',
+                    '-D_WASI_EMULATED_GETPID',
                     '-femulated-tls',
                     '-Wl,--shared-memory',
                     '-Wl,--max-memory=16777216',
