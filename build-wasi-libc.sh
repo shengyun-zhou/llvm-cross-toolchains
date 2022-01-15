@@ -31,9 +31,14 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"wamr"* ]]; then
         cp -r ../wamr/include/* "$OUTPUT_DIR/$target/include" || true
         cat ../wamr/defined-symbols.txt >> "$OUTPUT_DIR/$target/share/wasm32-wasi/defined-symbols.txt"
-        "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -DNDEBUG ../wamr/src/wamr_libc.c -o wamr_libc.o
-        # Recompile dlmalloc with thread-safety support
-        "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -DNDEBUG -DUSE_LOCKS=1 -DUSE_SPIN_LOCKS=0 dlmalloc/src/dlmalloc.c -o dlmalloc.o
-        "$OUTPUT_DIR/bin/llvm-ar" rs "$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a" dlmalloc.o wamr_libc.o
+        mkdir build-$target && cd build-$target
+        # Build extend libc for WAMR
+        # Hack include directory temporarily
+        mv ../libc-top-half/musl/include include.bak
+        cp -r "$OUTPUT_DIR/$target/include" ../libc-top-half/musl
+        "$__CMAKE_WRAPPER" $target ../../wamr -DCMAKE_VERBOSE_MAKEFILE=1 -DWASI_LIBC_SOURCE="$(dirname "$(pwd)")" -DPREBUILT_WASI_LIBC="$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a"
+        cmake --build . -- -j$(cpu_count)
+        rm -rf ../libc-top-half/musl/include && mv include.bak ../libc-top-half/musl/include
+        cd ..
     fi
 done

@@ -16,6 +16,7 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
 
 int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int* out_type) {
     *out_type = attr->__attr;
+    return 0;
 }
 
 int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
@@ -27,4 +28,9 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const s
     if (!abstime)
 		return pthread_cond_wait(cond, mutex);
 	return _pthread_cond_timedwait(cond, mutex, abstime->tv_sec * 1000000 + abstime->tv_nsec / 1000); 
+}
+
+int pthread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void)) {
+    // fork() not supported, so do nothing
+    return 0;
 }
