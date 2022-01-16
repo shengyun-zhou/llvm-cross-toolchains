@@ -17,15 +17,17 @@ mkdir -p $BUILD_DIR
 tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 apply_patch wasi-libc-${WASI_LIBC_COMMIT_ID:0:8}
-
-make -j$(cpu_count)
-# Supply some header files
-cp libc-top-half/musl/include/pthread.h sysroot/include
+# Remove -Werror compile flag
+sed -i.bak "s/-Werror//g" Makefile
+# Remove symbol different checking
+sed -i.bak "/diff -wur/d" Makefile
 
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target != *"-wasi"* ]]; then
         continue
     fi
+    rm -rf build sysroot || true
+    make WASM_CC="$OUTPUT_DIR/bin/$target-clang" WASM_AR="$OUTPUT_DIR/bin/$target-ar" WASM_NM="$OUTPUT_DIR/bin/$target-nm"  -j$(cpu_count)
     mkdir -p "$OUTPUT_DIR/$target"
     cp -r sysroot/* "$OUTPUT_DIR/$target"
     if [[ $target == *"wamr"* ]]; then
@@ -36,7 +38,11 @@ for target in "${CROSS_TARGETS[@]}"; do
         # Hack include directory temporarily
         mv ../libc-top-half/musl/include include.bak
         cp -r "$OUTPUT_DIR/$target/include" ../libc-top-half/musl
-        "$__CMAKE_WRAPPER" $target ../../wamr -DCMAKE_VERBOSE_MAKEFILE=1 -DWASI_LIBC_SOURCE="$(dirname "$(pwd)")" -DPREBUILT_WASI_LIBC="$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a"
+        "$__CMAKE_WRAPPER" $target ../../wamr -DCMAKE_VERBOSE_MAKEFILE=1 \
+            -DCMAKE_C_COMPILER_WORKS=1 \
+            -DCMAKE_CXX_COMPILER_WORKS=1 \
+            -DWASI_LIBC_SOURCE="$(dirname "$(pwd)")" \
+            -DPREBUILT_WASI_LIBC="$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a"
         cmake --build . -- -j$(cpu_count)
         rm -rf ../libc-top-half/musl/include && mv include.bak ../libc-top-half/musl/include
         cd ..

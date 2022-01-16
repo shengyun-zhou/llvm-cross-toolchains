@@ -7,6 +7,116 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
+int32_t __imported_wasi_unstable_sock_socket(int32_t domain, int32_t type, int32_t protocol, int32_t* out_sockfd) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_socket")
+));
+
+int socket(int domain, int type, int protocol) {
+    int32_t sockfd = -1;
+    int32_t err = __imported_wasi_unstable_sock_socket(domain, type, protocol, &sockfd);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    return sockfd;
+}
+
+int32_t __imported_wasi_unstable_sock_bind(int32_t sockfd, const struct sockaddr *addr, uint32_t addrlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_bind")
+));
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+    int32_t err = __imported_wasi_unstable_sock_bind(sockfd, addr, addrlen);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_connect(int32_t sockfd, const struct sockaddr *addr, uint32_t addrlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_connect")
+));
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+    int32_t err = __imported_wasi_unstable_sock_connect(sockfd, addr, addrlen);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_listen(int32_t sockfd, int32_t backlog) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_listen")
+));
+
+int listen(int sockfd, int backlog) {
+    int32_t err = __imported_wasi_unstable_sock_listen(sockfd, backlog);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_accept(int32_t sockfd, struct sockaddr *addr, uint32_t* addrlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_accept")
+));
+
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+    uint32_t wasi_addrlen = 0;
+    if (addrlen)
+        wasi_addrlen = *addrlen;
+    int32_t err = __imported_wasi_unstable_sock_accept(sockfd, addr, &wasi_addrlen);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    if (addrlen)
+        *addrlen = wasi_addrlen;
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_getopt(int32_t sockfd, int32_t level, int32_t optname, void *optval, uint32_t *optlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_getopt")
+));
+
+int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen) {
+    if (!optval || !optlen) {
+        errno = EINVAL;
+        return -1;
+    }
+    uint32_t wasi_optlen = *optlen;
+    int32_t ret = __imported_wasi_unstable_sock_getopt(sockfd, level, optname, optval, &wasi_optlen);
+    if (ret != 0) {
+        errno = ret;
+        return -1;
+    }
+    *optlen = wasi_optlen;
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_setopt(int32_t sockfd, int32_t level, int32_t optname, const void *optval, uint32_t optlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_setopt")
+));
+
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen) {
+    int32_t ret = __imported_wasi_unstable_sock_setopt(sockfd, level, optname, optval, optlen);
+    if (ret != 0) { 
+        errno = ret;
+        return -1;
+    }
+    return 0;
+}
+
 ssize_t recvfrom(int sock, void *restrict buffer, size_t length, int flags, struct sockaddr *restrict address,
                  socklen_t *restrict address_len) {
     struct msghdr msg;
@@ -72,3 +182,42 @@ ssize_t sendmsg(int sock, const struct msghdr *msg, int flags) {
     return ret_datasize;
 }
 
+int32_t __imported_wasi_unstable_sock_getsockname(int32_t sockfd, struct sockaddr *addr, uint32_t* addrlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_getsockname")
+));
+
+int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+    if (!addr || !addrlen) {
+        errno = EINVAL;
+        return -1;
+    }
+    uint32_t wasi_addrlen = *addrlen;
+    int32_t err = __imported_wasi_unstable_sock_getsockname(sockfd, addr, &wasi_addrlen);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    *addrlen = wasi_addrlen;
+    return 0;
+}
+
+int32_t __imported_wasi_unstable_sock_getpeername(int32_t sockfd, struct sockaddr *addr, uint32_t* addrlen) __attribute__((
+    __import_module__("wasi_unstable"),
+    __import_name__("sock_getpeername")
+));
+
+int getpeername(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+    if (!addr || !addrlen) {
+        errno = EINVAL;
+        return -1;
+    }
+    uint32_t wasi_addrlen = *addrlen;
+    int32_t err = __imported_wasi_unstable_sock_getpeername(sockfd, addr, &wasi_addrlen);
+    if (err != 0) {
+        errno = err;
+        return -1;
+    }
+    *addrlen = wasi_addrlen;
+    return 0;
+}
