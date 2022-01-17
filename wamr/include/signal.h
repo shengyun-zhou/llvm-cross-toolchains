@@ -199,6 +199,7 @@ int __libc_current_sigrtmax(void);
 #define SIGRTMIN  (__libc_current_sigrtmin())
 #define SIGRTMAX  (__libc_current_sigrtmax())
 
+/*
 int kill(pid_t, int);
 
 int sigemptyset(sigset_t *);
@@ -221,6 +222,7 @@ int pthread_kill(pthread_t, int);
 
 void psiginfo(const siginfo_t *, const char *);
 void psignal(int, const char *);
+*/
 
 #endif
 

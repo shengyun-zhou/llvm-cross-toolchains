@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")"
 source config
-check_build_for_targets '-emscripten' || exit 0
+check_build_for_targets 'wasm' || exit 0
 
 # Build binaryen
 SOURCE_TARBALL=binaryen-$BINARYEN_VERSION.tar.gz

@@ -126,6 +126,11 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *__restrict, int *__rest
 int pthread_mutexattr_init(pthread_mutexattr_t *);
 int pthread_mutexattr_settype(pthread_mutexattr_t *, int);
 
+int pthread_setcancelstate(int, int *);
+int pthread_setcanceltype(int, int *);
+void pthread_cleanup_push(void (*)(void *), void *);
+void pthread_cleanup_pop(int);
+
 #ifdef __cplusplus
 }
 #endif

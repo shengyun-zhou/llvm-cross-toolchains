@@ -13,7 +13,33 @@ add_library(wamr_top_half OBJECT
     ${WASI_LIBC_TOP_HALF_SRC}/network/inet_ntoa.c
     ${WASI_LIBC_TOP_HALF_SRC}/network/send.c
     ${WASI_LIBC_TOP_HALF_SRC}/network/recv.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/dn_expand.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/dns_parse.c
     ${WASI_LIBC_TOP_HALF_SRC}/network/freeaddrinfo.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gai_strerror.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getaddrinfo.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyaddr_r.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyaddr.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyname_r.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyname.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyname2_r.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/gethostbyname2.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getnameinfo.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getservbyname_r.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getservbyname.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getservbyport_r.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/getservbyport.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/lookup_ipliteral.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/lookup_name.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/lookup_serv.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_init.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_mkquery.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_msend.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_query.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_querydomain.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_send.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/res_state.c
+    ${WASI_LIBC_TOP_HALF_SRC}/network/resolvconf.c
 )
 target_include_directories(wamr_top_half PRIVATE ${WASI_LIBC_TOP_HALF_SRC}/include ${WASI_LIBC_TOP_HALF_SRC}/internal)
 
