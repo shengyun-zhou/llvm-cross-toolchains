@@ -24,9 +24,9 @@ struct ifaddrs {
 #define ifa_broadaddr ifa_ifu.ifu_broadaddr
 #define ifa_dstaddr ifa_ifu.ifu_dstaddr
 
-struct ifaddrs_hwdata {
-	unsigned char           ifa_hwaddr[6];
-	unsigned int            ifa_ifindex;
+struct ifaddrs_extdata {
+	unsigned char ifa_hwaddr[6];
+	unsigned int  ifa_ifindex;
 };
 
 void freeifaddrs(struct ifaddrs *);
