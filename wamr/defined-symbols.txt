@@ -32,3 +32,5 @@ pthread_rwlock_tryrdlock
 pthread_rwlock_wrlock
 pthread_rwlock_trywrlock
 pthread_rwlock_unlock
+
+__wamr_ext_sysconf
