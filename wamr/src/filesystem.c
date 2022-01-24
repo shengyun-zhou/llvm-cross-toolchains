@@ -7,7 +7,6 @@
 #include <sys/file.h>
 #include <sys/statvfs.h>
 #include <stdint.h>
-#include <wasi/api.h>
 #include <string.h>
 
 int chown(const char *path, uid_t owner, gid_t group) { errno = ENOSYS; return -1; }
@@ -63,21 +62,13 @@ void __wamr_statvfs_to_statvfs(const struct wamr_statvfs *internal_buf, struct s
     out_buf->f_bavail = internal_buf->f_bavail;
 }
 
-int32_t __imported_wasi_unstable_path_statvfs(const char *path, uint32_t pathlen, struct wamr_statvfs *buf) __attribute__((
-    __import_module__("wasi_unstable"),
-    __import_name__("path_statvfs")
-));
-
 int statvfs(const char *path, struct statvfs *buf) {
-    uint32_t pathlen = strlen(path);
-    struct wamr_statvfs internal_vfs_buf;
-    int32_t err = __imported_wasi_unstable_path_statvfs(path, pathlen, &internal_vfs_buf);
-    if (err != 0) {
-        errno = err;
+    int tempfd = open(path, O_RDONLY);
+    if (tempfd == -1)
         return -1;
-    }
-    __wamr_statvfs_to_statvfs(&internal_vfs_buf, buf);
-    return 0;
+    int ret = fstatvfs(tempfd, buf);
+    close(tempfd);
+    return ret;
 }
 
 int32_t __imported_wasi_unstable_fd_statvfs(int32_t fd, struct wamr_statvfs *buf) __attribute__((
