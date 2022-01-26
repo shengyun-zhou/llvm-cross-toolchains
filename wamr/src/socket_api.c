@@ -76,12 +76,12 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     if (addrlen)
         wasi_addrlen = *addrlen;
     int32_t err = __imported_wasi_unstable_sock_accept(sockfd, addr, &wasi_addrlen);
+    if (addrlen)
+        *addrlen = wasi_addrlen;
     if (err != 0) {
         errno = err;
         return -1;
     }
-    if (addrlen)
-        *addrlen = wasi_addrlen;
     return 0;
 }
 
@@ -97,11 +97,11 @@ int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optl
     }
     uint32_t wasi_optlen = *optlen;
     int32_t ret = __imported_wasi_unstable_sock_getopt(sockfd, level, optname, optval, &wasi_optlen);
+    *optlen = wasi_optlen;
     if (ret != 0) {
         errno = ret;
         return -1;
     }
-    *optlen = wasi_optlen;
     return 0;
 }
 
@@ -196,11 +196,11 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     }
     uint32_t wasi_addrlen = *addrlen;
     int32_t err = __imported_wasi_unstable_sock_getsockname(sockfd, addr, &wasi_addrlen);
+    *addrlen = wasi_addrlen;
     if (err != 0) {
         errno = err;
         return -1;
     }
-    *addrlen = wasi_addrlen;
     return 0;
 }
 
@@ -216,11 +216,11 @@ int getpeername(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     }
     uint32_t wasi_addrlen = *addrlen;
     int32_t err = __imported_wasi_unstable_sock_getpeername(sockfd, addr, &wasi_addrlen);
+    *addrlen = wasi_addrlen;
     if (err != 0) {
         errno = err;
         return -1;
     }
-    *addrlen = wasi_addrlen;
     return 0;
 }
 
