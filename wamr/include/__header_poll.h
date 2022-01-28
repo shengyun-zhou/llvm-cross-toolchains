@@ -14,10 +14,10 @@
 #define POLLHUP 0x2000
 #define POLLNVAL 0x4000
 
-// The following values will be ignored
-#define POLLPRI    0x002
-#define POLLRDBAND 0x080
-#define POLLWRBAND 0x200
+// The following values are meaningless, will be ignored
+#define POLLPRI    0x4
+#define POLLRDBAND 0x8
+#define POLLWRBAND 0x10
 
 #ifdef __cplusplus
 extern "C" {
