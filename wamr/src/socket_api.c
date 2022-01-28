@@ -66,7 +66,7 @@ int listen(int sockfd, int backlog) {
     return 0;
 }
 
-int32_t __imported_wasi_unstable_sock_accept(int32_t sockfd, struct sockaddr *addr, uint32_t* addrlen) __attribute__((
+int32_t __imported_wasi_unstable_sock_accept(int32_t sockfd, int32_t *out_newsockfd, struct sockaddr *addr, uint32_t* addrlen) __attribute__((
     __import_module__("wasi_unstable"),
     __import_name__("sock_accept")
 ));
@@ -75,14 +75,15 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     uint32_t wasi_addrlen = 0;
     if (addrlen)
         wasi_addrlen = *addrlen;
-    int32_t err = __imported_wasi_unstable_sock_accept(sockfd, addr, &wasi_addrlen);
+    int32_t new_sockfd = -1;
+    int32_t err = __imported_wasi_unstable_sock_accept(sockfd, &new_sockfd, addr, &wasi_addrlen);
     if (addrlen)
         *addrlen = wasi_addrlen;
     if (err != 0) {
         errno = err;
         return -1;
     }
-    return 0;
+    return new_sockfd;
 }
 
 int32_t __imported_wasi_unstable_sock_getopt(int32_t sockfd, int32_t level, int32_t optname, void *optval, uint32_t *optlen) __attribute__((
@@ -136,7 +137,7 @@ ssize_t recvfrom(int sock, void *restrict buffer, size_t length, int flags, stru
     return ret;
 }
 
-int32_t __imported_wasi_unstable_sock_recvfrom(int32_t sock, const struct iovec* iov, uint32_t iovlen, int32_t flags, void* ip_buf, uint32_t ip_bufsize,
+int32_t __imported_wasi_unstable_sock_recvfrom(int32_t sock, const struct iovec* iov, uint32_t iovlen, int32_t flags, struct sockaddr* addr, uint32_t* addrlen,
                                                uint32_t* ret_datasize, uint32_t* ret_recvflags) __attribute__((
     __import_module__("wasi_unstable"),
     __import_name__("sock_recvfrom")
@@ -145,7 +146,9 @@ int32_t __imported_wasi_unstable_sock_recvfrom(int32_t sock, const struct iovec*
 ssize_t recvmsg(int sock, struct msghdr *message, int flags) {
     uint32_t ret_datasize = 0;
     uint32_t ret_recvflags = 0;
-    int32_t err = __imported_wasi_unstable_sock_recvfrom(sock, message->msg_iov, message->msg_iovlen, flags, message->msg_name, message->msg_namelen, &ret_datasize, &ret_recvflags);
+    uint32_t wasi_addrlen = message->msg_namelen;
+    int32_t err = __imported_wasi_unstable_sock_recvfrom(sock, message->msg_iov, message->msg_iovlen, flags, message->msg_name, &wasi_addrlen, &ret_datasize, &ret_recvflags);
+    message->msg_namelen = wasi_addrlen;
     if (err != 0) {
         errno = err;
         return -1;
@@ -168,7 +171,7 @@ ssize_t sendto(int sock, const void *message, size_t length, int flags, const st
     return sendmsg(sock, &msg, flags);
 }
 
-int32_t __imported_wasi_unstable_sock_sendto(int32_t sock, const struct iovec* iov, uint32_t iovlen, int32_t flags, const struct sockaddr* ip_buf, uint32_t ip_bufsize,
+int32_t __imported_wasi_unstable_sock_sendto(int32_t sock, const struct iovec* iov, uint32_t iovlen, int32_t flags, const struct sockaddr* addr, uint32_t addrlen,
                                              uint32_t* ret_datasize) __attribute__((
     __import_module__("wasi_unstable"),
     __import_name__("sock_sendto")
