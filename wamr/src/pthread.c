@@ -2,6 +2,8 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <stdio.h>
 
 /* pthread */
 
@@ -82,4 +84,25 @@ void pthread_exit(void *retval) {
     while (__thread_cleanup_handler_stacktop)
         pthread_cleanup_pop(1);
     _pthread_exit(retval);
+}
+
+pthread_mutex_t __g_pthread_once_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void __attribute__((constructor)) __pthread_lib_init() {
+    pthread_mutexattr_t mutex_attr;
+    pthread_mutexattr_init(&mutex_attr);
+    pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&__g_pthread_once_lock, &mutex_attr);
+}
+
+int pthread_once(pthread_once_t *once_control, void(*init_routine)()) {
+    if (!once_control || !init_routine)
+        return EINVAL;
+    if (*once_control == 0) {
+        pthread_mutex_lock(&__g_pthread_once_lock);
+        init_routine();
+        *once_control = 1;
+        pthread_mutex_unlock(&__g_pthread_once_lock);
+    }
+    return 0;
 }

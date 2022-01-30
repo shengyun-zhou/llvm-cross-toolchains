@@ -20,7 +20,6 @@ pthread_setspecific
 pthread_getspecific
 pthread_key_delete
 
-pthread_once
 pthread_cond_broadcast
 pthread_mutex_trylock
 
