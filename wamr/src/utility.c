@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 int getpagesize() {
     return sysconf(_SC_PAGESIZE);
@@ -40,3 +41,8 @@ FILE *popen(const char *command, const char *type) {
 }
 int system(const char *cmd) { return 127; }
 int pclose(FILE *stream) { return 0; }
+
+void *__cxa_allocate_exception(size_t thrown_size)
+{
+    return malloc(thrown_size);
+}
