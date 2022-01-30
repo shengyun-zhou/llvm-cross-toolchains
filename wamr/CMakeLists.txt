@@ -54,9 +54,10 @@ add_library(wamr_libc STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/user_group.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utility.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sysconf.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/fcntl.c 
 )
 
 add_custom_command(TARGET wamr_libc POST_BUILD
-    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC} dlmalloc.o recv.o send.o getsockopt.o sysconf.o
+    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC} dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
     COMMAND ${CMAKE_AR} qscL ${PREBUILT_WASI_LIBC} $<TARGET_FILE:wamr_libc>
 )
