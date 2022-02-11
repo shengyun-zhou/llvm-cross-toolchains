@@ -1,20 +1,17 @@
 diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
-index 62c53c0..8dd3689 100644
+index a221f37..fa78bc9 100644
 --- a/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
 +++ b/llvm/lib/Target/WebAssembly/WebAssemblyISelLowering.cpp
-@@ -1493,8 +1493,11 @@ SDValue WebAssemblyTargetLowering::LowerFRAMEADDR(SDValue Op,
- SDValue
- WebAssemblyTargetLowering::LowerGlobalTLSAddress(SDValue Op,
-                                                  SelectionDAG &DAG) const {
--  SDLoc DL(Op);
-   const auto *GA = cast<GlobalAddressSDNode>(Op);
+@@ -1696,6 +1696,9 @@ WebAssemblyTargetLowering::LowerGlobalTLSAddress(SDValue Op,
+     report_fatal_error("cannot use thread-local storage without bulk memory",
+                        false);
+ 
 +  if (DAG.getTarget().useEmulatedTLS())
 +    return LowerToTLSEmulatedModel(GA, DAG);
 +
-+  SDLoc DL(Op);
-   MVT PtrVT = getPointerTy(DAG.getDataLayout());
+   const GlobalValue *GV = GA->getGlobal();
  
-   MachineFunction &MF = DAG.getMachineFunction();
+   // Currently Emscripten does not support dynamic linking with threads.
 diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
 index 388c0f9..c7fa177 100644
 --- a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp

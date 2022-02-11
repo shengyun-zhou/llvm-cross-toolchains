@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LLVM_VERSION=13.0.1
+export LLVM_VERSION=14.0.0
 export MUSL_VERSION=1.2.2
 export GLIBC_VERSION=2.17
 export LINUX_KERNEL_VERSION=5.10.81
