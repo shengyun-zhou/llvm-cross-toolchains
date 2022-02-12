@@ -1,0 +1,13 @@
+diff --git a/libcxx/include/__locale b/libcxx/include/__locale
+index 51f35ee..58a776a 100644
+--- a/libcxx/include/__locale
++++ b/libcxx/include/__locale
+@@ -547,7 +547,7 @@ public:
+     _LIBCPP_INLINE_VISIBILITY ctype_base() {}
+ 
+ // TODO: Remove the ifndef when the assert no longer fails on AIX.
+-#ifndef _AIX
++#if !defined(_AIX) && !defined(_NEWLIB_VERSION)
+     static_assert((__regex_word & ~(space | print | cntrl | upper | lower | alpha | digit | punct | xdigit | blank)) == __regex_word,
+                   "__regex_word can't overlap other bits");
+ #endif
