@@ -21,9 +21,9 @@ The toolchain itself works on Linux, Windows and MacOSX now.
 
 #### Prerequisite tools and libs
 
-+ GCC >= 5
++ GCC >= 8
 
-+ CMake >= 3.0
++ CMake >= 3.15
 
 + Ninja
 
