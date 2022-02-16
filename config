@@ -27,13 +27,7 @@ case "$__os_name" in
                 # Force MinGW64
                 export MSYSTEM=MINGW64
                 export PATH=/mingw64/bin:/mingw64/sbin:$PATH
-                export HOST_CFLAGS="$HOST_CFLAGS -static"
-                export HOST_CXXFLAGS="$HOST_CXXFLAGS -static"
-                # Add dependent libs for libxml2
-                export HOST_LDFLAGS="$HOST_LDFLAGS -static -llzma -lz -liconv -lws2_32"
-                export LLVM_CMAKE_FLAGS="$LLVM_CMAKE_FLAGS -DLLVM_BUILD_STATIC=1 -DLIBCLANG_BUILD_STATIC=ON"
                 export CONFIGURE_ARGS="$CONFIGURE_ARGS --build=x86_64-w64-mingw32" 
-                export BINARYEN_STATIC_BUILD=1
             else
                 export MSYS_HOST=1
                 export MSYSTEM=MSYS
