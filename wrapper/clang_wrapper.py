@@ -50,7 +50,6 @@ def main(target, exec_name):
             # Just forward to emcc
             exit(emcc.run(sys.argv))
         else:
-            clang_args += ['-L%s' % os.path.join(sysroot_dir, 'lib')]
             if 'wamr' in target:
                 if cplusplus_mode:
                     clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']

@@ -31,6 +31,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
+        -DLLVM_LIBDIR_SUFFIX="$(target_install_libdir_suffix $target)" \
         -DLIBUNWIND_ENABLE_SHARED=OFF
     cmake --build . --target install/strip -- -j$(cpu_count)
     cd ..
