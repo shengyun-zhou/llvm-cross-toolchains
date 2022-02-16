@@ -141,9 +141,10 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
     if [[ -z "$COMPILER_RT_FULL_BUILD" && $target != *"apple"* && $target != *"msvc"* ]]; then
         # Put a fake empty libatomic.a in sysroot
-        mkdir -p "$(target_install_prefix $target)/lib"
-        rm -f "$(target_install_prefix $target)/lib/libatomic.a" || true
-        "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib/libatomic.a"
+        libatomic_path="$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)/libatomic.a"
+        mkdir -p "$(dirname "$libatomic_path")"
+        rm -f "$libatomic_path" || true
+        "$OUTPUT_DIR/bin/llvm-ar" crs "$libatomic_path"
     fi
     cd ..
 done

@@ -36,3 +36,13 @@ function target_install_prefix {
         echo "$OUTPUT_DIR/$1/usr"
     fi
 }
+
+function target_install_libdir_suffix {
+    if [[ "$1" == "wasm32"* && "$1" == *"wasi"* ]]; then
+        echo "/wasm32-wasi"
+    elif [[ "$1" == "wasm64"* && "$1" == *"wasi"* ]]; then
+        echo "/wasm64-wasi"
+    else
+        echo ""
+    fi
+}

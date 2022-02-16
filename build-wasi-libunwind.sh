@@ -18,19 +18,21 @@ tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR/system/lib/libunwind
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target != *"-wasi"* || $target == *"wamr"* ]]; then
-        # WAMR provides its own exception handle function now
+    if [[ $target != *"-wasi"* ]]; then
         continue
     fi
     mkdir build-$target && cd build-$target
     "$OUTPUT_DIR/bin/$target-clang" -c -v -O2 -fwasm-exceptions -DNDEBUG -D__EMSCRIPTEN__ -D_LIBUNWIND_DISABLE_VISIBILITY_ANNOTATIONS -D__USING_WASM_EXCEPTIONS__ \
         -I../include ../src/Unwind-wasm.c -o Unwind-wasm.o
     "$OUTPUT_DIR/bin/llvm-ar" rcs libunwind.a Unwind-wasm.o
-    cp libunwind.a "$(target_install_prefix $target)/lib/libunwind.a"
+    cp libunwind.a "$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)/libunwind.a"
     # Merge libunwind into compiler-rt builtins
-    builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
-    if [[ -f "$builtins_lib" ]]; then
-        "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" libunwind.a
+    # WAMR provides its own exception handle function now
+    if [[ $target != *"wamr"* ]]; then
+        builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
+        if [[ -f "$builtins_lib" ]]; then
+            "$OUTPUT_DIR/bin/llvm-ar" qcsL "$builtins_lib" libunwind.a
+        fi
     fi
     cd ..
 done

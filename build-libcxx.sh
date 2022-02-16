@@ -23,6 +23,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     rm -rf "$(target_install_prefix $target)/include/c++" || true
 
     cd libcxx && mkdir build-$target && cd build-$target
+    LIBDIR_SUFFIX="$(target_install_libdir_suffix $target)"
     LIBCXX_CMAKE_FLAGS=""
     if [[ $target == *"musl"* ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON"
@@ -32,17 +33,18 @@ for target in "${CROSS_TARGETS[@]}"; do
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DLIBCXX_ENABLE_FILESYSTEM=OFF"
         # Create empty fake libc++abi.a
         rm -f "$(target_install_prefix $target)/lib/libc++abi.a" || true
-        "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib/libc++abi.a"
+        "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib$LIBDIR_SUFFIX/libc++abi.a"
     fi
     "$__CMAKE_WRAPPER" $target .. \
         -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
+        -DLLVM_LIBDIR_SUFFIX="$LIBDIR_SUFFIX" \
         -DLIBCXX_ENABLE_SHARED=OFF \
         -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
         -DLIBCXX_CXX_ABI=libcxxabi \
         -DLIBCXX_CXX_ABI_INCLUDE_PATHS=../../libcxxabi/include \
-        -DLIBCXX_CXX_ABI_LIBRARY_PATH=../../libcxxabi/build-$target/lib \
+        -DLIBCXX_CXX_ABI_LIBRARY_PATH="../../libcxxabi/build-$target/lib$LIBDIR_SUFFIX" \
         -DLIBCXX_INCLUDE_TESTS=OFF \
         $LIBCXX_CMAKE_FLAGS
 
@@ -58,6 +60,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
+        -DLLVM_LIBDIR_SUFFIX="$LIBDIR_SUFFIX" \
         -DLIBCXXABI_ENABLE_SHARED=OFF \
         -DLIBCXXABI_LIBCXX_INCLUDES=../../libcxx/build-$target/include/c++/v1 \
         -DLIBCXXABI_USE_COMPILER_RT=ON \
