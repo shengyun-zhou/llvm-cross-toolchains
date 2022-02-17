@@ -44,7 +44,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
         -DLIBCXX_CXX_ABI=libcxxabi \
         -DLIBCXX_CXX_ABI_INCLUDE_PATHS=../../libcxxabi/include \
-        -DLIBCXX_CXX_ABI_LIBRARY_PATH="../../libcxxabi/build-$target/lib$LIBDIR_SUFFIX" \
+        -DLIBCXX_CXX_ABI_LIBRARY_PATH="../../libcxxabi/build-$target/lib" \
         -DLIBCXX_INCLUDE_TESTS=OFF \
         $LIBCXX_CMAKE_FLAGS
 
