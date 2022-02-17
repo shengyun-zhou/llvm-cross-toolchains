@@ -1,11 +1,11 @@
-FROM tobix/pywine@sha256:2612907bb4e56505439c32c4a38eeb9cfcfcfd0fbdffd4fa674fde223e705000
+FROM tobix/pywine@sha256:07e513ba8b24e9613ebe8910714b1d2cebdf801077e9043f9b30d765a3a588d9
 
 # Replace apt mirros
 RUN echo 'Acquire::PDiffs "false";' >> /etc/apt/apt.conf && rm -f /etc/apt/sources.list && rm -f /etc/apt/sources.list.d/*.sources && \
-    echo 'deb http://mirrors.ustc.edu.cn/debian/ bullseye main contrib non-free' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/debian/ bullseye-updates main contrib non-free' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/debian-security bullseye-security main contrib non-free' >> /etc/apt/sources.list
+    echo 'deb http://mirrors.ustc.edu.cn/debian/ buster main contrib non-free' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian/ buster-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian/ buster-backports main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
 RUN apt update && apt install -y --no-install-recommends \
     gcc g++ git wget curl ca-certificates patch unzip xz-utils bzip2 file ninja-build make python3 python3-pip python3-setuptools \
     autoconf automake zlib1g-dev libssl-dev libffi-dev liblzma-dev libbz2-dev

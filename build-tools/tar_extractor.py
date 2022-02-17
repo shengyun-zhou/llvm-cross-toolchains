@@ -30,7 +30,7 @@ def do_mklink(link_path, target_path, is_dir, is_hardlink):
     os.symlink(target_path, link_path, target_is_directory=is_dir)
 
 def extract_tar(tar_file, directory='.', strip_component_count=0, verbose_output_cb=None, progress_cb=None):
-    target_tarfile = tarfile.open(tar_file, 'r')
+    target_tarfile = tarfile.open(tar_file, 'r', encoding='utf-8')
     finished_member_count = 0
     previous_cwd = os.getcwd()
     os.chdir(directory)
