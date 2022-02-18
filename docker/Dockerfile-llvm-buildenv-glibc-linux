@@ -1,7 +1,7 @@
 FROM frolvlad/alpine-glibc:alpine-3.13_glibc-2.32
 
 # Replace mirrors
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 RUN apk update && apk add bash xz bzip2 gettext file cmake make autoconf automake ninja unzip zip libarchive-tools git git-lfs curl wget rsync file patch \
     musl-dev gcc clang llvm binutils lld compiler-rt compiler-rt-static python3 py3-setuptools texinfo patchelf
 
@@ -9,8 +9,8 @@ WORKDIR /root
 ENV BUILD_DEPS_ROOT=/root/build-deps-root
 # Add glibc 2.17 sysroot
 RUN mkdir ${BUILD_DEPS_ROOT} && cd "${BUILD_DEPS_ROOT}" && \
-    curl -L "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/noarch/sysroot_linux-64-2.17-h4a8ded7_12.tar.bz2" -o glibc-sysroot.tar.bz2 && \
-    curl -L "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/noarch/kernel-headers_linux-64-3.10.0-h4a8ded7_12.tar.bz2" -o linux-kernel.tar.gz && \
+    curl -L "https://mirrors.pku.edu.cn/anaconda/cloud/conda-forge/noarch/sysroot_linux-64-2.17-h4a8ded7_12.tar.bz2" -o glibc-sysroot.tar.bz2 && \
+    curl -L "https://mirrors.pku.edu.cn/anaconda/cloud/conda-forge/noarch/kernel-headers_linux-64-3.10.0-h4a8ded7_12.tar.bz2" -o linux-kernel.tar.gz && \
     tar xvf glibc-sysroot.tar.bz2 && tar xvf linux-kernel.tar.gz && rm -rf info glibc-sysroot.tar.bz2 linux-kernel.tar.gz
 ENV PATH="${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC="clang -Qunused-arguments -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot" \
