@@ -31,6 +31,9 @@ for target in "${CROSS_TARGETS[@]}"; do
     mkdir -p "$OUTPUT_DIR/$target"
     cp -r sysroot/* "$OUTPUT_DIR/$target"
     if [[ $target == *"wamr"* ]]; then
+        LIBDIR="$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)"
+        # Merge some emulated libs into libc
+        "$OUTPUT_DIR/bin/llvm-ar" qcsL "$LIBDIR/libc.a" "$LIBDIR/libwasi-emulated-signal.a"
         cp -r ../wamr/include/* "$OUTPUT_DIR/$target/include" || true
         cat ../wamr/defined-symbols.txt >> "$OUTPUT_DIR/$target/share/wasm32-wasi/defined-symbols.txt"
         mkdir build-$target && cd build-$target
@@ -42,7 +45,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             -DCMAKE_C_COMPILER_WORKS=1 \
             -DCMAKE_CXX_COMPILER_WORKS=1 \
             -DWASI_LIBC_SOURCE="$(dirname "$(pwd)")" \
-            -DPREBUILT_WASI_LIBC="$OUTPUT_DIR/$target/lib/wasm32-wasi/libc.a"
+            -DPREBUILT_WASI_LIBC="$LIBDIR/libc.a"
         cmake --build . -- -j$(cpu_count)
         rm -rf ../libc-top-half/musl/include && mv include.bak ../libc-top-half/musl/include
         cd ..
