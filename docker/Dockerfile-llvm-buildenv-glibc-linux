@@ -2,8 +2,8 @@ FROM frolvlad/alpine-glibc:alpine-3.13_glibc-2.32
 
 # Replace mirrors
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
-RUN apk update && apk add bash xz bzip2 gettext file cmake make autoconf automake ninja unzip zip libarchive-tools git git-lfs curl wget rsync file patch \
-    musl-dev gcc clang llvm binutils lld compiler-rt compiler-rt-static python3 py3-setuptools texinfo patchelf
+RUN apk update && apk add bash xz bzip2 gettext gettext-dev file cmake make autoconf automake libtool ninja unzip zip libarchive-tools git git-lfs curl wget rsync file patch \
+    musl-dev gcc clang llvm binutils lld compiler-rt compiler-rt-static python3 py3-setuptools texinfo patchelf nodejs npm pkgconf
 
 WORKDIR /root
 ENV BUILD_DEPS_ROOT=/root/build-deps-root
@@ -28,4 +28,3 @@ ADD build-dep-libs.sh /root
 RUN OPENSSL_TARGET=linux-generic64 ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot/usr/include/c++" && touch "${BUILD_DEPS_ROOT}/lib/libatomic.a"
 ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
     HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz"
-RUN apk update && apk add nodejs npm
