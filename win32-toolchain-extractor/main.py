@@ -6,9 +6,8 @@ import traceback
 import wx
 import ctypes
 import threading
-import package_tar_info
-
-DEFAULT_TARGET_DIR_NAME = 'llvm-cross-toolchains'
+import package_info
+from package_info import DEFAULT_TARGET_DIR_NAME
 
 if __name__ == '__main__':
     try:
@@ -33,8 +32,8 @@ if __name__ == '__main__':
 
             self.m_progress_bar = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size( -1,-1 ), wx.GA_HORIZONTAL )
             self.m_progress_bar.SetValue( 0 )
-            if package_tar_info.FILE_COUNT > 0:
-                self.m_progress_bar.SetRange(package_tar_info.FILE_COUNT)
+            if package_info.FILE_COUNT > 0:
+                self.m_progress_bar.SetRange(package_info.FILE_COUNT)
             _bsizer1.Add( self.m_progress_bar, 0, wx.ALL|wx.EXPAND, 5 )
 
             self.m_ctext1 = wx.StaticText( self, wx.ID_ANY, u"Directory path to extract toolchain: ", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -87,9 +86,9 @@ if __name__ == '__main__':
 
         def async_extract(self, target_dir):
             try:
-                tar_extractor.extract_tar(os.path.join(os.path.dirname(__file__), package_tar_info.FILE_NAME), directory=target_dir, strip_component_count=1, 
+                tar_extractor.extract_tar(os.path.join(os.path.dirname(__file__), package_info.FILE_NAME), directory=target_dir, strip_component_count=1, 
                                           verbose_output_cb=lambda s : self.m_info_output_text.AppendText(s + '\n'),
-                                          progress_cb=lambda c : self.m_progress_bar.SetValue(min(c, package_tar_info.FILE_COUNT)) if package_tar_info.FILE_COUNT > 0 else 0)
+                                          progress_cb=lambda c : self.m_progress_bar.SetValue(min(c, package_info.FILE_COUNT)) if package_info.FILE_COUNT > 0 else 0)
                 self.m_info_output_text.AppendText('\nExtraction finished\n')
                 self.m_progress_bar.SetValue(self.m_progress_bar.GetRange())
                 self.m_ctrl_btn.SetLabel('Finish')

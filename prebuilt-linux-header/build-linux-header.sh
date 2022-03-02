@@ -10,7 +10,7 @@ check_build_for_targets '-linux-' || exit 0
 SOURCE_TARBALL=linux-$LINUX_KERNEL_VERSION.tar.xz
 mkdir -p "$SOURCE_DIR"
 if [ ! -f "$SOURCE_DIR/$SOURCE_TARBALL" ]; then
-    curl -sSL "https://mirrors.tuna.tsinghua.edu.cn/kernel/v${LINUX_KERNEL_VERSION%%.*}.x/$SOURCE_TARBALL" -o "$SOURCE_DIR/$SOURCE_TARBALL.tmp"
+    curl -sSL "https://mirrors.ustc.edu.cn/kernel.org/linux/kernel/v${LINUX_KERNEL_VERSION%%.*}.x/$SOURCE_TARBALL" -o "$SOURCE_DIR/$SOURCE_TARBALL.tmp"
     mv "$SOURCE_DIR/$SOURCE_TARBALL.tmp" "$SOURCE_DIR/$SOURCE_TARBALL"
 fi
 BUILD_DIR=".build-linux-kernel"

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+int dup(int fildes) { errno = ENOSYS; return -1; }
 int chown(const char *path, uid_t owner, gid_t group) { errno = ENOSYS; return -1; }
 int fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag) { errno = ENOSYS; return -1; }
 int fchown(int fildes, uid_t owner, gid_t group) { errno = ENOSYS; return -1; }

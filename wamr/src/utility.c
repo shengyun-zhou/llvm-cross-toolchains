@@ -46,3 +46,6 @@ void *__cxa_allocate_exception(size_t thrown_size)
 {
     return malloc(thrown_size);
 }
+
+_Thread_local int __tls_h_errno = 0;
+int *__h_errno_location() { return &__tls_h_errno; }

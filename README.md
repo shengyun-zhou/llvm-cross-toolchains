@@ -13,13 +13,13 @@ Supported target platforms:
 
 + BSD: FreeBSD
 
-+ WebAssembly(WASM): Emscripten
++ WebAssembly(WASM): Emscripten, [WAMR(with custom extensions)](https://github.com/shengyun-zhou/wasm-micro-runtime/tree/dev-ext)
 
 The toolchain itself works on Linux, Windows and MacOSX now.
 
 ### Build
 
-#### Prerequisite tools and libs
+#### 1. Prerequisite tools and libs
 
 + GCC >= 8
 
@@ -58,17 +58,17 @@ The toolchain itself works on Linux, Windows and MacOSX now.
     
     + Windows subsystem for Linux(WSL) with any Linux distribution(Optional)
 
-#### Configure project
+#### 2. Configure project
 
-The file `version` contains the versions of some important toolchain components, such as LLVM, glibc, musl-libc and so on.
+The file `version` contains the versions of some important toolchain components, such as glibc, musl-libc and so on.
 
 The array variable `CROSS_TARGETS` in the file `cross-targets` defines all cross target triples to be built.
 
 You can change `version` and `cross-targets` based on your need.
 
-#### Prepare stuff
+#### 3. Prepare stuff
 
-##### Linux kernel header
+##### (1) Linux kernel header
 
 > NOTE for MacOSX host: Linux kernel header must be built on Linux environment, it's recommended to build in Docker Linux image.
 
@@ -76,7 +76,7 @@ You can change `version` and `cross-targets` based on your need.
 prebuilt-linux-header/build-linux-header.sh
 ```
 
-##### Linux glibc
+##### (2) Linux glibc
 
 > NOTE: glibc must be built in glibc based Linux environment(eg. CentOS, Debian, Ubuntu).
 
@@ -94,7 +94,7 @@ Prerequisite development libs:
 prebuilt-glibc/build-glibc.sh
 ```
 
-##### Android Bionic libc
+##### (3) Android Bionic libc
 
 Prerequisite: Android NDK >= r21e
 
@@ -105,7 +105,7 @@ export ANDROID_NDK_HOME=/path/to/android-ndk
 prebuilt-bionic/extract_bionic_from_ndk.sh
 ```
 
-##### Darwin SDKs
+##### (4) Darwin SDKs
 
 **Method 1: (recommended)extract SDKs from installed XCode on MacOSX host**
 
@@ -142,7 +142,7 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
    
 1. Put SDK packages in directory `prebuilt-darwin-sdk`.
 
-##### Apple cctools
+##### (5) Apple cctools
 
 > NOTE for Windows host: cctools must be built in WSL.
 
@@ -170,28 +170,28 @@ Build cctools:
 ./prebuilt-cctools/build-cctools.sh
 ```
 
-##### MSVC
+##### (6) MSVC
 
 1. Enter Visual Studio Developer Command Prompt first, then enter MSYS2/Cygwin shell.
-2. Excute the shell script:
+2. Execute the shell script:
 
 ```shell
 ./prebuilt-msvc-sdk/extract_sdk_from_msvc.sh
 ```
 
-##### Cygwin
+##### (7) Cygwin
 
 ```shell
 ./prebuilt-cygwin/prepare_sysroot.sh
 ```
 
-##### FreeBSD
+##### (8) FreeBSD
 
 ```shell
 ./prebuilt-freebsd/prepare_sysroot.sh
 ```
 
-#### Build and Assemble toolchain
+#### 4. Build and Assemble toolchain
 
 Execute the script `build-all.sh` to start building.
 
