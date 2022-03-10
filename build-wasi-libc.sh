@@ -35,7 +35,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         # Merge some emulated libs into libc
         "$OUTPUT_DIR/bin/llvm-ar" qcsL "$LIBDIR/libc.a" "$LIBDIR/libwasi-emulated-signal.a"
         cp -r ../wamr/include/* "$OUTPUT_DIR/$target/include" || true
-        cat ../wamr/defined-symbols.txt >> "$OUTPUT_DIR/$target/share/wasm32-wasi/defined-symbols.txt"
+        cp ../wamr/defined-symbols.txt "$OUTPUT_DIR/$target/share/wasm32-wasi/wamr-defined-symbols.txt"
         mkdir build-$target && cd build-$target
         # Build extend libc for WAMR
         # Hack include directory temporarily

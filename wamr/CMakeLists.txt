@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.13)
 
 project(wamr_ext_libc)
 
-add_library(wamr_dlmalloc OBJECT ${WASI_LIBC_SOURCE}/dlmalloc/src/dlmalloc.c)
-add_compile_options(-Werror -Wno-switch)
-target_compile_definitions(wamr_dlmalloc PRIVATE -DUSE_LOCKS=1 -DUSE_SPIN_LOCKS=0)
-
 set(WASI_LIBC_TOP_HALF_SRC ${WASI_LIBC_SOURCE}/libc-top-half/musl/src)
 add_library(wamr_top_half OBJECT
     ${WASI_LIBC_TOP_HALF_SRC}/network/inet_addr.c
@@ -48,7 +44,6 @@ target_include_directories(wamr_top_half PRIVATE ${WASI_LIBC_TOP_HALF_SRC}/inclu
 set(WASI_LIBC_BOTTOM_HALF_SRC ${WASI_LIBC_SOURCE}/libc-bottom-half/source)
 set(WASI_LIBC_BOTTOM_HALF_CLOUDLIBC_SRC ${WASI_LIBC_SOURCE}/libc-bottom-half/cloudlibc/src/libc)
 add_library(wamr_libc STATIC
-    $<TARGET_OBJECTS:wamr_dlmalloc>
     $<TARGET_OBJECTS:wamr_top_half>
     ${CMAKE_CURRENT_SOURCE_DIR}/src/filesystem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pthread.c
@@ -60,6 +55,9 @@ add_library(wamr_libc STATIC
 )
 
 add_custom_command(TARGET wamr_libc POST_BUILD
-    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC} dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
+    # Remove some original function implementation
+    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC} 
+        dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
+        memcmp.o memcpy.o memmove.o memset.o 
     COMMAND ${CMAKE_AR} qscL ${PREBUILT_WASI_LIBC} $<TARGET_FILE:wamr_libc>
 )

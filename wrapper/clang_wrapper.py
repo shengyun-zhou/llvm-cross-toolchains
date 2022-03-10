@@ -67,7 +67,7 @@ def main(target, exec_name):
                     '-z', 'stack-size=1048576',
                     '-Wl,--no-check-features',
                     '-Wl,--export=__heap_base,--export=__data_end',
-                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/defined-symbols.txt'),
+                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/wamr-defined-symbols.txt'),
                 ]
 
 

@@ -42,10 +42,9 @@ FILE *popen(const char *command, const char *type) {
 int system(const char *cmd) { return 127; }
 int pclose(FILE *stream) { return 0; }
 
-void *__cxa_allocate_exception(size_t thrown_size)
-{
-    return malloc(thrown_size);
-}
+void* __libc_malloc(size_t size) { return malloc(size); }
+void* __libc_calloc(size_t nmemb, size_t size) { return calloc(nmemb, size); }
+void __libc_free(void* ptr) { free(ptr); }
 
 _Thread_local int __tls_h_errno = 0;
 int *__h_errno_location() { return &__tls_h_errno; }
