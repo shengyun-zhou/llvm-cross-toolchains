@@ -34,6 +34,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         LIBDIR="$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)"
         # Merge some emulated libs into libc
         "$OUTPUT_DIR/bin/llvm-ar" qcsL "$LIBDIR/libc.a" "$LIBDIR/libwasi-emulated-signal.a"
+        "$OUTPUT_DIR/bin/llvm-ar" qcsL "$LIBDIR/libc.a" "$LIBDIR/libwasi-emulated-mman.a"
         cp -r ../wamr/include/* "$OUTPUT_DIR/$target/include" || true
         cp ../wamr/defined-symbols.txt "$OUTPUT_DIR/$target/share/wasm32-wasi/wamr-defined-symbols.txt"
         mkdir build-$target && cd build-$target

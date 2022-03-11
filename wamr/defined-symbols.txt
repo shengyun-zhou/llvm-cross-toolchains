@@ -9,6 +9,8 @@ memcpy
 memmove
 memset
 
+getpid
+
 __cxa_begin_catch
 __cxa_throw
 __cxa_allocate_exception
