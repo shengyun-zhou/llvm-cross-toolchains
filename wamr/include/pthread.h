@@ -131,6 +131,9 @@ int pthread_setcanceltype(int, int *);
 void pthread_cleanup_push(void (*)(void *), void *);
 void pthread_cleanup_pop(int);
 
+int pthread_setname_np(pthread_t thread, const char *name);
+int pthread_getname_np(pthread_t thread, char *name, uint32_t len);
+
 #ifdef __cplusplus
 }
 #endif

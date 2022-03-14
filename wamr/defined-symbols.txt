@@ -46,4 +46,7 @@ pthread_rwlock_wrlock
 pthread_rwlock_trywrlock
 pthread_rwlock_unlock
 
+pthread_setname_np
+pthread_getname_np
+
 __wamr_ext_sysconf
