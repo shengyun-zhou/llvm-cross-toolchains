@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-glibc:alpine-3.13_glibc-2.32
+FROM frolvlad/alpine-glibc:alpine-3.15_glibc-2.34
 
 # Replace mirrors
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
@@ -19,7 +19,7 @@ ENV PATH="${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_LDFLAGS="-pthread -fuse-ld=lld -L$BUILD_DEPS_ROOT/lib -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot -rtlib=compiler-rt -stdlib=libc++ -Wl,-rpath,'\$\${ORIGIN}/../lib'" \
+    HOST_LDFLAGS="-pthread -fuse-ld=lld -L$BUILD_DEPS_ROOT/lib -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot -rtlib=compiler-rt -stdlib=libc++ -Wl,-rpath,'\${ORIGIN}/../lib'" \
     HOST_RUNTIME_LIBS="$BUILD_DEPS_ROOT/lib/libc++.so.1" HOST_RPATH="\$ORIGIN/../lib"\
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT" \
     LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
