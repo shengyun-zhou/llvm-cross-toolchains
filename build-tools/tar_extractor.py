@@ -30,7 +30,18 @@ def do_mklink(link_path, target_path, is_dir, is_hardlink):
     os.symlink(target_path, link_path, target_is_directory=is_dir)
 
 def extract_tar(tar_file, directory='.', strip_component_count=0, verbose_output_cb=None, progress_cb=None):
-    target_tarfile = tarfile.open(tar_file, 'r', encoding='utf-8')
+    tempfp = None
+    if tar_file.endswith('.zst') or tar_file.endswith('.zstd'):
+        import zstandard
+        import tempfile
+        dctx = zstandard.ZstdDecompressor()
+        tempfp = tempfile.TemporaryFile()
+        with open(tar_file, 'rb') as temp_tarfp:
+            dctx.copy_stream(temp_tarfp, tempfp)
+        tempfp.seek(0)
+        target_tarfile = tarfile.open(fileobj=tempfp, encoding='utf-8')
+    else:
+        target_tarfile = tarfile.open(tar_file, 'r', encoding='utf-8')
     finished_member_count = 0
     previous_cwd = os.getcwd()
     os.chdir(directory)
@@ -106,6 +117,8 @@ def extract_tar(tar_file, directory='.', strip_component_count=0, verbose_output
             unresolve_link_members = []
         tar_link_members = unresolve_link_members
     target_tarfile.close()
+    if tempfp:
+        tempfp.close()
     os.chdir(previous_cwd)
 
 if __name__ == '__main__':
