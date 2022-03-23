@@ -24,8 +24,8 @@ fi
 unset APPLE_BUILT
 COMPILER_RT_INSTALL_PREFIX="$("$OUTPUT_DIR/bin/clang" --print-resource-dir)"
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"cygwin"* || $target == *"emscripten"* ]]; then
-        # Cygwin: compiler-rt does not support now
+    if [[ $target == *"cygwin"* || $target == *"msys"* || $target == *"emscripten"* ]]; then
+        # Cygwin/MSYS: compiler-rt does not support now
         # Emscripten: use compiler-rt built by emcc
         continue
     fi

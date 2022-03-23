@@ -9,6 +9,7 @@ cd "$PRE_PWD"
 TARGET=$1
 CMAKE_ARGS=()
 AR="$TARGET-ar${EXEC_SUFFIX}"
+LLVM_TARGET_TRIPLE=$TARGET
 case $TARGET in
     *linux*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Linux)
@@ -30,6 +31,10 @@ case $TARGET in
     *cygwin*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
         ;;
+    *msys*)
+        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
+        LLVM_TARGET_TRIPLE=${LLVM_TARGET_TRIPLE/msys/cygwin}
+        ;;
     *freebsd*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=FreeBSD)
         ;;
@@ -49,5 +54,5 @@ cmake -Wno-dev -G Ninja -DCMAKE_BUILD_TYPE=Release "${CMAKE_ARGS[@]}" \
     -DCMAKE_RANLIB="$OUTPUT_DIR/bin/$TARGET-ranlib${EXEC_SUFFIX}" \
     -DCMAKE_STRIP="$OUTPUT_DIR/bin/$TARGET-strip${EXEC_SUFFIX}" \
     -DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE \
-    -DLLVM_DEFAULT_TARGET_TRIPLE=$TARGET \
+    -DLLVM_DEFAULT_TARGET_TRIPLE=$LLVM_TARGET_TRIPLE \
     "$@"

@@ -45,6 +45,7 @@ prebuilt-linux-header/*.gz
 prebuilt-harmonyos/*.gz
 prebuilt-msvc-sdk/*.gz
 prebuilt-cygwin/*.gz
+prebuilt-msys2/*.gz
 prebuilt-freebsd/*.gz
 prebuilt-msvc-sdk/.temp_sdk_dir/
 __pycache__/
