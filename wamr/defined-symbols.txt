@@ -1,5 +1,20 @@
+malloc
+calloc
+realloc
+free
+posix_memalign
+
+memcmp
+memcpy
+memmove
+memset
+
+getpid
+
 __cxa_begin_catch
 __cxa_throw
+__cxa_allocate_exception
+
 pthread_create
 pthread_join
 pthread_detach
@@ -30,5 +45,8 @@ pthread_rwlock_tryrdlock
 pthread_rwlock_wrlock
 pthread_rwlock_trywrlock
 pthread_rwlock_unlock
+
+pthread_setname_np
+pthread_getname_np
 
 __wamr_ext_sysconf

@@ -19,9 +19,10 @@ ENV PATH="${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
+    # Escape $ORIGIN to use LDFLAGS in autoconf based project
     HOST_LDFLAGS="-pthread -fuse-ld=lld -L$BUILD_DEPS_ROOT/lib -target x86_64-linux-gnu --sysroot ${BUILD_DEPS_ROOT}/x86_64-conda-linux-gnu/sysroot -rtlib=compiler-rt -stdlib=libc++ -Wl,-rpath,'\$\${ORIGIN}/../lib'" \
     HOST_RUNTIME_LIBS="$BUILD_DEPS_ROOT/lib/libc++.so.1" HOST_RPATH="\$ORIGIN/../lib"\
-    HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT" \
+    HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH='\$ORIGIN/../lib'" \
     LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
 
 ADD build-dep-libs.sh /root

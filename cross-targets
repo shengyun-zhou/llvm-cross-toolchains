@@ -39,6 +39,11 @@ export CROSS_TARGETS=(
     "i686-pc-cygwin"
     "x86_64-pc-cygwin"
 
+    # Windows MSYS
+    # Require corresponding Cygwin target to be enabled too
+    "i686-pc-msys"
+    "x86_64-pc-msys"
+
     # MacOSX
     "aarch64-apple-macosx"
     "arm64-apple-macosx"    # Synonym for aarch64-apple-macosx

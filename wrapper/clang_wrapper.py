@@ -67,15 +67,17 @@ def main(target, exec_name):
                     '-z', 'stack-size=1048576',
                     '-Wl,--no-check-features',
                     '-Wl,--export=__heap_base,--export=__data_end',
-                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/defined-symbols.txt'),
+                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/wamr-defined-symbols.txt'),
                 ]
 
 
-    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target and not target.startswith('wasm'):
+    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target and not 'msys' in target and \
+       not target.startswith('wasm'):
         clang_args += ['-fPIC']
 
-    if 'cygwin' in target:
+    if 'cygwin' in target or 'msys' in target:
         if '__GCC_AS_LD' in os.environ:
+            sysroot_dir = os.environ.get('__GCC_AS_LD_SYSROOT', sysroot_dir)
             gcc_ld_args = [
                 '--sysroot', sysroot_dir,
                 '-B', os.path.join(DIR, '%s-' % target),
@@ -89,6 +91,11 @@ def main(target, exec_name):
         else:
             fuse_ld = ''
             clang_args += ['-D_GNU_SOURCE']
+            if 'msys' in target:
+                # Make clang treat MSYS targets as Cygwin targets
+                clang_target = target.replace('msys', 'cygwin')
+                clang_args += ['-D__MSYS__']
+                os.environ['__GCC_AS_LD_SYSROOT'] = sysroot_dir
             if cplusplus_mode:
                 clang_args += ['-D_LIBCPP_OBJECT_FORMAT_COFF', '-D_LIBCPP_HAS_THREAD_API_PTHREAD']
             os.environ['__GCC_AS_LD'] = '1'     # Clang may call gcc as linker later

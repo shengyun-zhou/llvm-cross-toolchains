@@ -33,9 +33,13 @@ The toolchain itself works on Linux, Windows and MacOSX now.
   pip install ninja
   ```
 
-+ Python 3
++ Python 3 and related python packages:
 
   > Python >= 3.8 is required on Windows to support unelevated symlinks with developer mode
+
+  ```
+  pip install zstandard
+  ```
 
 + Some development libs:
 
@@ -185,7 +189,13 @@ Build cctools:
 ./prebuilt-cygwin/prepare_sysroot.sh
 ```
 
-##### (8) FreeBSD
+##### (8) MSYS2
+
+```
+./prebuilt-msys2/prepare_sysroot.sh
+```
+
+##### (9) FreeBSD
 
 ```shell
 ./prebuilt-freebsd/prepare_sysroot.sh

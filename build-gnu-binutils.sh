@@ -25,15 +25,20 @@ export CXXFLAGS="$HOST_CXXFLAGS"
 export LDFLAGS="$HOST_LDFLAGS"
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == "riscv"*"-linux-"* || $target == *"cygwin"* ]]; then
+    if [[ $target == "riscv"*"-linux-"* || $target == *"cygwin"* || $target == *"msys"* ]]; then
         mkdir build-$target && cd build-$target
-        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
+        binutils_target=$target
+        if [[ $target == *"msys"* ]]; then
+            binutils_target=${target/msys/cygwin}
+        fi
+        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$binutils_target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
         make -j$(cpu_count)
         make install
-        rm -f binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX} || true
+        rm -f binutils-install/bin/$binutils_target-as${CROSS_EXEC_SUFFIX} || true
         for binfile in binutils-install/bin/*; do
             "${HOST_STRIP:-strip}" "$binfile"
             binfile_basename="$(basename "$binfile")"
+            binfile_basename=${binfile_basename/$binutils_target/$target}
             rm -f "$OUTPUT_DIR/bin/$binfile_basename" || true
             cp "$binfile" "$OUTPUT_DIR/bin/$binfile_basename"
         done

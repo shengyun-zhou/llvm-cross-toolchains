@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(wamr_ext_libc)
 
+# Recompile dlmalloc in wasi-libc with multi-thread support
 add_library(wamr_dlmalloc OBJECT ${WASI_LIBC_SOURCE}/dlmalloc/src/dlmalloc.c)
 add_compile_options(-Werror -Wno-switch)
 target_compile_definitions(wamr_dlmalloc PRIVATE -DUSE_LOCKS=1 -DUSE_SPIN_LOCKS=0)
@@ -60,6 +61,9 @@ add_library(wamr_libc STATIC
 )
 
 add_custom_command(TARGET wamr_libc POST_BUILD
-    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC} dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
+    # Remove some original function implementation
+    COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC}
+        dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
+        memcmp.o memcpy.o memmove.o memset.o 
     COMMAND ${CMAKE_AR} qscL ${PREBUILT_WASI_LIBC} $<TARGET_FILE:wamr_libc>
 )

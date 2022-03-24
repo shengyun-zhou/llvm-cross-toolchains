@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 int getpagesize() {
     return sysconf(_SC_PAGESIZE);
@@ -49,3 +50,5 @@ void *__cxa_allocate_exception(size_t thrown_size)
 
 _Thread_local int __tls_h_errno = 0;
 int *__h_errno_location() { return &__tls_h_errno; }
+
+int sigprocmask(int how, const sigset_t* set, sigset_t* oldset) { errno = ENOSYS; return -1; }

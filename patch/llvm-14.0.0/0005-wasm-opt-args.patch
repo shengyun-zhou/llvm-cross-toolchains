@@ -1,0 +1,13 @@
+diff --git a/clang/lib/Driver/ToolChains/WebAssembly.cpp b/clang/lib/Driver/ToolChains/WebAssembly.cpp
+index 19f3571..7fedd74 100644
+--- a/clang/lib/Driver/ToolChains/WebAssembly.cpp
++++ b/clang/lib/Driver/ToolChains/WebAssembly.cpp
+@@ -146,6 +146,8 @@ void wasm::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+         ArgStringList CmdArgs;
+         CmdArgs.push_back(Output.getFilename());
+         CmdArgs.push_back(Args.MakeArgString(llvm::Twine("-O") + OOpt));
++        if (Args.hasArg(options::OPT_g_Group) && !Args.hasArg(options::OPT_g0))
++          CmdArgs.push_back("-g");
+         CmdArgs.push_back("-o");
+         CmdArgs.push_back(Output.getFilename());
+         C.addCommand(std::make_unique<Command>(
