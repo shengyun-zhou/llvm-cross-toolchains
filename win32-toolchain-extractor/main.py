@@ -51,7 +51,7 @@ if __name__ == '__main__':
             self.m_target_dir_picker.Bind(wx.EVT_DIRPICKER_CHANGED, lambda e : self.m_target_dir_text.SetValue(os.path.join(e.GetPath(), DEFAULT_TARGET_DIR_NAME)))
             _bsizer2.Add( self.m_target_dir_picker, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-            self.m_ctrl_btn = wx.Button( self, wx.ID_ANY, u"Start", wx.DefaultPosition, wx.DefaultSize, 0 )
+            self.m_ctrl_btn = wx.Button( self, wx.ID_ANY, u"Extract", wx.DefaultPosition, wx.DefaultSize, 0 )
             self.m_ctrl_btn.Bind(wx.EVT_BUTTON, self.on_ctrl_btn_clicked)
             _bsizer2.Add( self.m_ctrl_btn, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
