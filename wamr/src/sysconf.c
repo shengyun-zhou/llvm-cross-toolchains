@@ -6,6 +6,7 @@
 #define JT(x) (-256|(x))
 #define VER JT(1)
 #define JT_ARG_MAX JT(2)
+#define JT_PAGE_SIZE JT(4)
 #define JT_ZERO JT(10)
 #define JT_DELAYTIMER_MAX JT(11)
 
@@ -42,6 +43,7 @@ long sysconf(int name)
 		[_SC_AIO_PRIO_DELTA_MAX] = JT_ZERO, /* ?? */
 		[_SC_DELAYTIMER_MAX] = JT_DELAYTIMER_MAX,
 		[_SC_VERSION] = VER,
+		[_SC_PAGE_SIZE] = JT_PAGE_SIZE,
 		[_SC_RTSIG_MAX] = -1,
 		[_SC_SEM_NSEMS_MAX] = -1,
 		[_SC_SEM_VALUE_MAX] = -1,
@@ -169,6 +171,8 @@ long sysconf(int name)
 		return _POSIX_VERSION;
 	case JT_ARG_MAX & 255:
 		return ARG_MAX;
+	case JT_PAGE_SIZE & 255:
+		return PAGE_SIZE;
 	case JT_DELAYTIMER_MAX & 255:
 		return DELAYTIMER_MAX;
 	case JT_ZERO & 255:
