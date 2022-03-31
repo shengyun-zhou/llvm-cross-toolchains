@@ -5,7 +5,8 @@ import subprocess
 import toolchain_wrapper_tools
 from sys import exit
 
-DIR=os.path.dirname(__file__)
+DIR = os.path.dirname(__file__)
+DEBUG_INFO_OPTS = {'-g0', '-g', '-g1', '-g2', '-g3', '-gfull', '-gline-tables-only', '-ggdb', '-glldb', '-gsce', '-gdbx'}
 
 def main(target, exec_name):
     arch = target.split('-')[0]
@@ -91,6 +92,14 @@ def main(target, exec_name):
             exec_prog = os.path.join(DIR, '%s-gcc-ld' % target)
             toolchain_wrapper_tools.exec_subprocess([exec_prog] + sys.argv[1:] + gcc_ld_args)
         else:
+            arg_idx = len(sys.argv) - 1
+            while arg_idx > 0:
+                if sys.argv[arg_idx] in DEBUG_INFO_OPTS:
+                    if sys.argv[arg_idx] != '-g0':
+                        # LD in GNU binutils doesn't support DWARF-5 now
+                        clang_args += ['-gdwarf-4']
+                    break
+                arg_idx -= 1
             fuse_ld = ''
             clang_args += ['-D_GNU_SOURCE']
             if 'msys' in target:
