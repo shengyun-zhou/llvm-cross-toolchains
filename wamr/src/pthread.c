@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 /* pthread */
 
@@ -26,11 +27,19 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
     return 0;
 }
 
+// Wait for a specific elapse
 extern int _pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, uint64_t useconds);
+// Wait util a specific time point
 int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime) {
     if (!abstime)
 		return pthread_cond_wait(cond, mutex);
-	return _pthread_cond_timedwait(cond, mutex, abstime->tv_sec * 1000000 + abstime->tv_nsec / 1000); 
+    uint64_t abs_ts = (uint64_t)abstime->tv_sec * 1000000 + abstime->tv_nsec / 1000;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    uint64_t now_ts = (uint64_t)now.tv_sec * 1000000 + now.tv_usec;
+    if (abs_ts <= now_ts)
+        return ETIMEDOUT;
+	return _pthread_cond_timedwait(cond, mutex, abs_ts - now_ts); 
 }
 
 int pthread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void)) {
