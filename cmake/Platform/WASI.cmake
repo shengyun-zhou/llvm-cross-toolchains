@@ -4,6 +4,7 @@ set(CMAKE_SYSTEM_VERSION 1)
 set(WASI 1)
 set(CMAKE_CROSSCOMPILING TRUE)
 set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE)
+set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
 
 # Advertise WASI as a 32-bit platform (as opposed to
 # CMAKE_SYSTEM_PROCESSOR=x86_64 for 64-bit platform), since some projects (e.g.
