@@ -27,7 +27,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         continue
     fi
     rm -rf build sysroot || true
-    make WASM_CC="$OUTPUT_DIR/bin/$target-clang" WASM_AR="$OUTPUT_DIR/bin/$target-ar" WASM_NM="$OUTPUT_DIR/bin/$target-nm"  -j$(cpu_count)
+    make CC="$OUTPUT_DIR/bin/$target-clang" AR="$OUTPUT_DIR/bin/$target-ar" NM="$OUTPUT_DIR/bin/$target-nm" -j$(cpu_count)
     mkdir -p "$OUTPUT_DIR/$target"
     cp -r sysroot/* "$OUTPUT_DIR/$target"
     if [[ $target == *"wamr"* ]]; then
