@@ -18,13 +18,6 @@ int fchmod(int fd, mode_t mode) { errno = ENOSYS; return -1; }
 int fchmodat(int dirfd, const char *pathname, mode_t mode, int flags) { errno = ENOSYS; return -1; }
 mode_t umask(mode_t mask) { return S_IRGRP | S_IROTH; }
 
-int utimes(const char *filename, const struct timeval times[2]) {
-    struct utimbuf utime_buf;
-    utime_buf.actime = times[0].tv_sec +  times[0].tv_usec / 1000000;
-    utime_buf.modtime = times[1].tv_sec + times[1].tv_usec / 1000000;
-    return utime(filename, &utime_buf);
-}
-
 int flock (int fd, int operation) {
     // Emulate as a call to fcntl().
     // Ref: glibc(https://code.woboq.org/userspace/glibc/sysdeps/posix/flock.c.html)

@@ -64,6 +64,6 @@ add_custom_command(TARGET wamr_libc POST_BUILD
     # Remove some original function implementation
     COMMAND ${CMAKE_AR} -d ${PREBUILT_WASI_LIBC}
         dlmalloc.o recv.o send.o getsockopt.o sysconf.o fcntl.o
-        memcmp.o memcpy.o memmove.o memset.o 
+        memcmp.o memcpy.o memmove.o memset.o accept.o
     COMMAND ${CMAKE_AR} qscL ${PREBUILT_WASI_LIBC} $<TARGET_FILE:wamr_libc>
 )
