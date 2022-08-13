@@ -70,7 +70,6 @@ def main(target, exec_name):
                     '-Wl,--no-check-features',
                     '-Wl,--export=__heap_base,--export=__data_end',
                     '-Wl,--export=malloc,--export=free',
-                    '-Wl,--allow-undefined-file=%s' % os.path.join(sysroot_dir, 'share/wasm32-wasi/wamr-defined-symbols.txt'),
                 ]
 
 

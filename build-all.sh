@@ -10,7 +10,7 @@ source config
 LIBC_STARTFILE_STAGE=1 ./build-musl.sh
 LIBC_STARTFILE_STAGE=1 ./build-mingw.sh
 ./build-emscripten.sh
-./build-wasi-libc.sh
+./build-wamr-ext-libc.sh
 ./build-compiler-rt.sh
 ./build-musl.sh
 ./build-mingw.sh

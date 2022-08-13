@@ -13,7 +13,7 @@ Supported target platforms:
 
 + BSD: FreeBSD
 
-+ WebAssembly(WASM): Emscripten, [WAMR(with custom extensions)](https://github.com/shengyun-zhou/wasm-micro-runtime/tree/dev-ext)
++ WebAssembly(WASM): Emscripten, [WAMR(with custom extensions)](https://github.com/shengyun-zhou/wamr-wasm-libs)
 
 The toolchain itself works on Linux, Windows and MacOSX now.
 
