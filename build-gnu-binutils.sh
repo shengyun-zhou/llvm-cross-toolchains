@@ -25,12 +25,9 @@ export CXXFLAGS="$HOST_CXXFLAGS"
 export LDFLAGS="$HOST_LDFLAGS"
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == "riscv"*"-linux-"* || $target == *"cygwin"* || $target == *"msys"* ]]; then
+    if [[ $target == "riscv"*"-linux-"* ]]; then
         mkdir build-$target && cd build-$target
         binutils_target=$target
-        if [[ $target == *"msys"* ]]; then
-            binutils_target=${target/msys/cygwin}
-        fi
         ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$binutils_target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
         make -j$(cpu_count)
         make install

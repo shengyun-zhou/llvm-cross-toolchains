@@ -10,9 +10,13 @@ TARGET=$1
 CMAKE_ARGS=()
 AR="$TARGET-ar${EXEC_SUFFIX}"
 LLVM_TARGET_TRIPLE=$TARGET
+TARGET_CFLAGS="$CFLAGS"
+TARGET_CXXFLAGS="$CXXFLAGS"
 case $TARGET in
     *linux*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Linux)
+        TARGET_CFLAGS="$TARGET_CFLAGS -D_GNU_SOURCE"
+        TARGET_CXXFLAGS="$TARGET_CXXFLAGS -D_GNU_SOURCE"
         ;;
     *mingw*|*windows*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Windows)
@@ -28,13 +32,6 @@ case $TARGET in
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Darwin "-DCMAKE_LIBTOOL=$OUTPUT_DIR/bin/llvm-libtool-darwin${EXEC_SUFFIX}")
         CMAKE_ARGS+=("-DCMAKE_LIPO=$OUTPUT_DIR/bin/llvm-lipo${EXEC_SUFFIX}")
         ;;
-    *cygwin*)
-        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
-        ;;
-    *msys*)
-        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=CYGWIN)
-        LLVM_TARGET_TRIPLE=${LLVM_TARGET_TRIPLE/msys/cygwin}
-        ;;
     *freebsd*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=FreeBSD)
         ;;
@@ -47,7 +44,7 @@ case $TARGET in
         ;;    
 esac
 shift
-cmake -Wno-dev -G Ninja -DCMAKE_BUILD_TYPE=Release "${CMAKE_ARGS[@]}" \
+CFLAGS="$TARGET_CFLAGS" CXXFLAGS="$TARGET_CXXFLAGS" cmake -Wno-dev -G Ninja -DCMAKE_BUILD_TYPE=Release "${CMAKE_ARGS[@]}" \
     -DCMAKE_C_COMPILER="$OUTPUT_DIR/bin/$TARGET-clang${EXEC_SUFFIX}" \
     -DCMAKE_CXX_COMPILER="$OUTPUT_DIR/bin/$TARGET-clang++${EXEC_SUFFIX}"  \
     -DCMAKE_AR="$OUTPUT_DIR/bin/$AR" \

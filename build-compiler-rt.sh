@@ -24,8 +24,7 @@ fi
 unset APPLE_BUILT
 COMPILER_RT_INSTALL_PREFIX="$("$OUTPUT_DIR/bin/clang" --print-resource-dir)"
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"cygwin"* || $target == *"msys"* || $target == *"emscripten"* ]]; then
-        # Cygwin/MSYS: compiler-rt does not support now
+    if [[ $target == *"emscripten"* ]]; then
         # Emscripten: use compiler-rt built by emcc
         continue
     fi
@@ -34,6 +33,10 @@ for target in "${CROSS_TARGETS[@]}"; do
             continue
         else
             target="apple-darwin"
+            # Create temporary lipo and ld executable
+            # TODO: support Windows host
+            ln -sf llvm-lipo${EXEC_SUFFIX} "$OUTPUT_DIR/bin/lipo${EXEC_SUFFIX}"
+            ln -sf cctools-ld${EXEC_SUFFIX} "$OUTPUT_DIR/bin/ld${EXEC_SUFFIX}"
         fi
     fi
     if [[ -z "$COMPILER_RT_FULL_BUILD" ]]; then        
@@ -121,6 +124,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     cmake --build . --target install/strip -- -j$(cpu_count)
     if [[ $target == *"apple"* ]]; then
         APPLE_BUILT=1
+        rm -f "$OUTPUT_DIR/bin/lipo${EXEC_SUFFIX}" "$OUTPUT_DIR/bin/ld${EXEC_SUFFIX}"
     else
         # Clang >= 13.0.0 require directory name to be normalized target triple
         # Ref: https://github.com/llvm/llvm-project/commit/36430d44edba9063a08493c89864edf5f071d08c

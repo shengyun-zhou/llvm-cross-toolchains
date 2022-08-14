@@ -6,7 +6,6 @@ import toolchain_wrapper_tools
 from sys import exit
 
 DIR = os.path.dirname(__file__)
-DEBUG_INFO_OPTS = {'-g0', '-g', '-g1', '-g2', '-g3', '-gfull', '-gline-tables-only', '-ggdb', '-glldb', '-gsce', '-gdbx'}
 
 def main(target, exec_name):
     arch = target.split('-')[0]
@@ -73,42 +72,16 @@ def main(target, exec_name):
                 ]
 
 
-    if not 'mingw' in target and not 'windows' in target and not 'cygwin' in target and not 'msys' in target and \
-       not target.startswith('wasm'):
+    if not 'mingw' in target and not 'windows' in target and not target.startswith('wasm'):
         clang_args += ['-fPIC']
 
-    if 'cygwin' in target or 'msys' in target:
-        if '__GCC_AS_LD' in os.environ:
-            sysroot_dir = os.environ.get('__GCC_AS_LD_SYSROOT', sysroot_dir)
-            gcc_ld_args = [
-                '--sysroot', sysroot_dir,
-                '-B', os.path.join(DIR, '%s-' % target),
-                '-L' + os.path.join(sysroot_dir, 'usr/lib/w32api'),
-                '-static-libgcc',
-            ]
-            if cplusplus_mode and os.path.exists(os.path.join(sysroot_dir, 'usr/lib/libc++.a')):
-                gcc_ld_args += ['-lc++']
-            exec_prog = os.path.join(DIR, '%s-gcc-ld' % target)
-            toolchain_wrapper_tools.exec_subprocess([exec_prog] + sys.argv[1:] + gcc_ld_args)
-        else:
-            arg_idx = len(sys.argv) - 1
-            while arg_idx > 0:
-                if sys.argv[arg_idx] in DEBUG_INFO_OPTS:
-                    if sys.argv[arg_idx] != '-g0':
-                        # LD in GNU binutils doesn't support DWARF-5 now
-                        clang_args += ['-gdwarf-4']
-                    break
-                arg_idx -= 1
-            fuse_ld = ''
-            clang_args += ['-D_GNU_SOURCE']
-            if 'msys' in target:
-                # Make clang treat MSYS targets as Cygwin targets
-                clang_target = target.replace('msys', 'cygwin')
-                clang_args += ['-D__MSYS__']
-                os.environ['__GCC_AS_LD_SYSROOT'] = sysroot_dir
-            if cplusplus_mode:
-                clang_args += ['-D_LIBCPP_OBJECT_FORMAT_COFF', '-D_LIBCPP_HAS_THREAD_API_PTHREAD']
-            os.environ['__GCC_AS_LD'] = '1'     # Clang may call gcc as linker later
+    if 'android' in target:
+        i = -2
+        while str.isdigit(target[i - 1]):
+            i = i - 1
+        android_api = int(target[i:])
+        if cplusplus_mode and android_api < 24:
+            clang_args += ['-D_LIBCPP_HAS_NO_OFF_T_FUNCTIONS']
     elif 'apple' in target:
         # TODO: Use LLD if it's mature enough for Apple
         fuse_ld = 'ld'
