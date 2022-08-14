@@ -40,9 +40,6 @@ def main(target, exec_name):
     elif arch.startswith('x86_64'):
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/x86_64-linux-android')]
-    elif arch.startswith('riscv'):
-        # TODO: Use LLD after it has implemented linker relaxation for RISC-V
-        fuse_ld = 'ld'
     elif arch.startswith('wasm'):
         if 'emscripten' in target:
             sys.path.append(os.path.join(DIR, '../emscripten'))
@@ -77,7 +74,7 @@ def main(target, exec_name):
 
     if 'android' in target:
         i = -2
-        while str.isdigit(target[i - 1]):
+        while target[i - 1].isdigit():
             i = i - 1
         android_api = int(target[i:])
         if cplusplus_mode and android_api < 24:
