@@ -1,0 +1,15 @@
+diff --git a/libcxx/src/filesystem/filesystem_common.h b/libcxx/src/filesystem/filesystem_common.h
+index 99bba27..1c2139b 100644
+--- a/libcxx/src/filesystem/filesystem_common.h
++++ b/libcxx/src/filesystem/filesystem_common.h
+@@ -551,8 +551,10 @@ static file_type get_file_type(DirEntT* ent, int) {
+     return file_type::symlink;
+   case DT_REG:
+     return file_type::regular;
++#if defined(DT_SOCK)
+   case DT_SOCK:
+     return file_type::socket;
++#endif
+   // Unlike in lstat, hitting "unknown" here simply means that the underlying
+   // filesystem doesn't support d_type. Report is as 'none' so we correctly
+   // set the cache to empty.

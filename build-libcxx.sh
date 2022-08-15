@@ -30,7 +30,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     elif [[ $target == *"mingw"* ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_WIN32_THREAD_API=ON"
     elif [[ $target == "wasm"* ]]; then
-        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DLIBCXX_ENABLE_FILESYSTEM=OFF"
+        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON"
         # Create empty fake libc++abi.a
         rm -f "$(target_install_prefix $target)/lib/libc++abi.a" || true
         "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib$LIBDIR_SUFFIX/libc++abi.a"
