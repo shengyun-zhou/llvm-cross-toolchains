@@ -86,7 +86,3 @@ export CROSS_TARGETS=(
     # WASI
     "wasm32-wamr-wasi"
 )
-
-export CROSS_TARGETS=(
-    "wasm32-wamr-wasi"
-)
