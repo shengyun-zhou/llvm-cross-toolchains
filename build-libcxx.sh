@@ -30,7 +30,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     elif [[ $target == *"mingw"* ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_WIN32_THREAD_API=ON"
     elif [[ $target == "wasm"* ]]; then
-        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DLIBCXX_ENABLE_FILESYSTEM=OFF"
+        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON"
         if [[ $target == *"wamr"* ]]; then
             # Use exception handler from WAMR
             LIBCXXABI_CMAKE_FLAGS="$LIBCXXABI_CMAKE_FLAGS -DLIBCXXABI_ENABLE_EXCEPTIONS=OFF"
