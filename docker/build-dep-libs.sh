@@ -113,7 +113,7 @@ mkdir libffi-build && cd libffi-build && tar xvf ../libffi.tar.gz --strip 1 && .
 cd "$ROOT_DIR/build"
 
 # Build openssl
-curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/o/openssl/openssl_1.1.1j.orig.tar.gz" -o openssl.tar.gz && mkdir openssl-build && \
+curl -L "https://www.openssl.org/source/openssl-1.1.1j.tar.gz" -o openssl.tar.gz && mkdir openssl-build && \
 cd openssl-build && tar xvf ../openssl.tar.gz --strip 1
 # Patch configuration file
 sed -i '/rcflag/d' Configurations/10-main.conf
