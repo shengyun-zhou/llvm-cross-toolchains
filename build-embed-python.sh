@@ -24,7 +24,7 @@ mkdir -p $BUILD_DIR
 
 NATIVE_PYTHON_VERSION=3.9
 PYTHON_SOURCE_TARBALL=Python-3.9.7.tar.xz
-PYTHON_DOWNLOAD_URL=http://mirrors.ustc.edu.cn/ubuntu/pool/main/p/python3.9/python3.9_3.9.7.orig.tar.xz
+PYTHON_DOWNLOAD_URL=https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tar.xz
 # Disable ipv6 due to getaddrinfo() bug in old glibc
 PYTHON_COMMON_CONFIGURE_ARGS="--without-ensurepip --disable-ipv6 --with-system-ffi"
 
