@@ -64,9 +64,8 @@ def main(target, exec_name):
                     '-U_REENTRANT',
                     '-femulated-tls',
                     '-Wl,--shared-memory',
-                    # Default memory configuration: stack size=2MB, maximum memory=16MB 
-                    '-Wl,--max-memory=16777216',
-                    '-z', 'stack-size=2097152',
+                    # Default memory configuration: stack size=1.5MB
+                    '-z', 'stack-size=1572864',
                     '-Wl,--no-check-features',
                     '-Wl,--export=__heap_base,--export=__data_end',
                     '-Wl,--export=malloc,--export=free',
