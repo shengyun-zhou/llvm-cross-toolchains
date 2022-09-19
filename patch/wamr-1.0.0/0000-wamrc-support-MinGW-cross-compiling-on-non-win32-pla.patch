@@ -1,7 +1,8 @@
 From 294c3ccefa355d5df629fd54e67ed5831cb94569 Mon Sep 17 00:00:00 2001
 From: Shengyun Zhou <GGGZ-1101-28@live.cn>
 Date: Mon, 19 Sep 2022 10:16:47 +0800
-Subject: [PATCH] wamrc: support MinGW cross-compiling on non-win32 platforms
+Subject: [PATCH 0/2] wamrc: support MinGW cross-compiling on non-win32
+ platforms
 
 ---
  .../platform/windows/platform_internal.h      |  4 ++--
