@@ -1,0 +1,76 @@
+From 294c3ccefa355d5df629fd54e67ed5831cb94569 Mon Sep 17 00:00:00 2001
+From: Shengyun Zhou <GGGZ-1101-28@live.cn>
+Date: Mon, 19 Sep 2022 10:16:47 +0800
+Subject: [PATCH] wamrc: support MinGW cross-compiling on non-win32 platforms
+
+---
+ .../platform/windows/platform_internal.h      |  4 ++--
+ wamr-compiler/CMakeLists.txt                  | 21 +++++++++++--------
+ 2 files changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/core/shared/platform/windows/platform_internal.h b/core/shared/platform/windows/platform_internal.h
+index 5c50f9e3..03f75ace 100644
+--- a/core/shared/platform/windows/platform_internal.h
++++ b/core/shared/platform/windows/platform_internal.h
+@@ -26,8 +26,8 @@
+ #include <malloc.h>
+ #include <process.h>
+ #include <winsock2.h>
+-#include <Windows.h>
+-#include <BaseTsd.h>
++#include <windows.h>
++#include <basetsd.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/wamr-compiler/CMakeLists.txt b/wamr-compiler/CMakeLists.txt
+index 2eff9bb6..d67fc8ff 100644
+--- a/wamr-compiler/CMakeLists.txt
++++ b/wamr-compiler/CMakeLists.txt
+@@ -3,7 +3,13 @@
+ 
+ cmake_minimum_required (VERSION 2.9)
+ 
+-string (TOLOWER ${CMAKE_HOST_SYSTEM_NAME} WAMR_BUILD_PLATFORM)
++if (NOT DEFINED WAMR_BUILD_PLATFORM)
++  if (CMAKE_SYSTEM_NAME)
++    string(TOLOWER ${CMAKE_SYSTEM_NAME} WAMR_BUILD_PLATFORM)
++  else()
++    string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} WAMR_BUILD_PLATFORM)
++  endif()
++endif()
+ 
+ if (NOT WAMR_BUILD_PLATFORM STREQUAL "windows")
+   project (aot-compiler)
+@@ -233,15 +239,12 @@ endif()
+ # set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mindirect-branch=thunk -mfunction-return=thunk")
+ 
+ if (NOT MSVC)
+-  if (NOT (CMAKE_C_COMPILER MATCHES ".*clang.*" OR CMAKE_C_COMPILER_ID MATCHES ".*Clang"))
+-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pie -fPIE -ftrapv -D_FORTIFY_SOURCE=2")
+-  else()
+-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE -ftrapv -D_FORTIFY_SOURCE=2")
+-  endif()
++  add_definitions(-D_FORTIFY_SOURCE=2)
++  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftrapv")
+ endif()
+ 
+-if (MSVC)
+-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS")
++if (WIN32)
++  add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+ endif()
+ 
+ # message ("-- CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+@@ -267,7 +270,7 @@ if (NOT MSVC)
+   target_link_libraries (wamrc aotclib vmlib LLVMDemangle ${LLVM_AVAILABLE_LIBS} ${lib_ubsan}
+                          -lm -lpthread ${lib_lldb} ${UV_A_LIBS})
+   if (MINGW)
+-      target_link_libraries (wamrc -lssp -lWs2_32)
++      target_link_libraries (wamrc -lssp -lws2_32)
+   else()
+       target_link_libraries (wamrc -ldl)
+   endif()
+-- 
+2.37.3
+

@@ -8,3 +8,4 @@ source config
 ./build-binaryen.sh
 ./build-wabt.sh
 ./build-cygwin-gcc.sh
+./build-wamrc.sh

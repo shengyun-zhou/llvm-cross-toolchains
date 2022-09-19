@@ -1,0 +1,13 @@
+diff --git a/wamr-compiler/CMakeLists.txt b/wamr-compiler/CMakeLists.txt
+index d67fc8ff..0da654b1 100644
+--- a/wamr-compiler/CMakeLists.txt
++++ b/wamr-compiler/CMakeLists.txt
+@@ -270,7 +270,7 @@ if (NOT MSVC)
+   target_link_libraries (wamrc aotclib vmlib LLVMDemangle ${LLVM_AVAILABLE_LIBS} ${lib_ubsan}
+                          -lm -lpthread ${lib_lldb} ${UV_A_LIBS})
+   if (MINGW)
+-      target_link_libraries (wamrc -lssp -lws2_32)
++      target_link_libraries (wamrc ssp.a -lws2_32)
+   else()
+       target_link_libraries (wamrc -ldl)
+   endif()
