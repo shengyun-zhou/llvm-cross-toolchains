@@ -1,7 +1,7 @@
 From fc5a1b72617ba1e180a41c2a22043ab9cbd9884f Mon Sep 17 00:00:00 2001
 From: Shengyun Zhou <GGGZ-1101-28@live.cn>
 Date: Mon, 19 Sep 2022 11:45:46 +0800
-Subject: [PATCH 2/2] wamrc: link static libssp for MinGW
+Subject: [PATCH 2/3] wamrc: link static libssp for MinGW
 
 ---
  wamr-compiler/CMakeLists.txt | 2 +-
