@@ -64,11 +64,10 @@ def main(target, exec_name):
                     '-U_REENTRANT',
                     '-femulated-tls',
                     '-Wl,--shared-memory',
-                    # Default memory configuration: stack size=1.5MB
-                    '-z', 'stack-size=1572864',
+                    # Default memory configuration: stack size=256KB
+                    '-z', 'stack-size=262144',
                     '-Wl,--no-check-features',
                     '-Wl,--export=__heap_base,--export=__data_end',
-                    '-Wl,--export=malloc,--export=free',
                     # Build the WASM app as reactor(sub module) to avoid __wasm_call_ctors() and __wasm_call_dtors() to be called unexpectedly when the runtime call exported functions
                     # See: https://github.com/WebAssembly/WASI/issues/471 
                     '-mexec-model=reactor', '-Wl,--export=__main_void,--export=__wasm_call_dtors'
