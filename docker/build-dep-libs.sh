@@ -10,6 +10,7 @@ CMAKE_FLAGS="-G Ninja -DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_BUILD_TYPE=Release -DCM
 if [[ $CROSS_HOST != "Windows" ]]; then
     export CFLAGS="$CFLAGS -fPIC" CXXFLAGS="$CXXFLAGS -fPIC"
 fi
+export CFLAGS="$CFLAGS -fvisibility=hidden" CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 if [[ $CROSS_HOST == "Windows" ]]; then
     OPENSSL_TARGET=mingw64
 elif [[ $CROSS_HOST == "Linux" ]]; then
@@ -103,8 +104,9 @@ cd xz-utils-build && tar xvf ../xz-utils.tar.xz --strip 1 && ./configure $HOST_C
 cd "$ROOT_DIR/build"
 
 # Build libxml2
-curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10%2Bdfsg.orig.tar.xz" -o libxml2.tar.gz && mkdir libxml2-build && \
-cd libxml2-build && tar xvf ../libxml2.tar.gz --strip 1 && ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared --with-zlib="$BUILD_DEPS_ROOT" --with-lzma="$BUILD_DEPS_ROOT" --without-python && make install -j$(nproc)
+curl -L "https://download.gnome.org/sources/libxml2/2.10/libxml2-2.10.2.tar.xz" -o libxml2.tar.xz && mkdir libxml2-build && \
+cd libxml2-build && tar xvf ../libxml2.tar.xz --strip 1
+mkdir build && cd build && cmake .. $CMAKE_FLAGS -DLIBXML2_WITH_PYTHON=OFF && cmake --build . --target install/strip
 cd "$ROOT_DIR/build"
 
 # Build libffi
