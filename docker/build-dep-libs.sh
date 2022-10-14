@@ -48,35 +48,26 @@ cd "$ROOT_DIR/build"
 
 if [[ -z "$SKIP_BUILD_LIBCXX" ]]; then
     # Build shared libc++
-    curl "http://mirrors.ustc.edu.cn/ubuntu/pool/main/l/llvm-toolchain-12/llvm-toolchain-12_12.0.1.orig.tar.xz" -o llvm.tar.xz
+    curl "http://mirrors.ustc.edu.cn/ubuntu/pool/main/l/llvm-toolchain-14/llvm-toolchain-14_14.0.0.orig.tar.xz" -o llvm.tar.xz
     mkdir llvm-build && cd llvm-build && tar xvf ../llvm.tar.xz --strip 1
     if [[ $CROSS_HOST == "Windows" ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_WIN32_THREAD_API=ON"
+    elif [[ $CROSS_HOST != "Darwin" ]]; then
+        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_GCC_LIB=ON -DLIBCXX_HAS_GCC_S_LIB=OFF -DLIBCXX_HAS_ATOMIC_LIB=OFF -DLIBCXXABI_HAS_GCC_S_LIB=OFF"
     fi
-    if [[ $CROSS_HOST != "Darwin" ]]; then
-        # Don't link libatomic
-        cd libunwind && mkdir build && cd build
-        cmake .. $CMAKE_FLAGS -DLIBUNWIND_ENABLE_SHARED=OFF
-        cmake --build . --target install/strip
-        cd ../../
-        LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_USE_LLVM_UNWINDER=ON"
-    fi
-    cd libcxx && mkdir build && cd build
-    cmake .. $CMAKE_FLAGS -DLIBCXX_ENABLE_STATIC=OFF \
+    cd runtimes && mkdir build-$target && cd build-$target
+    cmake .. $CMAKE_FLAGS \
+        -DLLVM_ENABLE_RUNTIMES="libcxxabi;libcxx" \
+        -DLLVM_LIBDIR_SUFFIX="" \
+        -DLIBCXX_ENABLE_STATIC=OFF -DLIBCXX_ENABLE_SHARED=ON \
         -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
         -DLIBCXX_CXX_ABI=libcxxabi \
-        -DLIBCXX_CXX_ABI_INCLUDE_PATHS=../../libcxxabi/include \
-        -DLIBCXX_CXX_ABI_LIBRARY_PATH=../../libcxxabi/build/lib \
-        -DLIBCXX_INCLUDE_TESTS=OFF -DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF \
-        -DLIBCXX_LIBDIR_SUFFIX="" \
-        $LIBCXX_CMAKE_FLAGS
-    cmake --build . --target generate-cxx-headers
-    cd ../../libcxxabi && mkdir build && cd build
-    cmake .. $CMAKE_FLAGS \
-        -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE -DLIBCXX_ENABLE_SHARED=ON \
-        -DLIBCXXABI_LIBCXX_INCLUDES=../../libcxx/build/include/c++/v1
-    cmake --build .
-    cd ../../libcxx/build && cmake --build . --target install/strip
+        -DLIBCXX_INCLUDE_TESTS=OFF \
+        -DLIBCXX_INCLUDE_BENCHMARKS=OFF \
+        -DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF \
+        $LIBCXX_CMAKE_FLAGS \
+        -DLIBCXXABI_ENABLE_SHARED=OFF
+    cmake --build . --target install/strip
     cd "$ROOT_DIR/build"
 fi
 
@@ -106,7 +97,7 @@ cd "$ROOT_DIR/build"
 # Build libxml2
 curl -L "https://download.gnome.org/sources/libxml2/2.10/libxml2-2.10.2.tar.xz" -o libxml2.tar.xz && mkdir libxml2-build && \
 cd libxml2-build && tar xvf ../libxml2.tar.xz --strip 1
-mkdir build && cd build && cmake .. $CMAKE_FLAGS -DLIBXML2_WITH_PYTHON=OFF && cmake --build . --target install/strip
+mkdir build && cd build && cmake .. $CMAKE_FLAGS -DCMAKE_C_VISIBILITY_PRESET=default -DLIBXML2_WITH_PYTHON=OFF && cmake --build . --target install/strip
 cd "$ROOT_DIR/build"
 
 # Build libffi
