@@ -1,19 +1,19 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Replace apt mirros
-ENV DEBIAN_FRONTEND=noninteractive
-RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
-RUN apt update && apt install -y gcc g++ clang git wget curl patch unzip cmake ninja-build make python3 zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev llvm-dev texinfo
+RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy main restricted universe multiverse' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-security main restricted universe multiverse' >> /etc/apt/sources.list
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+    gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file cmake ninja-build make python3 python3-pip python3-setuptools \
+    autoconf automake texinfo gawk clang zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev llvm-dev texinfo
 WORKDIR /root
 ARG GITHUB_MIRROR_DOMAIN=github.com
-RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/26ebac26899650b12b99de86ebbde785de6ca173.tar.gz" -o osxcross.tar.gz && mkdir -p osxcross && \
+RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/50e86ebca7d14372febd0af8cd098705049161b9.tar.gz" -o osxcross.tar.gz && mkdir -p osxcross && \
     cd osxcross && tar xf ../osxcross.tar.gz --strip 1 && rm -f ../osxcross.tar.gz && sed -i -e "s/github.com/${GITHUB_MIRROR_DOMAIN}/g" build.sh build_compiler_rt.sh tools/tools.sh && \
     curl -L https://${GITHUB_MIRROR_DOMAIN}/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz -o tarballs/MacOSX11.3.sdk.tar.xz
 RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf build
-RUN apt update && apt install -y autoconf git-lfs
 
 ARG CROSS_ARCH=x86_64
 ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=${CROSS_ARCH}-apple-darwin20.4
@@ -23,12 +23,12 @@ ENV PATH="/root/osxcross/target/bin:${PATH}" \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
-    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib" \
+    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -Wl,-rpath,@loader_path/../lib" \
+    HOST_RPATH="@loader_path/../lib" \
     HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_SYSROOT=/root/osxcross/target/SDK/MacOSX11.3.sdk -DCMAKE_SYSTEM_VERSION=11.3 \
-        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT" \
+        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root
 RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
-ENV HOST_LDFLAGS="$HOST_LDFLAGS -llzma -lz -liconv"
-
+ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.2.10.2.dylib"
