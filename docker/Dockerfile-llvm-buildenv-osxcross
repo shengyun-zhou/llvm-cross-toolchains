@@ -17,7 +17,7 @@ RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf b
 
 ARG CROSS_ARCH=x86_64
 ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=${CROSS_ARCH}-apple-darwin20.4
-ENV PATH="/root/osxcross/target/bin:${PATH}" \
+ENV PATH="/root/osxcross/target/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=$CROSS_PREFIX-cc HOST_CXX=$CROSS_PREFIX-c++ HOST_STRIP=$CROSS_PREFIX-strip \
     HOST_CPP="$CROSS_PREFIX-cc --driver-mode=cpp" \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
@@ -26,7 +26,7 @@ ENV PATH="/root/osxcross/target/bin:${PATH}" \
     HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -Wl,-rpath,@loader_path/../lib" \
     HOST_RPATH="@loader_path/../lib" \
     HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_SYSROOT=/root/osxcross/target/SDK/MacOSX11.3.sdk -DCMAKE_SYSTEM_VERSION=11.3 \
-        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
+        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_STRIP=$CROSS_PREFIX-strip -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root
