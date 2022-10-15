@@ -30,7 +30,7 @@ TAPI_CMAKE_EXTRA_FLAGS=""
 if [[ "$CROSS_HOST" != "$BUILD_HOST" ]]; then
     TAPI_CMAKE_EXTRA_FLAGS="$TAPI_CMAKE_EXTRA_FLAGS -DCLANG_TABLEGEN_EXE=$(pwd)/NATIVE/bin/clang-tblgen${EXEC_SUFFIX}"
 fi
-CC="${HOST_CC:-clang}" CXX="${HOST_CXX:-clang++}" CFLAGS="$HOST_CFLAGS" CXXFLAGS="$HOST_CXXFLAGS" LDFLAGS="$HOST_LDFLAGS" \
+CC="${HOST_CC:-clang}" CXX="${HOST_CXX:-clang++}" CFLAGS="$HOST_CFLAGS -w" CXXFLAGS="$HOST_CXXFLAGS -w" LDFLAGS="$HOST_LDFLAGS" \
 CXXFLAGS="$CXXFLAGS -I../src/llvm/projects/clang/include -Iprojects/clang/include" cmake ../src/llvm -Wno-dev -G Ninja $LLVM_CMAKE_FLAGS $HOST_CMAKE_FLAGS \
     -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(pwd)/../../cctools-install" \
     -DCROSS_TOOLCHAIN_FLAGS_NATIVE="" \
@@ -53,8 +53,8 @@ cd ../../
 export CC="${HOST_CC:-clang}"
 export CXX="${HOST_CXX:-clang++}"
 export CPPFLAGS="$HOST_CPPFLAGS"
-export CXXFLAGS="$HOST_CXXFLAGS -Qunused-arguments"
-export CFLAGS="$HOST_CFLAGS -Qunused-arguments"
+export CXXFLAGS="$HOST_CXXFLAGS -Qunused-arguments -w"
+export CFLAGS="$HOST_CFLAGS -Qunused-arguments -w"
 export LDFLAGS="$HOST_LDFLAGS -pthread"
 if [[ $CROSS_HOST == "Linux" ]]; then
     export LDFLAGS="$LDFLAGS -Wl,-rpath,'\$\${ORIGIN}/../lib'"
