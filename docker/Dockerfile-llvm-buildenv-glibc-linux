@@ -1,13 +1,14 @@
-FROM ubuntu:22.04
+# Use old Ubuntu version to run this image on old Docker.
+FROM ubuntu:20.04
 
 # Replace apt mirros
-RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy main restricted universe multiverse' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-security main restricted universe multiverse' >> /etc/apt/sources.list
+RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file cmake ninja-build make python3 python3-pip python3-setuptools \
-    autoconf automake zlib1g-dev texinfo flex bison help2man gawk libtool libtool-bin libncurses-dev clang lld patchelf
+    autoconf automake zlib1g-dev texinfo flex bison help2man gawk libtool libtool-bin libncurses-dev clang lld llvm patchelf
 
 WORKDIR /root
 ARG CROSS_ARCH=x86_64
@@ -37,6 +38,5 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
 
 ADD build-dep-libs.sh /root
 RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/include/c++"
-RUN DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends llvm
 ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
     HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.so.2.10.2"

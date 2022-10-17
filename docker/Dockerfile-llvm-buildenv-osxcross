@@ -1,10 +1,11 @@
-FROM ubuntu:22.04
+# Use old Ubuntu version to run this image on old Docker.
+FROM ubuntu:20.04
 
 # Replace apt mirros
-RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy main restricted universe multiverse' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ jammy-security main restricted universe multiverse' >> /etc/apt/sources.list
+RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file cmake ninja-build make python3 python3-pip python3-setuptools \
     autoconf automake texinfo gawk clang zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev llvm-dev texinfo
