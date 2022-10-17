@@ -27,9 +27,9 @@ ENV PATH="/root/osxcross/target/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -Wl,-rpath,@loader_path/../lib" \
     HOST_RPATH="@loader_path/../lib" \
     HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_SYSROOT=/root/osxcross/target/SDK/MacOSX11.3.sdk -DCMAKE_SYSTEM_VERSION=11.3 \
-        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_STRIP=$CROSS_PREFIX-strip -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
+        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root
-RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
+RUN pip3 install cmake==3.23.3 && SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
 ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.2.10.2.dylib"

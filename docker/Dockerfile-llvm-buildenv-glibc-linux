@@ -26,7 +26,7 @@ ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang
 ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++
 ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=${CROSS_PREFIX}-clang HOST_CXX="${CROSS_PREFIX}-clang++ -stdlib=libc++" \
-    HOST_CPP=${CROSS_PREFIX}-cpp \
+    HOST_CPP=${CROSS_PREFIX}-cpp HOST_STRIP=${CROSS_PREFIX}-strip \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
@@ -37,7 +37,7 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
 
 ADD build-dep-libs.sh /root
-RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/include/c++"
+RUN pip3 install cmake==3.23.3 && ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/include/c++"
 RUN DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends nodejs npm
 ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
     HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.so.2.10.2"
