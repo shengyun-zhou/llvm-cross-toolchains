@@ -27,6 +27,8 @@ cd wamr-compiler && mkdir build && cd build
 WAMR_BUILD_TARGET=X86_64
 if [[ "$CROSS_PREFIX" == "aarch64"* || "$CROSS_PREFIX" == "arm64"* ]]; then
     WAMR_BUILD_TARGET=AARCH64
+elif [[ "$(uname -m)" == "aarch64"* || "$(uname -m)" == "arm64"* ]]; then
+    WAMR_BUILD_TARGET=AARCH64
 fi
 WAMR_RPATH_CMAKE_FLAGS=""
 if [[ $CROSS_HOST == "Darwin" ]]; then
