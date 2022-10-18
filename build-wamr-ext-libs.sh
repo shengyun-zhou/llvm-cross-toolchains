@@ -33,6 +33,6 @@ for target in "${CROSS_TARGETS[@]}"; do
         cmake --build . -- -j$(cpu_count)
         cd ..
     else
-        ./thirdparty-libs/build-all-libs.sh
+        CROSS_PREFIX=$target ./thirdparty-libs/build-all-libs.sh
     fi
 done
