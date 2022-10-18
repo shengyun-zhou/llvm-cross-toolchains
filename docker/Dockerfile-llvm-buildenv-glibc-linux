@@ -21,10 +21,6 @@ ADD ${CROSS_PREFIX}-ct-ng.config /root
 RUN mkdir ct-${CROSS_PREFIX}-build && cd ct-${CROSS_PREFIX}-build && cp ../${CROSS_PREFIX}-ct-ng.config .config && \
     ct-ng build.$(nproc) && cd .. && rm -rf ct-${CROSS_PREFIX}-build
 RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.23.3
-# Install latest make to fix "make: write error: stdout"
-RUN wget https://mirrors.ustc.edu.cn/gnu/make/make-4.3.tar.gz -O gnumake.tar.gz && mkdir gnumake && cd gnumake && tar xvf ../gnumake.tar.gz --strip 1 && \
-    ./configure --prefix=/usr && make install -j$(nproc) && \
-    cd /root && rm -rf gnumake
 
 ENV TOOLCHAIN_ROOT=/root/x-tools/${CROSS_PREFIX}
 ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang

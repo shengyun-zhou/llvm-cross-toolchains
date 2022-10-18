@@ -18,13 +18,17 @@ tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 apply_patch mingw-$MINGW_VERSION
 
+# Try to fix "make write error: stdout" by limiting maximum parallel jobs
+MAKE_JOBS="$(cpu_count)"
+MAKE_JOBS="$((MAKE_JOBS<8 ? MAKE_JOBS : 8))"
+
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"-mingw"* ]]; then
         if [ -n "$LIBC_STARTFILE_STAGE" ]; then
             echo "Install MinGW header and start files for target $target"
             cd mingw-w64-headers && mkdir build-$target && cd build-$target
             ../configure $CONFIGURE_ARGS --prefix="$(target_install_prefix $target)" --enable-idl --with-default-win32-winnt=0x601 --with-default-msvcrt=msvcrt
-            make -j$(cpu_count)
+            make -j$MAKE_JOBS
             make install
             MINGW_CRT_CONFIG_FLAGS=""
             case $target in
@@ -43,14 +47,14 @@ for target in "${CROSS_TARGETS[@]}"; do
             esac
             cd ../../mingw-w64-crt && mkdir build-$target && cd build-$target
             ../configure $CONFIGURE_ARGS --prefix="$(target_install_prefix $target)" --host=$target --with-default-msvcrt=msvcrt $MINGW_CRT_CONFIG_FLAGS
-            make -j$(cpu_count)
+            make -j$MAKE_JOBS
             make install
             cd ../../
         else
             cd mingw-w64-libraries/winpthreads && mkdir build-$target && cd build-$target
             echo "Install MinGW libraries for target $target"
             ../configure $CONFIGURE_ARGS --host=$target --prefix="$(target_install_prefix $target)" --disable-shared
-            make -j$(cpu_count)
+            make -j$MAKE_JOBS
             make install
             cd ../../../
         fi
