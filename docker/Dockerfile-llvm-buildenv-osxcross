@@ -15,6 +15,7 @@ RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/50e86
     cd osxcross && tar xf ../osxcross.tar.gz --strip 1 && rm -f ../osxcross.tar.gz && sed -i -e "s/github.com/${GITHUB_MIRROR_DOMAIN}/g" build.sh build_compiler_rt.sh tools/tools.sh && \
     curl -L https://${GITHUB_MIRROR_DOMAIN}/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz -o tarballs/MacOSX11.3.sdk.tar.xz
 RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf build
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.23.3
 
 ARG CROSS_ARCH=x86_64
 ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=${CROSS_ARCH}-apple-darwin20.4
@@ -31,5 +32,5 @@ ENV PATH="/root/osxcross/target/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root
-RUN pip3 install cmake==3.23.3 && SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
+RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
 ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.2.10.2.dylib"
