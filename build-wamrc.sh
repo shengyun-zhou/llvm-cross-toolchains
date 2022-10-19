@@ -19,7 +19,7 @@ apply_patch wamr-$WAMR_VERSION
 
 export CC="$HOST_CC"
 export CXX="$HOST_CXX"
-export CFLAGS="$HOST_CFLAGS"
+export CFLAGS="$HOST_CFLAGS -Wno-implicit-function-declaration"
 export CXXFLAGS="$HOST_CXXFLAGS"
 export LDFLAGS="$HOST_LDFLAGS"
 
