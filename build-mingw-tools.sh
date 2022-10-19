@@ -29,7 +29,11 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"-mingw"* ]]; then
         for d in gendef genidl genlib genpeimg widl; do
             if [ -d "$d" ]; then
-                cd "$d" && mkdir build-$target && cd build-$target
+                cd "$d"
+                if [ -f Makefile.in ]; then
+                    sed -i.bak "s/-Werror//g" Makefile.in
+                fi
+                mkdir build-$target && cd build-$target
                 ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --program-prefix=${target}- --prefix="$OUTPUT_DIR"
                 make -j$(cpu_count)
                 make install
