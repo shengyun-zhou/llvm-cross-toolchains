@@ -48,6 +48,7 @@ def main(target, exec_name):
         if 'emscripten' in target:
             sys.path.append(os.path.join(DIR, '../emscripten'))
             import emcc
+            os.environ['EMSDK_PYTHON'] = sys.executable
             # Just forward to emcc
             exit(emcc.run(sys.argv))
         else:
