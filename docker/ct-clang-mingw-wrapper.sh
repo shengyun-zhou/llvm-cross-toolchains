@@ -16,4 +16,4 @@ else
     EXE=clang
 fi
 
-$EXE "${CLANG_ARGS[@]}" "$@"
+$EXE "${CLANG_ARGS[@]}" "$@" -Wno-unused-but-set-variable

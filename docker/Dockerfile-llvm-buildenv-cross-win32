@@ -34,8 +34,8 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CPP=${CROSS_PREFIX}-cpp \
     HOST_STRIP=${CROSS_PREFIX}-strip HOST_RC=${CROSS_PREFIX}-windres \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include -Wno-unused-but-set-variable" \
-    HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include -Wno-unused-but-set-variable" \
+    HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
+    HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread -stdlib=libc++" \
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows" \
     HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/mingw/bin/libwinpthread-1.dll" \
