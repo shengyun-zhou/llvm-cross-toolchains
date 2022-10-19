@@ -22,19 +22,28 @@ RUN wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.25.0.tar.x
 ADD ${CROSS_PREFIX}-ct-ng.config /root
 RUN mkdir ct-${CROSS_PREFIX}-build && cd ct-${CROSS_PREFIX}-build && cp ../${CROSS_PREFIX}-ct-ng.config .config && \
     ct-ng build.$(nproc) && cd .. && rm -rf ct-${CROSS_PREFIX}-build
+RUN apt install -y --no-install-recommends lsb-release software-properties-common gnupg && wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x install-llvm.sh && \
+    # Install LLVM 16 to handle hidden visibility
+    ./install-llvm.sh 16 && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100 && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
 
 ENV TOOLCHAIN_ROOT=/root/x-tools/${CROSS_PREFIX}
+ADD ct-clang-mingw-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang
+ADD ct-clang-mingw-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++
 ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
-    HOST_CC=${CROSS_PREFIX}-gcc HOST_CXX=${CROSS_PREFIX}-g++ HOST_CPP=${CROSS_PREFIX}-cpp \
+    HOST_CC=${CROSS_PREFIX}-clang HOST_CXX="${CROSS_PREFIX}-clang++ -stdlib=libc++" \
+    HOST_CPP=${CROSS_PREFIX}-cpp \
     HOST_STRIP=${CROSS_PREFIX}-strip HOST_RC=${CROSS_PREFIX}-windres \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread" \
+    HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include -Wno-unused-but-set-variable" \
+    HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include -Wno-unused-but-set-variable" \
+    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread -stdlib=libc++" \
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows" \
-    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/${CROSS_PREFIX}/bin/libwinpthread-1.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/lib/libstdc++-6.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/lib/libgcc_s_seh-1.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/lib/libssp-0.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/lib/libatomic-1.dll" \
+    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/mingw/bin/libwinpthread-1.dll" \
     HOST_CONFIGURE_ARGS="--host=${CROSS_PREFIX}" CROSS_HOST=Windows
+RUN ${CROSS_PREFIX}-ar crs "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/lib/libgcc_eh.a" && ${CROSS_PREFIX}-ar crs "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/lib/libgcc_s.a" && \
+    # Forced to use lld
+    cp /usr/bin/ld.lld-16 "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-ld"
 
 ADD build-dep-libs.sh /root
-RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
-ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/bin/libxml2.dll"
+RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/mingw/include/c++"
+ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/bin/libc++.dll ${BUILD_DEPS_ROOT}/bin/libxml2.dll"

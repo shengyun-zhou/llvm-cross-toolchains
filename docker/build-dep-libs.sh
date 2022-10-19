@@ -55,8 +55,8 @@ if [[ -z "$SKIP_BUILD_LIBCXX" ]]; then
     elif [[ $CROSS_HOST != "Darwin" ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_GCC_LIB=ON -DLIBCXX_HAS_GCC_S_LIB=OFF -DLIBCXX_HAS_ATOMIC_LIB=OFF -DLIBCXXABI_HAS_GCC_S_LIB=OFF"
     fi
-    cd runtimes && mkdir build-$target && cd build-$target
-    cmake .. $CMAKE_FLAGS \
+    cd runtimes && mkdir build && cd build
+    cmake .. $CMAKE_FLAGS -DCMAKE_C_COMPILER_TARGET=$CROSS_PREFIX -DCMAKE_CXX_COMPILER_TARGET=$CROSS_PREFIX \
         -DLLVM_ENABLE_RUNTIMES="libcxxabi;libcxx" \
         -DLLVM_LIBDIR_SUFFIX="" \
         -DLIBCXX_ENABLE_STATIC=OFF -DLIBCXX_ENABLE_SHARED=ON \
