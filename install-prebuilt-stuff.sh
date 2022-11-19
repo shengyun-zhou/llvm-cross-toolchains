@@ -28,23 +28,6 @@ for target in "${CROSS_TARGETS[@]}"; do
         mkdir -p "$(target_install_prefix $target)"
         tar_extractor.py prebuilt-glibc/glibc-${GLIBC_VERSION}_$target.tar.gz -C "$(target_install_prefix $target)" --strip 1
         ln -sfn usr/lib "$(target_install_prefix $target)/../lib"
-    elif [[ $target == *"cygwin"* || $target == *"msys"* ]]; then
-        arch=''
-        case "$target" in
-        i*86*-cygwin) sysroot_tar=prebuilt-cygwin/cygwin-sysroot-${CYGWIN_VERSION}_x86.tar.gz ;;
-        x86_64*-cygwin) sysroot_tar=prebuilt-cygwin/cygwin-sysroot-${CYGWIN_VERSION}_x86_64.tar.gz ;;
-        i*86*-msys) sysroot_tar=prebuilt-msys2/msys2-sysroot-${MSYS2_VERSION}_i686.tar.gz ;;
-        x86_64*-msys) sysroot_tar=prebuilt-msys2/msys2-sysroot-${MSYS2_VERSION}_x86_64.tar.gz ;;
-        esac
-        sysroot_dir="$(target_install_prefix $target)"
-        mkdir -p "$sysroot_dir"
-        tar_extractor.py $sysroot_tar -C "$sysroot_dir" --strip 1
-        # Merge libgcc_eh.a into libgcc.a
-        "$OUTPUT_DIR/bin/llvm-ar" qcsL "$sysroot_dir/lib/libgcc.a" "$sysroot_dir/lib/libgcc_eh.a"
-        if [[ $target == *"msys"* ]]; then
-            # Make fake libcygwin for linker
-            ln -sf libmsys-2.0.a "$sysroot_dir/lib/libcygwin.a"
-        fi
     elif [[ $target == *"freebsd"* ]]; then
         mkdir -p "$(target_install_prefix $target)"
         freebsd_arch=''

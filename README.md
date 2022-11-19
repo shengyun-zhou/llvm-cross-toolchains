@@ -7,7 +7,8 @@ Supported target platforms:
 + Linux: musl-libc, glibc
 
 + Android
-+ Windows: MinGW, MSVC(Experiment), Cygwin
+
++ Windows: MinGW, MSVC(Experiment)
 
 + Darwin: MacOSX, Mac-Catalyst, iOS, tvOS, watchOS
 
@@ -183,19 +184,7 @@ Build cctools:
 ./prebuilt-msvc-sdk/extract_sdk_from_msvc.sh
 ```
 
-##### (7) Cygwin
-
-```shell
-./prebuilt-cygwin/prepare_sysroot.sh
-```
-
-##### (8) MSYS2
-
-```
-./prebuilt-msys2/prepare_sysroot.sh
-```
-
-##### (9) FreeBSD
+##### (7) FreeBSD
 
 ```shell
 ./prebuilt-freebsd/prepare_sysroot.sh

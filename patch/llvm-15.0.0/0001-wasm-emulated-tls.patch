@@ -13,10 +13,10 @@ index a221f37..fa78bc9 100644
  
    // Currently Emscripten does not support dynamic linking with threads.
 diff --git a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp b/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
-index 388c0f9..c7fa177 100644
+index 0b3e534..30ccfe8 100644
 --- a/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
 +++ b/llvm/lib/Target/WebAssembly/WebAssemblyRuntimeLibcallSignatures.cpp
-@@ -892,6 +892,12 @@ void llvm::getLibcallSignature(const WebAssemblySubtarget &Subtarget,
+@@ -894,6 +894,12 @@ void llvm::getLibcallSignature(const WebAssemblySubtarget &Subtarget,
                                 StringRef Name,
                                 SmallVectorImpl<wasm::ValType> &Rets,
                                 SmallVectorImpl<wasm::ValType> &Params) {
@@ -26,6 +26,6 @@ index 388c0f9..c7fa177 100644
 +    Params.push_back(PtrTy);
 +    return;
 +  }
-   auto &Map = LibcallNameMap->Map;
+   static StaticLibcallNameMap LibcallNameMap;
+   auto &Map = LibcallNameMap.Map;
    auto Val = Map.find(Name);
- #ifndef NDEBUG

@@ -11,32 +11,30 @@ mkdir -p $BUILD_DIR
 tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 apply_patch llvm-$LLVM_VERSION
-cd libunwind
+cd runtimes
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"apple"* || $target == *"msvc"* || $target == *"cygwin"* || $target == *"msys"* || $target == "wasm"* ]]; then
+    if [[ $target == *"apple"* || $target == *"msvc"* || $target == "wasm"* ]]; then
         # Apple: use libunwind in the SDK
         # MSVC: do not use it now
-        # Cygwin/MSYS: use unwind in libgcc
         # WASM: build libunwind from Emscripten source code
         continue
     fi
     mkdir build-$target && cd build-$target
     LIBUNWIND_CXXFLAGS=""
-    if [[ $target == *"linux"* ]]; then
-        LIBUNWIND_CXXFLAGS="$LIBUNWIND_CXXFLAGS -D__STDC_FORMAT_MACROS"
-    fi
 
     CXXFLAGS="$LIBUNWIND_CXXFLAGS" "$__CMAKE_WRAPPER" $target .. \
         -DCMAKE_INSTALL_PREFIX="$(target_install_prefix $target)" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
         -DLLVM_LIBDIR_SUFFIX="$(target_install_libdir_suffix $target)" \
+        -DLLVM_ENABLE_RUNTIMES="libunwind" \
+        -DLIBUNWIND_USE_COMPILER_RT=ON \
         -DLIBUNWIND_ENABLE_SHARED=OFF
     cmake --build . --target install/strip -- -j$(cpu_count)
     cd ..
     # Copy header files
-    cp include/libunwind.h include/__libunwind_config.h "$(target_install_prefix $target)/include"
+    cp ../libunwind/include/libunwind.h ../libunwind/include/__libunwind_config.h "$(target_install_prefix $target)/include"
     # Merge libunwind into compiler-rt builtins
     if [[ -f "$(target_install_prefix $target)/lib/libunwind.a" ]]; then
         builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
