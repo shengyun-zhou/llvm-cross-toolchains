@@ -15,9 +15,14 @@ for arch in arm64 i386 amd64; do
         filename=$(basename "$pic_libfile")
         libfile=${filename%_p.a}.a
         ln -sf $filename "usr/lib/$libfile"
-    done 
-    tar cvzf ../freebsd-sysroot-${FREEBSD_VERSION}_$arch.tar.gz ./lib ./usr/include ./usr/lib \
-        --exclude=./usr/include/c++* --exclude=./usr/include/gcc --exclude=./usr/lib/clang --exclude=./usr/lib/libcompiler_rt* \
-        --exclude=./usr/lib/libc++* --exclude=./usr/lib/libgcc*.a
+    done
+    rm -rf usr/include/c++* || true
+    rm -rf usr/include/gcc || true
+    rm -rf usr/lib/clang* || true
+    rm -rf usr/lib/libcompiler_rt* || true
+    rm -rf usr/lib/libc++* || true
+    rm -rf usr/lib/libgcc*.a || true
+    
+    tar cvzf ../freebsd-sysroot-${FREEBSD_VERSION}_$arch.tar.gz ./lib ./usr/include ./usr/lib
     cd .. && rm -rf .freebsd-sysroot
 done
