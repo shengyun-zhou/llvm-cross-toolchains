@@ -24,10 +24,6 @@ fi
 unset APPLE_BUILT
 COMPILER_RT_INSTALL_PREFIX="$("$OUTPUT_DIR/bin/clang" --print-resource-dir)"
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"emscripten"* ]]; then
-        # Emscripten: use compiler-rt built by emcc
-        continue
-    fi
     if [[ $target == *"apple"* ]]; then
         if [[ -n "$APPLE_BUILT" ]]; then
             continue

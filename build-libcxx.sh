@@ -13,10 +13,9 @@ tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 apply_patch llvm-$LLVM_VERSION
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == *"apple"* || $target == *"msvc"* || $target == *"emscripten"* ]]; then
+    if [[ $target == *"apple"* || $target == *"msvc"* ]]; then
         # Apple: use libc++ in the SDK
         # MSVC: use MSVC c++
-        # Emscripten: use libc++ built by emcc
         continue
     fi
     # Clean installed C++ headers

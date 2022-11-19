@@ -41,34 +41,27 @@ def main(target, exec_name):
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/x86_64-linux-android')]
     elif arch.startswith('wasm'):
-        if 'emscripten' in target:
-            sys.path.append(os.path.join(DIR, '../emscripten'))
-            import emcc
-            os.environ['EMSDK_PYTHON'] = sys.executable
-            # Just forward to emcc
-            exit(emcc.run(sys.argv))
-        else:
-            if 'wamr' in target:
-                if cplusplus_mode:
-                    clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']
-                clang_args += [
-                    '-D__wamr__',
-                    '-D_WASI_EMULATED_SIGNAL',
-                    '-D_WASI_EMULATED_PROCESS_CLOCKS',
-                    '-D_WASI_EMULATED_MMAN',
-                    '-D_WASI_EMULATED_GETPID',
-                    '-pthread',
-                    '-U_REENTRANT',
-                    '-femulated-tls',
-                    '-Wl,--shared-memory',
-                    # Default memory configuration: stack size=256KB
-                    '-z', 'stack-size=262144',
-                    '-Wl,--no-check-features',
-                    '-Wl,--export=__heap_base,--export=__data_end',
-                    # Build the WASM app as reactor(sub module) to avoid __wasm_call_ctors() and __wasm_call_dtors() to be called unexpectedly when the runtime call exported functions
-                    # See: https://github.com/WebAssembly/WASI/issues/471 
-                    '-mexec-model=reactor', '-Wl,--export=__main_void,--export=__wasm_call_dtors'
-                ]
+        if 'wamr' in target:
+            if cplusplus_mode:
+                clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']
+            clang_args += [
+                '-D__wamr__',
+                '-D_WASI_EMULATED_SIGNAL',
+                '-D_WASI_EMULATED_PROCESS_CLOCKS',
+                '-D_WASI_EMULATED_MMAN',
+                '-D_WASI_EMULATED_GETPID',
+                '-pthread',
+                '-U_REENTRANT',
+                '-femulated-tls',
+                '-Wl,--shared-memory',
+                # Default memory configuration: stack size=256KB
+                '-z', 'stack-size=262144',
+                '-Wl,--no-check-features',
+                '-Wl,--export=__heap_base,--export=__data_end',
+                # Build the WASM app as reactor(sub module) to avoid __wasm_call_ctors() and __wasm_call_dtors() to be called unexpectedly when the runtime call exported functions
+                # See: https://github.com/WebAssembly/WASI/issues/471 
+                '-mexec-model=reactor', '-Wl,--export=__main_void,--export=__wasm_call_dtors'
+            ]
 
 
     if not 'mingw' in target and not 'windows' in target and not target.startswith('wasm'):
