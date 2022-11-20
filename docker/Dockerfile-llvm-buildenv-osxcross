@@ -8,7 +8,10 @@ RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ foc
     echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file cmake ninja-build make python3 python3-pip python3-setuptools \
-    autoconf automake texinfo gawk clang zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev llvm-dev texinfo
+    autoconf automake texinfo gawk zlib1g-dev libssl-dev liblzma-dev libxml2-dev uuid-dev texinfo lsb-release software-properties-common gnupg
+RUN wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x ./install-llvm.sh && ./install-llvm.sh 14 && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
+    update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-14 100
 WORKDIR /root
 ARG GITHUB_MIRROR_DOMAIN=github.com
 RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/50e86ebca7d14372febd0af8cd098705049161b9.tar.gz" -o osxcross.tar.gz && mkdir -p osxcross && \
@@ -17,18 +20,17 @@ RUN curl -L "https://${GITHUB_MIRROR_DOMAIN}/tpoechtrager/osxcross/archive/50e86
 RUN cd osxcross && UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && rm -rf build
 RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.23.3
 
-ARG CROSS_ARCH=x86_64
-ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=${CROSS_ARCH}-apple-darwin20.4
+ENV BUILD_DEPS_ROOT=/root/build-deps-root CROSS_PREFIX=x86_64-apple-darwin20.4
 ENV PATH="/root/osxcross/target/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=$CROSS_PREFIX-cc HOST_CXX=$CROSS_PREFIX-c++ HOST_STRIP=$CROSS_PREFIX-strip \
     HOST_CPP="$CROSS_PREFIX-cc --driver-mode=cpp" \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
-    HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include" \
+    HOST_CFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include -arch x86_64 -arch arm64" \
+    HOST_CXXFLAGS="-Qunused-arguments -I$BUILD_DEPS_ROOT/include -arch x86_64 -arch arm64" \
     HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -Wl,-rpath,@loader_path/../lib" \
     HOST_RPATH="@loader_path/../lib" \
     HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_SYSROOT=/root/osxcross/target/SDK/MacOSX11.3.sdk -DCMAKE_SYSTEM_VERSION=11.3 \
-        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH=@loader_path/../lib" \
+        -DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH=@loader_path/../lib -DCMAKE_OSX_ARCHITECTURES=x86_64;arm64" \
     HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" CROSS_HOST=Darwin
 
 ADD build-dep-libs.sh /root

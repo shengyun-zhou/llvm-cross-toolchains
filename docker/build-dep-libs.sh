@@ -25,27 +25,6 @@ if [[ -n "$CROSS_PREFIX" ]]; then
     export AR=$CROSS_PREFIX-ar RANLIB=$CROSS_PREFIX-ranlib
 fi
 
-# Build libgmp
-curl -L "http://mirrors.ustc.edu.cn/gnu/gmp/gmp-6.2.1.tar.xz" -o gmp.tar.xz
-mkdir gmp-build && cd gmp-build && tar xvf ../gmp.tar.xz --strip 1
-CC="$CC $LDFLAGS" CC_FOR_BUILD="cc" ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared --disable-assembly
-make install -j$(nproc)
-cd "$ROOT_DIR/build"
-
-# Build libmpfr
-curl -L "https://mirrors.ustc.edu.cn/gnu/mpfr/mpfr-4.1.0.tar.xz" -o mpfr.tar.xz
-mkdir mpfr-build && cd mpfr-build && tar xvf ../mpfr.tar.xz --strip 1
-CC="$CC $LDFLAGS" ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared
-make install -j$(nproc)
-cd "$ROOT_DIR/build"
-
-# Build libmpc
-curl -L "https://mirrors.ustc.edu.cn/gnu/mpc/mpc-1.2.1.tar.gz" -o mpc.tar.xz
-mkdir mpc-build && cd mpc-build && tar xvf ../mpc.tar.xz --strip 1
-CC="$CC $LDFLAGS" ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared
-make install -j$(nproc)
-cd "$ROOT_DIR/build"
-
 if [[ -z "$SKIP_BUILD_LIBCXX" ]]; then
     # Build shared libc++
     curl "http://mirrors.ustc.edu.cn/ubuntu/pool/main/l/llvm-toolchain-14/llvm-toolchain-14_14.0.0.orig.tar.xz" -o llvm.tar.xz
