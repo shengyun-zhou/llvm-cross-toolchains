@@ -1,0 +1,13 @@
+diff --git a/compiler-rt/cmake/builtin-config-ix.cmake b/compiler-rt/cmake/builtin-config-ix.cmake
+index 7fe204a..705499f 100644
+--- a/compiler-rt/cmake/builtin-config-ix.cmake
++++ b/compiler-rt/cmake/builtin-config-ix.cmake
+@@ -63,7 +63,7 @@ set(WASM64 wasm64)
+ set(VE ve)
+ 
+ if(APPLE)
+-  set(ARM64 arm64 arm64e)
++  set(ARM64 arm64 arm64e arm64_32)
+   set(ARM32 armv7 armv7k armv7s)
+   set(X86_64 x86_64 x86_64h)
+ endif()
