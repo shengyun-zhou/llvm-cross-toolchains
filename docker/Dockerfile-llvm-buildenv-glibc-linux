@@ -8,7 +8,7 @@ RUN rm /etc/apt/sources.list && echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ foc
     echo 'deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse' >> /etc/apt/sources.list
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file cmake ninja-build make python3 python3-pip python3-setuptools \
-    autoconf automake zlib1g-dev texinfo flex bison help2man gawk libtool libtool-bin libncurses-dev clang lld llvm patchelf
+    autoconf automake zlib1g-dev texinfo flex bison help2man gawk libtool libtool-bin libncurses-dev patchelf lsb-release software-properties-common gnupg
 
 WORKDIR /root
 ARG CROSS_ARCH=x86_64
@@ -21,6 +21,9 @@ ADD ${CROSS_PREFIX}-ct-ng.config /root
 RUN mkdir ct-${CROSS_PREFIX}-build && cd ct-${CROSS_PREFIX}-build && cp ../${CROSS_PREFIX}-ct-ng.config .config && \
     ct-ng build.$(nproc) && cd .. && rm -rf ct-${CROSS_PREFIX}-build
 RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.23.3
+RUN wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x ./install-llvm.sh && ./install-llvm.sh 14 && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
+    update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-14 100
 
 ENV TOOLCHAIN_ROOT=/root/x-tools/${CROSS_PREFIX}
 ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang
