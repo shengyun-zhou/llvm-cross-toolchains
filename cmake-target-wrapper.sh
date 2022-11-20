@@ -29,8 +29,8 @@ case $TARGET in
         fi
         ;;
     *apple*)
-        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Darwin "-DCMAKE_LIBTOOL=$OUTPUT_DIR/bin/llvm-libtool-darwin${EXEC_SUFFIX}")
-        CMAKE_ARGS+=("-DCMAKE_LIPO=$OUTPUT_DIR/bin/llvm-lipo${EXEC_SUFFIX}")
+        CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_LIBTOOL="$OUTPUT_DIR/bin/llvm-libtool-darwin${EXEC_SUFFIX}")
+        CMAKE_ARGS+=(-DCMAKE_LIPO="$OUTPUT_DIR/bin/llvm-lipo${EXEC_SUFFIX}" -DCMAKE_LINKER="$OUTPUT_DIR/bin/$TARGET-ld${EXEC_SUFFIX}")
         ;;
     *freebsd*)
         CMAKE_ARGS+=(-DCMAKE_SYSTEM_NAME=FreeBSD)

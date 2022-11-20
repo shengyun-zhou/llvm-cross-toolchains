@@ -52,4 +52,4 @@ if [[ $CROSS_HOST == "Windows" ]]; then
 fi
 
 # For xcrun, codesign, etc
-export PATH="$(pwd)/build-tools:$(pwd)/build-tools/win32-wrapper:$PATH"
+export PATH="$(pwd)/build-tools:$PATH"

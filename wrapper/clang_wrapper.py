@@ -8,11 +8,13 @@ from sys import exit
 DIR = os.path.dirname(__file__)
 
 def main(target, exec_name):
+    input_args = sys.argv[1:]
     arch = target.split('-')[0]
     clang_target = target
     clang_exec = os.path.join(DIR, 'clang')
     sysroot_dir = os.path.join(DIR, '../%s' % target)
     clang_args = []
+    clang_last_args = []
     cplusplus_mode = exec_name in ('c++', 'g++', 'clang++')
     fuse_ld = 'lld'
     
@@ -22,7 +24,7 @@ def main(target, exec_name):
             clang_args += ['-mips32']
         if target.endswith('sf'):
             clang_args += ['-msoft-float']
-            if target == 'mipsel-linux-muslsf' and '-static' not in sys.argv[1:]:
+            if target == 'mipsel-linux-muslsf' and '-static' not in input_args:
                 # Fix linker path
                 clang_args += ['-Wl,-dynamic-linker=/lib/ld-musl-mipsel-sf.so.1']
         if 'linux' in target:
@@ -103,11 +105,12 @@ def main(target, exec_name):
         elif target.endswith('watchos-simulator'):
             clang_args += [sdk_min_version_arg['WatchSimulator']]
         elif target.endswith('darwin'):     # Special internal target apple-darwin
+            if '-D__FORCE_APPLE_DARWIN_TARGET' in input_args:
+                clang_last_args += ['-target', target]
             sysroot_dir = ''
-            args = sys.argv[1:]
-            for i, arg in enumerate(args):
-                if arg in ('--sysroot', '-isysroot') and i + 1 < len(args):
-                    sysroot_dir = args[i + 1]
+            for i, arg in enumerate(input_args):
+                if arg in ('--sysroot', '-isysroot') and i + 1 < len(input_args):
+                    sysroot_dir = input_args[i + 1]
                     break
             if not sysroot_dir:
                 for sdk_name, default_arch in {
@@ -123,14 +126,14 @@ def main(target, exec_name):
                     if os.path.isdir(temp_sysroot_dir):
                         sysroot_dir = temp_sysroot_dir
                         clang_args += [sdk_min_version_arg[sdk_name]]
-                        if '-arch' not in sys.argv[1:]:
+                        if '-arch' not in input_args:
                             clang_args += ['-arch', default_arch]
                         break
                 
                 if not sysroot_dir:
                     sys.stderr.write('clang-wrapper: cannot find any Darwin SDK\n')
                     exit(1)
-            elif '-arch' not in sys.argv[1:]:
+            elif '-arch' not in input_args:
                 clang_args += ['-arch', 'x86_64']
 
     if fuse_ld:
@@ -140,7 +143,6 @@ def main(target, exec_name):
         '-Qunused-arguments'
     ]
 
-    input_args = sys.argv[1:]
     if 'msvc' in target:
         clang_args += [
             '-isystem', os.path.join(sysroot_dir, 'include'),
@@ -171,4 +173,4 @@ def main(target, exec_name):
     if cplusplus_mode and 'msvc' not in target:
         clang_args += ['--driver-mode=g++', '-stdlib=libc++']
 
-    toolchain_wrapper_tools.exec_subprocess([clang_exec] + clang_args + input_args)
+    toolchain_wrapper_tools.exec_subprocess([clang_exec] + clang_args + input_args + clang_last_args)

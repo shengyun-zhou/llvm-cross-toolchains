@@ -1,0 +1,9 @@
+#!/bin/bash
+# Apple lipo for building compiler-rt
+
+set -e
+PRE_CWD="$(pwd)"
+cd "$(dirname "$0")/.."
+source config
+cd "$PRE_CWD"
+"$OUTPUT_DIR/bin/llvm-lipo" "$@"

@@ -24,15 +24,16 @@ fi
 unset APPLE_BUILT
 COMPILER_RT_INSTALL_PREFIX="$("$OUTPUT_DIR/bin/clang" --print-resource-dir)"
 for target in "${CROSS_TARGETS[@]}"; do
+    COMPILER_RT_CMAKE_FLAGS=""
+    COMPILER_RT_CFLAGS=""
+    COMPILER_RT_LDFLAGS=""
     if [[ $target == *"apple"* ]]; then
         if [[ -n "$APPLE_BUILT" ]]; then
             continue
         else
             target="apple-darwin"
-            # Create temporary lipo and ld executable
-            # TODO: support Windows host
-            ln -sf llvm-lipo${EXEC_SUFFIX} "$OUTPUT_DIR/bin/lipo${EXEC_SUFFIX}"
-            ln -sf cctools-ld${EXEC_SUFFIX} "$OUTPUT_DIR/bin/ld${EXEC_SUFFIX}"
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_ENABLE_MACCATALYST=ON"
+            COMPILER_RT_LDFLAGS="$COMPILER_RT_LDFLAGS -D__FORCE_APPLE_DARWIN_TARGET"
         fi
     fi
     if [[ -z "$COMPILER_RT_FULL_BUILD" ]]; then        
@@ -45,8 +46,6 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
     mkdir build-$target && cd build-$target
     COMPILER_RT_COMPILER_TARGET=$target
-    COMPILER_RT_CMAKE_FLAGS=""
-    COMPILER_RT_CFLAGS=""
     case $target in
     aarch64*|arm64*)
         ;;
@@ -106,7 +105,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         fi
     fi
 
-    CFLAGS="$COMPILER_RT_CFLAGS" "$__CMAKE_WRAPPER" $target $COMPILER_RT_SRC_DIR \
+    CFLAGS="$COMPILER_RT_CFLAGS" LDFLAGS="$COMPILER_RT_LDFLAGS" "$__CMAKE_WRAPPER" $target $COMPILER_RT_SRC_DIR \
         -DCMAKE_INSTALL_PREFIX="$COMPILER_RT_INSTALL_PREFIX" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
@@ -120,7 +119,6 @@ for target in "${CROSS_TARGETS[@]}"; do
     cmake --build . --target install/strip -- -j$(cpu_count)
     if [[ $target == *"apple"* ]]; then
         APPLE_BUILT=1
-        rm -f "$OUTPUT_DIR/bin/lipo${EXEC_SUFFIX}" "$OUTPUT_DIR/bin/ld${EXEC_SUFFIX}"
     else
         # Clang >= 13.0.0 require directory name to be normalized target triple
         # Ref: https://github.com/llvm/llvm-project/commit/36430d44edba9063a08493c89864edf5f071d08c
