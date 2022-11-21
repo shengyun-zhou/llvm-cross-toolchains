@@ -9,41 +9,38 @@ RUN echo 'Acquire::PDiffs "false";' >> /etc/apt/apt.conf && rm -f /etc/apt/sourc
 RUN apt update && apt install -y --no-install-recommends \
     gcc g++ git git-lfs wget curl ca-certificates patch unzip xz-utils bzip2 file ninja-build make python3 python3-pip python3-setuptools \
     autoconf automake zlib1g-dev texinfo flex bison help2man gawk libtool libtool-bin libncurses-dev
-RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.18.4
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.22.6
 RUN wine pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 WORKDIR /root
-ARG CROSS_ARCH=x86_64
-ENV CROSS_PREFIX=${CROSS_ARCH}-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root
-RUN wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.25.0.tar.xz -O crosstool-ng.tar.xz && \
-    mkdir crosstool-ng && cd crosstool-ng && tar xvf ../crosstool-ng.tar.xz --strip 1 && ./configure --prefix=/usr && make install -j$(nproc) && \
-    cd /root && rm -rf crosstool-ng*
+ARG GITHUB_MIRROR_DOMAIN=github.com
+RUN wget "https://${GITHUB_MIRROR_DOMAIN}/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-msvcrt-ubuntu-18.04-x86_64.tar.xz" -O llvm-mingw.tar.xz && \
+    mkdir llvm-mingw && tar xvf llvm-mingw.tar.xz -C llvm-mingw --strip 1 && rm -f llvm-mingw.tar.xz
 
-ADD ${CROSS_PREFIX}-ct-ng.config /root
-RUN mkdir ct-${CROSS_PREFIX}-build && cd ct-${CROSS_PREFIX}-build && cp ../${CROSS_PREFIX}-ct-ng.config .config && \
-    ct-ng build.$(nproc) && cd .. && rm -rf ct-${CROSS_PREFIX}-build
 RUN apt install -y --no-install-recommends lsb-release software-properties-common gnupg && wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x install-llvm.sh && \
     # Install LLVM 16 to handle hidden visibility
     ./install-llvm.sh 16 && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100 && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
 
-ENV TOOLCHAIN_ROOT=/root/x-tools/${CROSS_PREFIX}
-ADD ct-clang-mingw-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang
-ADD ct-clang-mingw-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++
+ARG CROSS_ARCH=x86_64
+ENV CROSS_PREFIX=${CROSS_ARCH}-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root
+ENV TOOLCHAIN_ROOT=/root/llvm-mingw
+ADD ct-clang-mingw-wrapper.sh /root
+RUN cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang" && cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++" && \
+    rm ct-clang-mingw-wrapper.sh && cp -r "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-gcc --print-resource-dir)/lib" "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang --print-resource-dir)" && \
+    # Forced to use lld-16
+    cp --remove-destination /usr/bin/lld-16 "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-ld"
 ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
-    HOST_CC=${CROSS_PREFIX}-clang HOST_CXX="${CROSS_PREFIX}-clang++ -stdlib=libc++" \
+    HOST_CC=${CROSS_PREFIX}-clang HOST_CXX=${CROSS_PREFIX}-clang++ \
     HOST_CPP=${CROSS_PREFIX}-cpp \
     HOST_STRIP=${CROSS_PREFIX}-strip HOST_RC=${CROSS_PREFIX}-windres \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
-    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread -stdlib=libc++" \
+    HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread" \
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows" \
-    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/mingw/bin/libwinpthread-1.dll" \
+    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libc++.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libunwind.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libssp-0.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libwinpthread-1.dll" \
     HOST_CONFIGURE_ARGS="--host=${CROSS_PREFIX}" CROSS_HOST=Windows
-RUN ${CROSS_PREFIX}-ar crs "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/lib/libgcc_eh.a" && ${CROSS_PREFIX}-ar crs "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/lib/libgcc_s.a" && \
-    # Forced to use lld
-    cp /usr/bin/ld.lld-16 "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-ld"
 
 ADD build-dep-libs.sh /root
-RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/mingw/include/c++"
-ENV HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/bin/libc++.dll ${BUILD_DEPS_ROOT}/bin/libxml2.dll"
+RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
+ENV HOST_RUNTIME_LIBS="${HOST_RUNTIME_LIBS} ${BUILD_DEPS_ROOT}/bin/libxml2.dll"
