@@ -79,8 +79,15 @@ for target in "${CROSS_TARGETS[@]}"; do
         COMPILER_RT_SRC_DIR=".."
         COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_BUILTINS=OFF -DSANITIZER_CXX_ABI=libc++"
         if [[ $target == *"musl"* ]]; then
-            # Santinizers can not built on MUSL now
-            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF -DLIBCXX_HAS_MUSL_LIBC=ON"
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DCOMPILER_RT_BUILD_GWP_ASAN=OFF"
+            # Santinizers for MUSL only support aarch64, x86_64 now.
+            case $target in
+            arm64*|aarch64*|x86_64*)
+                ;;
+            *)
+                COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF"
+                ;;
+            esac
         elif [[ $target == *"mingw"* || $target == *"windows"* || $target == *"bsd"* ]]; then
             # Santinizers on Windows/BSD only support x86 now
             case $target in
