@@ -44,8 +44,6 @@ def main(target, exec_name):
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/x86_64-linux-android')]
     elif arch.startswith('wasm'):
         if 'wamr' in target:
-            if cplusplus_mode:
-                clang_args += ['-D_LIBCPP_HAS_THREAD_API_PTHREAD']
             clang_args += [
                 '-D__wamr__',
                 '-D_WASI_EMULATED_SIGNAL',

@@ -74,5 +74,5 @@ export CROSS_TARGETS=(
     "x86_64-pc-freebsd${FREEBSD_VERSION%.*}"
 
     # WASI
-    "wasm32-wamr-wasi"
+    "wasm32-wamr-wasi-pthread"
 )
