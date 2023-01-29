@@ -39,14 +39,14 @@ function target_install_prefix {
 
 function target_install_libdir_suffix {
     if [[ "$1" == "wasm32"* && "$1" == *"wasi"* ]]; then
-        if [[ "$1" == *"pthread"* ]]; then
-            echo "/wasm32-wasi-pthread"
+        if [[ "$1" == *"threads"* ]]; then
+            echo "/wasm32-wasi-threads"
         else
             echo "/wasm32-wasi"
         fi
     elif [[ "$1" == "wasm64"* && "$1" == *"wasi"* ]]; then
-        if [[ "$1" == *"pthread"* ]]; then
-            echo "/wasm64-wasi-pthread"
+        if [[ "$1" == *"threads"* ]]; then
+            echo "/wasm64-wasi-threads"
         else
             echo "/wasm64-wasi"
         fi
