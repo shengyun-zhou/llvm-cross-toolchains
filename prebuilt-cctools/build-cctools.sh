@@ -27,7 +27,7 @@ apply_patch apple-libtapi
 mkdir build && cd build
 
 TAPI_CMAKE_EXTRA_FLAGS=""
-if [[ "$CROSS_HOST" != "$BUILD_HOST" ]]; then
+if [[ -n "$CROSS_COMPILING" ]]; then
     TAPI_CMAKE_EXTRA_FLAGS="$TAPI_CMAKE_EXTRA_FLAGS -DCLANG_TABLEGEN_EXE=$(pwd)/NATIVE/bin/clang-tblgen${EXEC_SUFFIX}"
 fi
 CC="${HOST_CC:-clang}" CXX="${HOST_CXX:-clang++}" CFLAGS="$HOST_CFLAGS -w" CXXFLAGS="$HOST_CXXFLAGS -w" LDFLAGS="$HOST_LDFLAGS" \

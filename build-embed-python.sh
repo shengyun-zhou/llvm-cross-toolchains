@@ -38,11 +38,7 @@ tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 mkdir build && cd build
 
-if [[ "$BUILD_HOST" != "$CROSS_HOST" ]]; then
-    CROSS_COMPILE_PYTHON=1
-fi
-
-if [[ -n "$CROSS_COMPILE_PYTHON" ]]; then
+if [[ -n "$CROSS_COMPILING" ]]; then
     NATIVE_PYTHON_EXEC=""
     for exe in python${NATIVE_PYTHON_VERSION} python3 python; do
         if [ -x "$(command -v $exe)" ]; then

@@ -50,6 +50,10 @@ export CROSS_HOST=${CROSS_HOST:-${BUILD_HOST}}
 if [[ $CROSS_HOST == "Windows" ]]; then
     CROSS_EXEC_SUFFIX=".exe"
 fi
+if [[ "$BUILD_HOST" != "$CROSS_HOST" ]]; then
+    # NOTE: CROSS_COMPILING can also be defined manually
+    export CROSS_COMPILING=1
+fi
 
 # For xcrun, codesign, etc
 export PATH="$(pwd)/build-tools:$PATH"
