@@ -38,7 +38,7 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_LDFLAGS="-pthread -L$BUILD_DEPS_ROOT/lib -stdlib=libc++ -Wl,-rpath,'\$\${ORIGIN}/../lib'" \
     HOST_RUNTIME_LIBS="$BUILD_DEPS_ROOT/lib/libc++.so.1" HOST_RPATH="\$ORIGIN/../lib"\
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_INSTALL_RPATH='\$ORIGIN/../lib'" \
-    LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
+    HOST_CONFIGURE_ARGS="--host=$CROSS_PREFIX" LD_LIBRARY_PATH=$BUILD_DEPS_ROOT/lib
 
 ADD build-dep-libs.sh /root
 RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/include/c++"

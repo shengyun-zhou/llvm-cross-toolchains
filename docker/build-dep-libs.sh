@@ -52,8 +52,8 @@ fi
 
 if [[ $CROSS_HOST == "Linux" ]]; then
     # Build libuuid
-    curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/u/util-linux/util-linux_2.20.1.orig.tar.gz" -o util-linux.tar.gz && mkdir util-linux-build && \
-    cd util-linux-build && tar xvf ../util-linux.tar.gz --strip 1 && ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared --without-ncurses && make install -j$(nproc)
+    curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/u/util-linux/util-linux_2.27.1.orig.tar.xz" -o util-linux.tar.xz && mkdir util-linux-build && \
+    cd util-linux-build && tar xvf ../util-linux.tar.xz --strip 1 && ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared --without-ncurses && make install -j$(nproc)
     cd "$ROOT_DIR/build"
 elif [[ $CROSS_HOST == "Windows" ]]; then
     # Build libiconv
