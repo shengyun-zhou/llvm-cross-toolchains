@@ -57,8 +57,8 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
 done
 if [[ $CROSS_HOST == "Windows" && -d "$OUTPUT_DIR/lib-llvm" ]]; then
-    # Copy llvm runtime library for cctools running in WSL
-    cp "$OUTPUT_DIR/lib-llvm/"* "$OUTPUT_DIR/lib/"
+    # Copy LLVM runtime library for cctools running in WSL
+    cp -r -P "$OUTPUT_DIR/lib-llvm/"* "$OUTPUT_DIR/lib/"
 fi
 (test -d "$OUTPUT_DIR/cctools-bin" && rm -rf "$OUTPUT_DIR/cctools-bin") || true
 (test -d "$OUTPUT_DIR/lib-llvm" && rm -rf "$OUTPUT_DIR/lib-llvm") || true
