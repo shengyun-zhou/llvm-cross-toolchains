@@ -33,7 +33,7 @@ def main(target, exec_name):
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/aarch64-linux-android')]
     elif arch.startswith('arm'):
-        clang_args += ['-mthumb']
+        clang_args += ['-mthumb', '-Wa,-mimplicit-it=thumb']
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/arm-linux-androideabi')]
     elif fnmatch.fnmatch(arch, 'i*86'):
@@ -132,6 +132,9 @@ def main(target, exec_name):
             elif '-arch' not in input_args:
                 clang_args += ['-arch', 'x86_64']
 
+    gnu_as_dir = os.path.join(DIR, 'gnu-as', clang_target)
+    if os.path.isdir(gnu_as_dir):
+        clang_args += ['-fno-integrated-as', '-B', gnu_as_dir]
     if fuse_ld:
         clang_args += ['-fuse-ld=%s' % fuse_ld]
     clang_args += [
