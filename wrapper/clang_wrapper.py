@@ -65,7 +65,7 @@ def main(target, exec_name):
                 '-Wl,--export=__heap_base,--export=__data_end',
                 # Build the WASM app as reactor(sub module) to avoid __wasm_call_ctors() and __wasm_call_dtors() to be called unexpectedly when the runtime call exported functions
                 # See: https://github.com/WebAssembly/WASI/issues/471
-                '-mexec-model=reactor', '-Wl,--export=__main_void,--export=__wasm_call_dtors,--export=__wasi_init_tp'
+                '-mexec-model=reactor', '-Wl,--export=__main_void,--export=__wasm_call_dtors'
             ]
 
 
