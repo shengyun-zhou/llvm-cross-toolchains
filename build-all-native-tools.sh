@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")"
 source config
 
-./build-gnu-as.sh
+./build-gnu-binutils.sh
 ./build-mingw-tools.sh
 ./build-binaryen.sh
 ./build-wabt.sh

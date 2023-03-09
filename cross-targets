@@ -5,6 +5,7 @@ export CROSS_TARGETS=(
     "mipsel-linux-muslsf"
     "mipsel-linux-musl"
     "mips64el-linux-musl"
+    "arm-linux-musleabi"
     "armv7a-linux-musleabihf"
     "aarch64-linux-musl"
     "i686-linux-musl"

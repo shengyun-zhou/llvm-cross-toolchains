@@ -19,6 +19,7 @@ def main(target, exec_name):
     fuse_ld = 'lld'
     
     if arch.startswith('mips'):
+        fuse_ld = 'ld'
         if not '64' in arch:
             # Use mips32 ISA by default
             clang_args += ['-mips32']
@@ -33,7 +34,13 @@ def main(target, exec_name):
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/aarch64-linux-android')]
     elif arch.startswith('arm'):
-        clang_args += ['-mthumb', '-Wa,-mimplicit-it=thumb']
+        if arch.startswith('armv7'):
+            clang_args += ['-mthumb', '-Wa,-mimplicit-it=thumb']
+        else:
+            fuse_ld = 'ld'
+            clang_args += ['-marm', '-Wa,-mimplicit-it=arm']
+            if arch == 'arm':
+                clang_args += ['-march=armv5t']
         if 'android' in target:
             clang_args += ['-isystem', os.path.join(sysroot_dir, 'usr/include/arm-linux-androideabi')]
     elif fnmatch.fnmatch(arch, 'i*86'):

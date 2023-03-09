@@ -25,14 +25,17 @@ export CXXFLAGS="$HOST_CXXFLAGS"
 export LDFLAGS="$HOST_LDFLAGS"
 
 for target in "${CROSS_TARGETS[@]}"; do
-    if [[ $target == "arm-"* || $target == *"mips"* ]]; then
+    if [[ $target == "arm-"* || $target == "mips"* ]]; then
         mkdir build-$target && cd build-$target
-        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-ld --disable-werror --with-sysroot=/
+        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
         make -j$(cpu_count)
         make install
         mkdir -p "$OUTPUT_DIR/bin/gnu-as/$target"
         "${HOST_STRIP:-strip}" "binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX}"
         cp "binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX}" "$OUTPUT_DIR/bin/gnu-as/$target/as${CROSS_EXEC_SUFFIX}"
+        "${HOST_STRIP:-strip}" "binutils-install/bin/$target-ld${CROSS_EXEC_SUFFIX}"
+        rm -f "$OUTPUT_DIR/bin/$target-ld${CROSS_EXEC_SUFFIX}" || true
+        cp "binutils-install/bin/$target-ld${CROSS_EXEC_SUFFIX}" "$OUTPUT_DIR/bin/$target-ld${CROSS_EXEC_SUFFIX}"
         cd ..
     fi
 done
