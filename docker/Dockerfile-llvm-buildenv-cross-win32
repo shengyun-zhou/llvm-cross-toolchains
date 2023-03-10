@@ -26,6 +26,7 @@ ENV CROSS_PREFIX=${CROSS_ARCH}-w64-mingw32 BUILD_DEPS_ROOT=/root/build-deps-root
 ENV TOOLCHAIN_ROOT=/root/llvm-mingw
 ADD ct-clang-mingw-wrapper.sh /root
 RUN cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang" && cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++" && \
+    cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-cpp" && \
     rm ct-clang-mingw-wrapper.sh && cp -r "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-gcc --print-resource-dir)/lib" "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang --print-resource-dir)" && \
     # Forced to use lld-16
     cp --remove-destination /usr/bin/lld-16 "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-ld"

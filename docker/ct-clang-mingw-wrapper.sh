@@ -11,6 +11,9 @@ CLANG_ARGS=(-Qunused-arguments -target $TARGET --sysroot "$DIR/../$TARGET" -rtli
 if [[ $EXE == "clang++" ]]; then
     EXE=/usr/bin/clang++
 else
+    if [[ $EXE == "cpp" ]]; then
+        CLANG_ARGS+=(--driver-mode=cpp)
+    fi
     EXE=/usr/bin/clang
 fi
 
