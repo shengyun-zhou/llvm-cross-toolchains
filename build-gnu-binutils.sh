@@ -14,6 +14,7 @@ if [ ! -f "$SOURCE_DIR/$SOURCE_TARBALL" ]; then
     mv "$SOURCE_DIR/$SOURCE_TARBALL.tmp" "$SOURCE_DIR/$SOURCE_TARBALL"
 fi
 tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" --strip 1
+apply_patch gnu-binutils-$GNU_BINUTILS_VERSION
 
 # LDFLAGS may not work for libtool, append it to CC
 export CPP="$HOST_CPP"
