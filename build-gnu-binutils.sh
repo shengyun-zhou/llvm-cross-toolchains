@@ -34,9 +34,13 @@ for target in "${CROSS_TARGETS[@]}"; do
         mkdir -p "$OUTPUT_DIR/bin/gnu-as/$target"
         "${HOST_STRIP:-strip}" "binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX}"
         cp "binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX}" "$OUTPUT_DIR/bin/gnu-as/$target/as${CROSS_EXEC_SUFFIX}"
-        "${HOST_STRIP:-strip}" "binutils-install/bin/$target-ld${CROSS_EXEC_SUFFIX}"
-        rm -f "$OUTPUT_DIR/bin/$target-ld${CROSS_EXEC_SUFFIX}" || true
-        cp "binutils-install/bin/$target-ld${CROSS_EXEC_SUFFIX}" "$OUTPUT_DIR/bin/$target-ld${CROSS_EXEC_SUFFIX}"
+        rm -f binutils-install/bin/$target-as${CROSS_EXEC_SUFFIX}
+        for binfile in binutils-install/bin/*; do
+            "${HOST_STRIP:-strip}" "$binfile"
+            binfile_basename="$(basename "$binfile")"
+            rm -f "$OUTPUT_DIR/bin/$binfile_basename" || true
+            cp "$binfile" "$OUTPUT_DIR/bin/$binfile_basename"
+        done
         cd ..
     fi
 done
