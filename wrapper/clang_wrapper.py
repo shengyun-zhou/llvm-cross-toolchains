@@ -21,8 +21,8 @@ def main(target, exec_name):
     if arch.startswith('mips'):
         fuse_ld = 'ld'
         if not '64' in arch:
-            # Use mips32 ISA by default
-            clang_args += ['-mips32']
+            # Use mips32r2 ISA by default
+            clang_args += ['-mips32r2']
         if target.endswith('sf'):
             clang_args += ['-msoft-float']
             if target == 'mipsel-linux-muslsf' and '-static' not in input_args:
