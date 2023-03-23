@@ -22,7 +22,7 @@ The toolchain itself works on Linux, Windows and MacOSX now.
 
 #### 1. Prerequisite tools and libs
 
-+ GCC >= 8
++ GCC or Clang that supports C++17 and later
 
 + CMake >= 3.15
 

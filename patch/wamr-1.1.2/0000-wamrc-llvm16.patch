@@ -1,0 +1,29 @@
+diff --git a/wamr-compiler/CMakeLists.txt b/wamr-compiler/CMakeLists.txt
+index 75c85a7..a7563d9 100644
+--- a/wamr-compiler/CMakeLists.txt
++++ b/wamr-compiler/CMakeLists.txt
+@@ -21,7 +21,7 @@ else()
+   add_definitions(-DCOMPILING_WASM_RUNTIME_API=1)
+ endif()
+ 
+-set (CMAKE_CXX_STANDARD 14)
++set (CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard to use")
+ 
+ if (NOT DEFINED WAMR_BUILD_PLATFORM)
+   set (WAMR_BUILD_PLATFORM "linux")
+diff --git a/core/iwasm/compilation/aot_orc_extra.cpp b/core/iwasm/compilation/aot_orc_extra.cpp
+index 8cf253e..d1d873c 100644
+--- a/core/iwasm/compilation/aot_orc_extra.cpp
++++ b/core/iwasm/compilation/aot_orc_extra.cpp
+@@ -141,7 +141,11 @@ LLVMOrcLLLazyJITBuilderSetJITTargetMachineBuilder(
+     LLVMOrcDisposeJITTargetMachineBuilder(JTMP);
+ }
+ 
++#if LLVM_VERSION_MAJOR >= 16
++static std::optional<CompileOnDemandLayer::GlobalValueSet>
++#else
+ static Optional<CompileOnDemandLayer::GlobalValueSet>
++#endif
+ PartitionFunction(GlobalValueSet Requested)
+ {
+     std::vector<const GlobalValue *> GVsToAdd;
