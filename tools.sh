@@ -54,3 +54,32 @@ function target_install_libdir_suffix {
         echo ""
     fi
 }
+
+function go_build {
+    go mod tidy
+    goos=""
+    goarch=""
+    case "$CROSS_PREFIX" in
+    *linux*)
+        goos=linux
+        ;;
+    *darwin*|*macos*|*apple*)
+        goos=darwin
+        ;;
+    *mingw*|*windows*)
+        goos=windows
+        ;;
+    esac
+    case "$CROSS_PREFIX" in
+    x86_64*)
+        goarch=amd64
+        ;;
+    i*86*)
+        goarch=386
+        ;;
+    aarch64*|arm64*)
+        goarch=arm64
+        ;;
+    esac
+    GOOS=$goos GOARCH=$goarch go build "$@"
+}

@@ -9,9 +9,10 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
 done
 
-cp wrapper/* "$OUTPUT_DIR/bin"
+cd wrapper && go_build -o "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
+"${HOST_STRIP:-strip}" "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
+cd ..
 cp -r cmake "$OUTPUT_DIR"
-${HOST_CC:-cc} -O2 $HOST_CFLAGS $HOST_LDFLAGS native-wrapper/toolchain-wrapper.c -o "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
 
 PRE_PWD="$(pwd)"
 cd "$OUTPUT_DIR/bin"
