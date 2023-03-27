@@ -89,8 +89,8 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	}
 
 	if strings.Contains(target, "android") {
-		i := -1
-		if unicode.IsDigit(rune(target[len(target)+i-1])) {
+		i := len(target) - 1
+		for unicode.IsDigit(rune(target[i-1])) {
 			i--
 		}
 		androidAPI, _ := strconv.Atoi(target[i:])
