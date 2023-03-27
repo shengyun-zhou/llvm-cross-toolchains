@@ -30,7 +30,9 @@ RUN cp --remove-destination ct-clang-mingw-wrapper.sh "${TOOLCHAIN_ROOT}/bin/${C
     rm ct-clang-mingw-wrapper.sh && cp -r "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-gcc --print-resource-dir)/lib" "$(${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang --print-resource-dir)" && \
     # Forced to use lld-16
     cp --remove-destination /usr/bin/lld-16 "${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-ld"
-ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
+RUN wget https://mirrors.ustc.edu.cn/golang/go1.20.2.linux-amd64.tar.gz -O golang.tar.gz && mkdir -p go && tar xvf golang.tar.gz -C go --strip 1 && \
+    rm -f golang.tar.gz
+ENV PATH="/root/go/bin:${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=${CROSS_PREFIX}-clang HOST_CXX=${CROSS_PREFIX}-clang++ \
     HOST_CPP=${CROSS_PREFIX}-cpp \
     HOST_STRIP=${CROSS_PREFIX}-strip HOST_RC=${CROSS_PREFIX}-windres \
@@ -44,4 +46,5 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
 
 ADD build-dep-libs.sh /root
 RUN SKIP_BUILD_LIBCXX=1 ./build-dep-libs.sh
-ENV HOST_RUNTIME_LIBS="${HOST_RUNTIME_LIBS} ${BUILD_DEPS_ROOT}/bin/libxml2.dll"
+ENV GOPROXY="https://mirrors.aliyun.com/goproxy/" \
+    HOST_RUNTIME_LIBS="${HOST_RUNTIME_LIBS} ${BUILD_DEPS_ROOT}/bin/libxml2.dll"

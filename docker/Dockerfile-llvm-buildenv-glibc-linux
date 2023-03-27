@@ -28,7 +28,9 @@ RUN wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x ./install-
 ENV TOOLCHAIN_ROOT=/root/x-tools/${CROSS_PREFIX}
 ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang
 ADD ct-clang-wrapper.sh ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}-clang++
-ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
+RUN wget https://mirrors.ustc.edu.cn/golang/go1.20.2.linux-amd64.tar.gz -O golang.tar.gz && mkdir -p go && tar xvf golang.tar.gz -C go --strip 1 && \
+    rm -f golang.tar.gz
+ENV PATH="/root/go/bin:${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CC=${CROSS_PREFIX}-clang HOST_CXX="${CROSS_PREFIX}-clang++ -stdlib=libc++" \
     HOST_CPP=${CROSS_PREFIX}-cpp HOST_STRIP=${CROSS_PREFIX}-strip \
     HOST_CPPFLAGS="-I$BUILD_DEPS_ROOT/include" \
@@ -42,6 +44,6 @@ ENV PATH="${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
 
 ADD build-dep-libs.sh /root
 RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/sysroot/usr/include/c++"
-ENV EMBED_PYTHON_CONFIGURE_ARGS="--enable-shared --enable-optimizations --with-openssl=$BUILD_DEPS_ROOT" \
+ENV GOPROXY="https://mirrors.aliyun.com/goproxy/" \
     HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.so.2.10.2"
 RUN update-alternatives --install /usr/bin/llvm-profdata llvm-profdata /usr/bin/llvm-profdata-14 100

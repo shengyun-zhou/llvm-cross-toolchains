@@ -79,11 +79,6 @@ cd libxml2-build && tar xvf ../libxml2.tar.xz --strip 1
 mkdir build && cd build && cmake .. $CMAKE_FLAGS -DCMAKE_C_VISIBILITY_PRESET=default -DLIBXML2_WITH_PYTHON=OFF && cmake --build . --target install/strip
 cd "$ROOT_DIR/build"
 
-# Build libffi
-curl -L "http://mirrors.ustc.edu.cn/ubuntu/pool/main/libf/libffi/libffi_3.4.2.orig.tar.gz" -o libffi.tar.gz
-mkdir libffi-build && cd libffi-build && tar xvf ../libffi.tar.gz --strip 1 && ./configure $HOST_CONFIGURE_ARGS --prefix="$BUILD_DEPS_ROOT" --disable-shared && make install -j$(nproc)
-cd "$ROOT_DIR/build"
-
 # Build openssl
 curl -L "https://www.openssl.org/source/openssl-1.1.1j.tar.gz" -o openssl.tar.gz && mkdir openssl-build && \
 cd openssl-build && tar xvf ../openssl.tar.gz --strip 1
