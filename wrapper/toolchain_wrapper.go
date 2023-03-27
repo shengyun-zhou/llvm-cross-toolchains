@@ -58,8 +58,8 @@ func main() {
 		clangWrapperMain(execDir, target, execName, os.Args)
 	} else if strings.Contains(target, "apple-") {
 		ccToolsWrapperMain(execDir, target, execName, os.Args)
-    } else if inArray([]string{"ld", "link"}, execName) {
-        lldWrapperMain(execDir, target, execName, os.Args)
+	} else if inArray([]string{"ld", "link"}, execName) {
+		lldWrapperMain(execDir, target, execName, os.Args)
 	} else {
 		fmt.Fprintln(os.Stderr, "toolchain-wrapper: cannot find correspond wrapper for "+basename)
 		os.Exit(1)
