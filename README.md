@@ -34,13 +34,11 @@ The toolchain itself works on Linux, Windows and MacOSX now.
   pip install ninja
   ```
 
-+ Python 3 and related python packages:
++ Python 3 >= 3.7
 
   > Python >= 3.8 is required on Windows to support unelevated symlinks with developer mode
 
-  ```
-  pip install zstandard
-  ```
++ Golang(latest version recommended)
 
 + Some development libs:
 
