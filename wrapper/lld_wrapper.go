@@ -19,10 +19,8 @@ func lldWrapperMain(execDir string, target string, execName string, cmdArgv []st
 		} else {
 			// Invoke lld-link via clang frontend to get MSVC lib path
 			lldName = target + "-clang"
-			tempArgv := cmdArgv
-			cmdArgv = []string{}
-			for _, arg := range tempArgv {
-				cmdArgv = append(cmdArgv, "/clang:-Wl,"+arg)
+			for i, arg := range cmdArgv {
+				cmdArgv[i] = "/clang:-Wl," + arg
 			}
 		}
 	}
