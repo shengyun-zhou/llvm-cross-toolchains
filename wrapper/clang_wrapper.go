@@ -138,7 +138,16 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 				}
 			}
 			if len(sysrootDir) == 0 {
-				for sdkName, defaultArch := range sdkMinVersionArg {
+				for _, p := range []StringStringPair{
+					{"MacOSX", "x86_64"},
+					{"iPhoneOS", "arm64"},
+					{"iPhoneSimulator", "x86_64"},
+					{"AppleTVOS", "arm64"},
+					{"AppleTVSimulator", "x86_64"},
+					{"WatchOS", "armv7"},
+					{"WatchSimulator", "x86_64"},
+				} {
+					sdkName, defaultArch := p.first, p.second
 					tempSysrootDir := path.Join(toolchainRootDir, sdkName+"-SDK")
 					if statInfo, err := os.Stat(tempSysrootDir); !os.IsNotExist(err) && statInfo.IsDir() {
 						sysrootDir = tempSysrootDir

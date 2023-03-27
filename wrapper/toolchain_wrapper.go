@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+type StringStringPair struct {
+	first  string
+	second string
+}
+
 func inArray(arr []string, target string) bool {
 	for _, val := range arr {
 		if val == target {
