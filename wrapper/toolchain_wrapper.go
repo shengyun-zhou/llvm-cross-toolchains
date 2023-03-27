@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -21,19 +22,25 @@ func runCommand(execPath string, argv []string, inputBytes []byte) {
 	cmd := exec.Command(execPath, argv...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		panic(err)
+	var err error = nil
+	var stdin io.WriteCloser = nil
+	if len(inputBytes) == 0 {
+		cmd.Stdin = os.Stdin
+	} else {
+		stdin, err = cmd.StdinPipe()
+		if err != nil {
+			panic(err)
+		}
 	}
 	err = cmd.Start()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	if len(inputBytes) > 0 {
+	if stdin != nil {
 		stdin.Write(inputBytes)
+		stdin.Close()
 	}
-	stdin.Close()
 	cmd.Wait()
 	os.Exit(cmd.ProcessState.ExitCode())
 }
