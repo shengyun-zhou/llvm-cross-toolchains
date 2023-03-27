@@ -56,30 +56,53 @@ function target_install_libdir_suffix {
 }
 
 function go_build {
+    output_file='a.out'
+    while [[ $# -gt 0 ]]; do
+        key="$1"
+        case $key in
+            -o)
+                output_file="$2"
+                shift
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
     go mod tidy
-    goos=""
-    goarch=""
-    case "$CROSS_PREFIX" in
-    *linux*)
-        goos=linux
-        ;;
-    *darwin*|*macos*|*apple*)
-        goos=darwin
-        ;;
-    *mingw*|*windows*)
-        goos=windows
-        ;;
-    esac
-    case "$CROSS_PREFIX" in
-    x86_64*)
-        goarch=amd64
-        ;;
-    i*86*)
-        goarch=386
-        ;;
-    aarch64*|arm64*)
-        goarch=arm64
-        ;;
-    esac
-    GOOS=$goos GOARCH=$goarch go build "$@"
+    if [[ "$CROSS_HOST" == "Darwin" ]]; then
+        # Build fat binary
+        GOOS=darwin GOARCH=amd64 go build -o "$output_file.amd64"
+        GOOS=darwin GOARCH=arm64 go build -o "$output_file.arm64"
+        "${HOST_LIPO:-lipo}" -create "$output_file.amd64" "$output_file.arm64" -output "$output_file"
+        rm -f "$output_file.amd64" "$output_file.arm64"
+    else
+        goos="$GOOS"
+        goarch="$GOARCH"
+        if [[ -z "$goos" ]]; then
+            case "$CROSS_PREFIX" in
+            *linux*)
+                goos=linux
+                ;;
+            *mingw*|*windows*)
+                goos=windows
+                ;;
+            esac
+        fi
+        if [[ -z "$goarch" ]]; then
+            case "$CROSS_PREFIX" in
+            x86_64*)
+                goarch=amd64
+                ;;
+            i*86*)
+                goarch=386
+                ;;
+            aarch64*|arm64*)
+                goarch=arm64
+                ;;
+            esac
+        fi
+        GOOS=$goos GOARCH=$goarch go build -o "$output_file"
+    fi
 }

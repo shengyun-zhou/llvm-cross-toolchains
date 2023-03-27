@@ -10,7 +10,6 @@ for target in "${CROSS_TARGETS[@]}"; do
 done
 
 cd wrapper && go_build -o "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
-"${HOST_STRIP:-strip}" "$OUTPUT_DIR/bin/toolchain-wrapper${CROSS_EXEC_SUFFIX}"
 cd ..
 cp -r cmake "$OUTPUT_DIR"
 
