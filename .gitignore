@@ -52,3 +52,4 @@ win32-toolchain-extractor/*.spec
 win32-toolchain-extractor/build
 win32-toolchain-extractor/dist
 *.wasm
+!go.mod
