@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -55,10 +55,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	execDir = path.Dir(execDir)
+	execDir = filepath.Dir(execDir)
 	os.Setenv("PATH", execDir+string(os.PathListSeparator)+os.Getenv("PATH"))
-	basename := path.Base(os.Args[0])
-	basename = strings.TrimSuffix(basename, path.Ext(basename))
+	basename := filepath.Base(os.Args[0])
+	basename = strings.TrimSuffix(basename, filepath.Ext(basename))
 	_tempSplit := strings.Split(basename, "-")
 	execName := _tempSplit[len(_tempSplit)-1]
 	target := strings.TrimSuffix(basename, "-"+execName)

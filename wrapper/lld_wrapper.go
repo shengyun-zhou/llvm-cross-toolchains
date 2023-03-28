@@ -1,7 +1,7 @@
 package main
 
 import (
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -24,6 +24,6 @@ func lldWrapperMain(execDir string, target string, execName string, cmdArgv []st
 			}
 		}
 	}
-	lldExec := path.Join(execDir, lldName)
+	lldExec := filepath.Join(execDir, lldName)
 	runCommand(lldExec, cmdArgv, nil)
 }

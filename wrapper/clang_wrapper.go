@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -14,9 +14,9 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	inputArgv := cmdArgv[1:]
 	arch := strings.Split(target, "-")[0]
 	clangTarget := target
-	clangExec := path.Join(execDir, "clang")
-	toolchainRootDir := path.Dir(execDir)
-	sysrootDir := path.Join(toolchainRootDir, target)
+	clangExec := filepath.Join(execDir, "clang")
+	toolchainRootDir := filepath.Dir(execDir)
+	sysrootDir := filepath.Join(toolchainRootDir, target)
 	clangArgs := []string{}
 	clangLastArgs := []string{}
 	cplusplusMode := execName == "c++" || execName == "g++" || execName == "clang++"
@@ -40,7 +40,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		}
 	} else if strings.HasPrefix(arch, "arm64") || strings.HasPrefix(arch, "aarch64") {
 		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", path.Join(sysrootDir, "usr", "include", "aarch64-linux-android"))
+			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "aarch64-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "arm") {
 		if strings.HasPrefix(arch, "armv7") {
@@ -53,15 +53,15 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			}
 		}
 		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", path.Join(sysrootDir, "usr", "include", "arm-linux-androideabi"))
+			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "arm-linux-androideabi"))
 		}
 	} else if regexp.MustCompile("^i.86$").MatchString(arch) {
 		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", path.Join(sysrootDir, "usr", "include", "i686-linux-android"))
+			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "i686-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "x86_64") {
 		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", path.Join(sysrootDir, "usr", "include", "x86_64-linux-android"))
+			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "x86_64-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "wasm") {
 		if strings.Contains(target, "wamr") {
@@ -148,7 +148,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 					{"WatchSimulator", "x86_64"},
 				} {
 					sdkName, defaultArch := p.first, p.second
-					tempSysrootDir := path.Join(toolchainRootDir, sdkName+"-SDK")
+					tempSysrootDir := filepath.Join(toolchainRootDir, sdkName+"-SDK")
 					if statInfo, err := os.Stat(tempSysrootDir); !os.IsNotExist(err) && statInfo.IsDir() {
 						sysrootDir = tempSysrootDir
 						clangArgs = append(clangArgs, sdkMinVersionArg[sdkName])
@@ -168,7 +168,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		}
 	}
 
-	gnuAsDir := path.Join(toolchainRootDir, "gnu-as", clangTarget)
+	gnuAsDir := filepath.Join(toolchainRootDir, "gnu-as", clangTarget)
 	if statInfo, err := os.Stat(gnuAsDir); !os.IsNotExist(err) && statInfo.IsDir() {
 		clangArgs = append(clangArgs, "-fno-integrated-as", "-B", gnuAsDir)
 	}
@@ -179,18 +179,18 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	)
 
 	if strings.Contains(target, "msvc") {
-		clangArgs = append(clangArgs, "-isystem", path.Join(sysrootDir, "include"))
+		clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "include"))
 		if !inArray(inputArgv, "-c") && !inArray(inputArgv, "/c") && !inArray(inputArgv, "/C") {
 			// Cannot specify additional library path in compile-only mode.
-			clangArgs = append(clangArgs, "-Wl,/libpath:"+path.Join(sysrootDir, "lib"))
+			clangArgs = append(clangArgs, "-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
 		}
 		for i, arg := range clangArgs {
 			clangArgs[i] = "/clang:" + arg
 		}
 		clangArgs = append(clangArgs,
 			"--driver-mode=cl",
-			"-vctoolsdir", path.Join(toolchainRootDir, "MSVC-SDK", "VC"),
-			"-winsdkdir", path.Join(toolchainRootDir, "MSVC-SDK", "Windows-SDK"),
+			"-vctoolsdir", filepath.Join(toolchainRootDir, "MSVC-SDK", "VC"),
+			"-winsdkdir", filepath.Join(toolchainRootDir, "MSVC-SDK", "Windows-SDK"),
 		)
 
 		// Convert input arguments to accept some normal clang arguments

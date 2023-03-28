@@ -3,7 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -15,7 +15,7 @@ func winPath2WSLPath(winPath string) string {
 		return winPath
 	}
 	winPath = strings.Replace(winPath, "\\", "/", -1)
-	if !path.IsAbs(winPath) {
+	if !filepath.IsAbs(winPath) {
 		return winPath
 	}
 	absPathSplit := strings.SplitN(winPath, ":/", 2)
@@ -50,7 +50,7 @@ func ccToolsHandleCmdlineArg(targetExec string, arg string) []string {
 			return []string{arg[:2] + winPath2WSLPath(arg[2:])}
 		}
 	}
-	dirName := path.Dir(arg)
+	dirName := filepath.Dir(arg)
 	if len(dirName) > 0 && dirName != "." {
 		_, err := os.Stat(dirName)
 		if err == nil {
@@ -59,7 +59,7 @@ func ccToolsHandleCmdlineArg(targetExec string, arg string) []string {
 	}
 	argSplit := strings.SplitN(arg, "=", 2)
 	if len(argSplit) == 2 {
-		dirName = path.Dir(argSplit[1])
+		dirName = filepath.Dir(argSplit[1])
 		_, err := os.Stat(dirName)
 		if err == nil {
 			return []string{argSplit[0] + "=" + winPath2WSLPath(argSplit[1])}
@@ -69,11 +69,10 @@ func ccToolsHandleCmdlineArg(targetExec string, arg string) []string {
 }
 
 func ccToolsWrapperMain(execDir string, target string, execName string, cmdArgv []string) {
-	targetExec := path.Join(execDir, "cctools-"+execName)
+	targetExec := filepath.Join(execDir, "cctools-"+execName)
 	runArgs := []string{}
 	shellEvelArgs := []string{}
 	if runtime.GOOS == "windows" {
-		runArgs = append(runArgs, "wsl")
 		wslDistro := os.Getenv("LLVM_CROSS_WSL_DISTRO")
 		if len(wslDistro) > 0 {
 			runArgs = append(runArgs, "-d", wslDistro)
@@ -87,7 +86,7 @@ func ccToolsWrapperMain(execDir string, target string, execName string, cmdArgv 
 		shellEvelArgs = append(shellEvelArgs, ccToolsHandleCmdlineArg(targetExec, arg)...)
 	}
 	if runtime.GOOS == "windows" {
-		runCommand(targetExec, runArgs, []byte(shlex.Join(shellEvelArgs...)))
+		runCommand("wsl", runArgs, []byte(shlex.Join(shellEvelArgs...)))
 	} else {
 		runCommand(targetExec, append(runArgs, shellEvelArgs...), nil)
 	}
