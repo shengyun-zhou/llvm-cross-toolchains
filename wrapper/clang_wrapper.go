@@ -19,7 +19,9 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	sysrootDir := filepath.Join(toolchainRootDir, target)
 	clangArgs := []string{}
 	clangLastArgs := []string{}
-	cplusplusMode := execName == "c++" || execName == "g++" || execName == "clang++"
+	linkerArgs := []string{}
+	cPlusPlusMode := execName == "c++" || execName == "g++" || execName == "clang++"
+	cPreProcessorMode := execName == "cpp"
 	fUseLD := "lld"
 
 	if strings.HasPrefix(arch, "mips") {
@@ -32,7 +34,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			clangArgs = append(clangArgs, "-msoft-float")
 			if strings.Contains(target, "musl") && !inArray(inputArgv, "-static") {
 				// Fix linker path
-				clangArgs = append(clangArgs, "-Wl,-dynamic-linker=/lib/ld-musl-mipsel-sf.so.1")
+				linkerArgs = append(linkerArgs, "-Wl,-dynamic-linker=/lib/ld-musl-mipsel-sf.so.1")
 			}
 		}
 		if strings.Contains(target, "linux") {
@@ -72,6 +74,8 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 				"-D_WASI_EMULATED_MMAN",
 				"-D_WASI_EMULATED_GETPID",
 				"-pthread",
+			)
+			linkerArgs = append(linkerArgs,
 				"-Wl,--shared-memory",
 				// Default memory configuration: stack size=128KB
 				"-z", "stack-size=131072",
@@ -94,7 +98,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			i--
 		}
 		androidAPI, _ := strconv.Atoi(target[i:])
-		if cplusplusMode && androidAPI < 24 {
+		if cPlusPlusMode && androidAPI < 24 {
 			clangArgs = append(clangArgs, "-D_LIBCPP_HAS_NO_OFF_T_FUNCTIONS")
 		}
 	} else if strings.Contains(target, "apple") {
@@ -179,10 +183,12 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	)
 
 	if strings.Contains(target, "msvc") {
+		cPlusPlusMode = false
+		cPreProcessorMode = false
 		clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "include"))
 		if !inArray(inputArgv, "-c") && !inArray(inputArgv, "/c") && !inArray(inputArgv, "/C") {
 			// Cannot specify additional library path in compile-only mode.
-			clangArgs = append(clangArgs, "-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
+			linkerArgs = append(linkerArgs, "/clang:-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
 		}
 		for i, arg := range clangArgs {
 			clangArgs[i] = "/clang:" + arg
@@ -205,10 +211,16 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			"-rtlib=compiler-rt",
 		)
 	}
-	if cplusplusMode && !strings.Contains(target, "msvc") {
+	if cPlusPlusMode {
 		clangArgs = append(clangArgs, "--driver-mode=g++", "-stdlib=libc++")
+	} else if cPreProcessorMode {
+		clangArgs = append(clangArgs, "--driver-mode=cpp")
 	}
-	allArgs := append(clangArgs, inputArgv...)
+	allArgs := clangArgs
+	if !cPreProcessorMode {
+		allArgs = append(allArgs, linkerArgs...)
+	}
+	allArgs = append(allArgs, inputArgv...)
 	allArgs = append(allArgs, clangLastArgs...)
 	runCommand(clangExec, allArgs, nil)
 }
