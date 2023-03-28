@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 source config
 
 declare -A APPLE_INSTALLED_SDK
-mkdir -p "$OUTPUT_DIR/lib/clang/$LLVM_VERSION/lib"
+mkdir -p "$OUTPUT_DIR/lib/clang/$LLVM_MAJOR_VERSION/lib"
 unset MSVC_SDK_INSTALLED
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"apple"* ]]; then
@@ -38,4 +38,4 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
 done
 
-cp -P -r "$LLVM_CROSS_TOOLCHAINS_ROOT/lib/clang/$LLVM_VERSION/lib" "$OUTPUT_DIR/lib/clang/$LLVM_VERSION"
+cp -P -r "$LLVM_CROSS_TOOLCHAINS_ROOT/lib/clang/$LLVM_MAJOR_VERSION/lib" "$OUTPUT_DIR/lib/clang/$LLVM_MAJOR_VERSION"
