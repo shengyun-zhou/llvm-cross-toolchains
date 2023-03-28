@@ -28,7 +28,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			// Use mips32r2 ISA by default
 			clangArgs = append(clangArgs, "-mips32r2")
 		}
-		if strings.HasSuffix(arch, "sf") {
+		if strings.HasSuffix(target, "sf") {
 			clangArgs = append(clangArgs, "-msoft-float")
 			if strings.Contains(target, "musl") && !inArray(inputArgv, "-static") {
 				// Fix linker path
