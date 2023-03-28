@@ -168,7 +168,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		}
 	}
 
-	gnuAsDir := filepath.Join(toolchainRootDir, "gnu-as", clangTarget)
+	gnuAsDir := filepath.Join(execDir, "gnu-as", clangTarget)
 	if statInfo, err := os.Stat(gnuAsDir); !os.IsNotExist(err) && statInfo.IsDir() {
 		clangArgs = append(clangArgs, "-fno-integrated-as", "-B", gnuAsDir)
 	}
