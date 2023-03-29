@@ -16,7 +16,7 @@ cp -r cmake "$OUTPUT_DIR"
 PRE_PWD="$(pwd)"
 cd "$OUTPUT_DIR/bin"
 for target in "${CROSS_TARGETS[@]}"; do
-    for exec in clang clang++ gcc g++ cc c++ as; do
+    for exec in clang clang++ gcc g++ cc c++ as cpp; do
         ln -sf toolchain-wrapper${CROSS_EXEC_SUFFIX} $target-$exec${CROSS_EXEC_SUFFIX}
     done
     for exec in addr2line ar ranlib nm objcopy strings strip objdump readelf size; do
@@ -28,9 +28,10 @@ for target in "${CROSS_TARGETS[@]}"; do
         ln -sf llvm-dlltool${CROSS_EXEC_SUFFIX} $target-dlltool${CROSS_EXEC_SUFFIX}
         ln -sf llvm-windres${CROSS_EXEC_SUFFIX} $target-windres${CROSS_EXEC_SUFFIX}
         if [[ $target == *"msvc"* ]]; then
-            ln -sf llvm-rc${CROSS_EXEC_SUFFIX} $target-rc
-            ln -sf llvm-lib${CROSS_EXEC_SUFFIX} $target-lib
-            ln -sf llvm-mt${CROSS_EXEC_SUFFIX} $target-mt
+            rm -f $target-cpp${CROSS_EXEC_SUFFIX}
+            ln -sf llvm-rc${CROSS_EXEC_SUFFIX} $target-rc${CROSS_EXEC_SUFFIX}
+            ln -sf llvm-lib${CROSS_EXEC_SUFFIX} $target-lib${CROSS_EXEC_SUFFIX}
+            ln -sf llvm-mt${CROSS_EXEC_SUFFIX} $target-mt${CROSS_EXEC_SUFFIX}
             ln -sf toolchain-wrapper${CROSS_EXEC_SUFFIX} $target-cl${CROSS_EXEC_SUFFIX}
             ln -sf toolchain-wrapper${CROSS_EXEC_SUFFIX} $target-link${CROSS_EXEC_SUFFIX}
         fi

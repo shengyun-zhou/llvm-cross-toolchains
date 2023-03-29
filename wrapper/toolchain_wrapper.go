@@ -66,7 +66,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "toolchain-wrapper: cannot run tools without target triple prefix")
 		os.Exit(1)
 	}
-	if inArray([]string{"clang", "clang++", "cc", "c++", "gcc", "g++", "as", "cl"}, execName) {
+	if inArray([]string{"clang", "clang++", "cc", "c++", "gcc", "g++", "as", "cpp", "cl"}, execName) {
 		clangWrapperMain(execDir, target, execName, os.Args)
 	} else if strings.Contains(target, "apple-") {
 		ccToolsWrapperMain(execDir, target, execName, os.Args)
