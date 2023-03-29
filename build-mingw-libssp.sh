@@ -39,7 +39,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == *"-mingw"* ]]; then
         mkdir build-$target && cd build-$target
         make -f ../Makefile -j$(cpu_count) CROSS=${target}-
-        cp libssp.a libssp_nonshared.a libssp.dll.a "$(target_install_prefix $target)/lib"
+        cp libssp.a libssp_nonshared.a "$(target_install_prefix $target)/lib"
         cd ..
     fi
 done
