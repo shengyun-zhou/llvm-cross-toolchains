@@ -31,7 +31,7 @@ ENV PATH="/root/go/bin:${TOOLCHAIN_ROOT}/bin:${BUILD_DEPS_ROOT}/bin:${PATH}" \
     HOST_CXXFLAGS="-I$BUILD_DEPS_ROOT/include" \
     HOST_LDFLAGS="-L$BUILD_DEPS_ROOT/lib -pthread" \
     HOST_CMAKE_FLAGS="-DCMAKE_FIND_ROOT_PATH=$BUILD_DEPS_ROOT -DCMAKE_SYSTEM_NAME=Windows" \
-    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libc++.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libunwind.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libssp-0.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libwinpthread-1.dll" \
+    HOST_RUNTIME_LIBS="${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libc++.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libunwind.dll ${TOOLCHAIN_ROOT}/${CROSS_PREFIX}/bin/libwinpthread-1.dll" \
     HOST_CONFIGURE_ARGS="--host=${CROSS_PREFIX}" CROSS_HOST=Windows
 
 ADD build-dep-libs.sh /root
