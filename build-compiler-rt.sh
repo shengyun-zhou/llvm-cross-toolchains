@@ -158,8 +158,8 @@ for target in "${CROSS_TARGETS[@]}"; do
 done
 
 # Apple: fix shared lib ID
-if [[ -n "$COMPILER_RT_FULL_BUILD" && -d "$OUTPUT_DIR/lib/clang/$LLVM_VERSION/lib/darwin" ]]; then
-    for dylib_file in "$OUTPUT_DIR/lib/clang/$LLVM_VERSION/lib/darwin/"*.dylib; do
+if [[ -n "$COMPILER_RT_FULL_BUILD" && -d "$COMPILER_RT_INSTALL_PREFIX/lib/darwin" ]]; then
+    for dylib_file in "$COMPILER_RT_INSTALL_PREFIX/lib/darwin/"*.dylib; do
         "$OUTPUT_DIR/bin/llvm-install-name-tool" -id "@executable_path/$(basename "$dylib_file")" "$dylib_file"
     done
 fi
