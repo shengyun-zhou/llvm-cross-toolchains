@@ -19,7 +19,7 @@ mkdir -p $BUILD_DIR
 tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
 cd $BUILD_DIR
 
-for kernel_arch in riscv mips arm arm64 x86; do
+for kernel_arch in riscv loongarch mips arm arm64 x86; do
     mkdir build-$kernel_arch && cd build-$kernel_arch
     make -C .. O="$(pwd)" ARCH=$kernel_arch INSTALL_HDR_PATH="$(pwd)/../linux-header-$kernel_arch" headers_install -j$(cpu_count)
     cd ..
