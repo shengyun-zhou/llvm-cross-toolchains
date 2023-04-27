@@ -1,0 +1,31 @@
+>From 44c15902ae84e7796c5dac843d9ba6d51d70c2bf Mon Sep 17 00:00:00 2001
+From: wanghongliang <wanghongliang@loongson.cn>
+Date: Tue, 4 Apr 2023 02:19:55 +0800
+Subject: [PATCH 2/2] Modify the member __pad of struct stat to __pad1 in
+ loongarch64.
+
+Modify the member __pad of struct stat to __pad1 in loongarch64
+to maintain consistency with the kernel and glibc based on v6 patch.
+
+Signed-off-by: wanghongliang <wanghongliang@loongson.cn>
+---
+ arch/loongarch64/bits/stat.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/loongarch64/bits/stat.h b/arch/loongarch64/bits/stat.h
+index b7f4221b..b604fb8f 100644
+--- a/arch/loongarch64/bits/stat.h
++++ b/arch/loongarch64/bits/stat.h
+@@ -6,7 +6,7 @@ struct stat {
+ 	uid_t st_uid;
+ 	gid_t st_gid;
+ 	dev_t st_rdev;
+-	unsigned long __pad;
++	unsigned long __pad1;
+ 	off_t st_size;
+ 	blksize_t st_blksize;
+ 	int __pad2;
+-- 
+2.37.1
+
+

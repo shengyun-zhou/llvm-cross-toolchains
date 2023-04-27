@@ -1,0 +1,47 @@
+>From e1663dd91c4b08aeaeb49ed7a82fab2a9c17613f Mon Sep 17 00:00:00 2001
+From: wanghongliang <wanghongliang@loongson.cn>
+Date: Tue, 4 Apr 2023 02:17:13 +0800
+Subject: [PATCH 1/2] Modify the member names of struct sigcontext in
+ loongarch64.
+
+Modify the member names of struct sigcontext to maintain consistency
+with the kernel and glibc based on v6 patch.
+
+Signed-off-by: wanghongliang <wanghongliang@loongson.cn>
+---
+ arch/loongarch64/bits/signal.h  | 8 ++++----
+ arch/loongarch64/pthread_arch.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/loongarch64/bits/signal.h b/arch/loongarch64/bits/signal.h
+index 9413e08e..83d40b1f 100644
+--- a/arch/loongarch64/bits/signal.h
++++ b/arch/loongarch64/bits/signal.h
+@@ -9,10 +9,10 @@
+ typedef unsigned long greg_t, gregset_t[32];
+ 
+ typedef struct sigcontext {
+-	unsigned long pc;
+-	gregset_t     gregs;
+-	unsigned int  flags;
+-	unsigned long extcontext[];
++	unsigned long sc_pc;
++	gregset_t     sc_regs;
++	unsigned int  sc_flags;
++	unsigned long sc_extcontext[];
+ } mcontext_t;
+ 
+ struct sigaltstack {
+diff --git a/arch/loongarch64/pthread_arch.h b/arch/loongarch64/pthread_arch.h
+index e6645726..3224c14f 100644
+--- a/arch/loongarch64/pthread_arch.h
++++ b/arch/loongarch64/pthread_arch.h
+@@ -8,4 +8,4 @@ static inline uintptr_t __get_tp()
+ #define TLS_ABOVE_TP
+ #define GAP_ABOVE_TP   0
+ #define DTP_OFFSET     0
+-#define MC_PC          pc
++#define MC_PC          sc_pc
+-- 
+2.37.1
+

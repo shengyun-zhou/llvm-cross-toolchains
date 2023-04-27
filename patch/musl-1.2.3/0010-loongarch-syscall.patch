@@ -1,0 +1,21 @@
+diff --git a/arch/loongarch64/bits/syscall.h.in b/arch/loongarch64/bits/syscall.h.in
+index 0980e53..9971b0d 100644
+--- a/arch/loongarch64/bits/syscall.h.in
++++ b/arch/loongarch64/bits/syscall.h.in
+@@ -76,6 +76,8 @@
+ #define __NR_splice                     76
+ #define __NR_tee                        77
+ #define __NR_readlinkat                 78
++#define __NR3264_fstatat                79
++#define __NR3264_fstat                  80
+ #define __NR_sync                       81
+ #define __NR_fsync                      82
+ #define __NR_fdatasync                  83
+@@ -299,5 +301,7 @@
+ #define __NR_ftruncate                  __NR3264_ftruncate
+ #define __NR_lseek                      __NR3264_lseek
+ #define __NR_sendfile                   __NR3264_sendfile
++#define __NR_newfstatat                 __NR3264_fstatat
++#define __NR_fstat                      __NR3264_fstat
+ #define __NR_mmap                       __NR3264_mmap
+ #define __NR_fadvise64                  __NR3264_fadvise64

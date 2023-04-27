@@ -11,6 +11,7 @@ export CROSS_TARGETS=(
     "i686-linux-musl"
     "x86_64-linux-musl"
     "riscv64-linux-musl"
+    "loongarch64-linux-musl"
 
     # Linux glibc
     "armv7a-linux-gnueabihf"

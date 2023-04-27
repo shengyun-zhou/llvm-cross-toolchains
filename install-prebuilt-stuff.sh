@@ -113,6 +113,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         kernel_arch=''
         case "$target" in
         riscv*) kernel_arch=riscv ;;
+        loongarch*) kernel_arch=loongarch ;;
         mips*) kernel_arch=mips ;;
         aarch64*|arm64*) kernel_arch=arm64 ;;
         arm*) kernel_arch=arm ;;

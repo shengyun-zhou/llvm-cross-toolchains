@@ -57,6 +57,9 @@ for target in "${CROSS_TARGETS[@]}"; do
             COMPILER_RT_COMPILER_TARGET="armv7-w64-mingw32"
         fi
         ;;
+    loongarch*)
+        COMPILER_RT_CFLAGS="$COMPILER_RT_CFLAGS -fintegrated-as"
+        ;;
     esac
     if [ -z "$COMPILER_RT_FULL_BUILD" ]; then
         COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=OFF"

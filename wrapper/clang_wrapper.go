@@ -86,6 +86,8 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 				"-mexec-model=reactor", "-Wl,--export=__main_void,--export=__wasm_call_dtors",
 			)
 		}
+	} else if strings.HasPrefix(arch, "loongarch") {
+		fUseLD = "ld"
 	}
 
 	if !strings.Contains(target, "mingw") && !strings.Contains(target, "windows") && !strings.HasPrefix(arch, "wasm") {
