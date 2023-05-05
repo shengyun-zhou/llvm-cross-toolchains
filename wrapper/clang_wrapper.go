@@ -45,14 +45,9 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "aarch64-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "arm") {
-		if strings.HasPrefix(arch, "armv7") {
-			clangArgs = append(clangArgs, "-mthumb", "-Wa,-mimplicit-it=thumb")
-		} else {
-			fUseLD = "ld"
-			clangArgs = append(clangArgs, "-marm", "-Wa,-mimplicit-it=arm")
-			if arch == "arm" {
-				clangArgs = append(clangArgs, "-march=armv5t")
-			}
+		clangArgs = append(clangArgs, "-mthumb", "-Wa,-mimplicit-it=thumb")
+		if arch == "arm" {
+			clangArgs = append(clangArgs, "-march=armv7+nofp")
 		}
 		if strings.Contains(target, "android") {
 			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "arm-linux-androideabi"))

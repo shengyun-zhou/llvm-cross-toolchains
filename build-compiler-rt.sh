@@ -40,9 +40,6 @@ for target in "${CROSS_TARGETS[@]}"; do
         if [[ $target == *"msvc"* ]]; then
             # No need to build builtins for MSVC
             continue
-        elif [[ $target == "arm-"* ]]; then
-            # Build CRT only
-            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_BUILTINS=OFF"
         fi
     elif [[ $target == "wasm"* ]]; then
         continue

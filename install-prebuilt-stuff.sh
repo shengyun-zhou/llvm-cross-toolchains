@@ -11,14 +11,6 @@ for target in "${CROSS_TARGETS[@]}"; do
         if [[ -f "prebuilt-libgcc-crt/crt_$target.tar.gz" ]]; then
             tar_extractor.py "prebuilt-libgcc-crt/crt_$target.tar.gz" -C "$CLANG_RESOURCE_DIR/lib/$target"
         fi
-        if [[ -f "prebuilt-libgcc/libgcc_$target.tar.gz" ]]; then
-            tar_extractor.py "prebuilt-libgcc/libgcc_$target.tar.gz" -C "$CLANG_RESOURCE_DIR/lib/$target"
-            libatomic_path="$CLANG_RESOURCE_DIR/lib/$target/libatomic.a"
-            "$OUTPUT_DIR/bin/llvm-ar" qcsL "$CLANG_RESOURCE_DIR/lib/$target/libgcc.a" "$libatomic_path"
-            rm -f "$libatomic_path"
-            # Use libgcc as compiler-rt builtin
-            mv "$CLANG_RESOURCE_DIR/lib/$target/libgcc.a" "$CLANG_RESOURCE_DIR/lib/$target/libclang_rt.builtins.a"
-        fi
         normalized_triple=$("$OUTPUT_DIR/bin/$target-clang" --print-target-triple)
         if [[ "$normalized_triple" != "$target" ]]; then
             ln -sfn $target "$CLANG_RESOURCE_DIR/lib/$normalized_triple"
