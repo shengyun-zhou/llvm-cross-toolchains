@@ -72,7 +72,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_ORC=OFF"
             COMPILER_RT_SRC_DIR=".."
             if [[ $target == *"linux"* ]]; then
-                COMPILER_RT_CFLAGS="$COMPILER_RT_CFLAGS -nostdlib"
+                COMPILER_RT_LDFLAGS="$COMPILER_RT_LDFLAGS -nostdlib"
             elif [[ $target == *"apple"* ]]; then
                 # Enable TVOS and WatchOS for builtins only now
                 COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_ENABLE_TVOS=ON -DCOMPILER_RT_ENABLE_WATCHOS=ON"
