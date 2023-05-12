@@ -45,6 +45,8 @@ for target in "${CROSS_TARGETS[@]}"; do
             ../configure $CONFIGURE_ARGS --prefix="$(target_install_prefix $target)" --host=$target --with-default-msvcrt=msvcrt $MINGW_CRT_CONFIG_FLAGS
             make -j$(cpu_count)
             make install
+            "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)/libssp.a"
+            "$OUTPUT_DIR/bin/llvm-ar" crs "$(target_install_prefix $target)/lib$(target_install_libdir_suffix $target)/libssp_nonshared.a"
             cd ../../
         else
             cd mingw-w64-libraries/winpthreads && mkdir build-$target && cd build-$target
