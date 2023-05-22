@@ -28,7 +28,7 @@ export LDFLAGS="$HOST_LDFLAGS"
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target == "mips"* || $target == "loongarch"* ]]; then
         mkdir build-$target && cd build-$target
-        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-werror --with-sysroot=/
+        ../configure $HOST_CONFIGURE_ARGS $CONFIGURE_ARGS --target=$target --prefix="$(pwd)/binutils-install" --disable-werror --disable-gprofng --with-sysroot=/
         make -j$(cpu_count)
         make install
         mkdir -p "$OUTPUT_DIR/bin/gnu-as/$target"
