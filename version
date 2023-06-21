@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LLVM_VERSION=16.0.4
+export LLVM_VERSION=16.0.6
 export LLVM_MAJOR_VERSION=`echo $LLVM_VERSION | cut -d. -f1`
 export MUSL_VERSION=1.2.4
 export GLIBC_VERSION=2.17
