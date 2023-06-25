@@ -61,7 +61,29 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "x86_64-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "wasm") {
-		if strings.Contains(target, "wamr") {
+		if strings.Contains(target, "emscripten") {
+			emsdkPython := os.Getenv("EMSDK_PYTHON")
+			if len(emsdkPython) == 0 {
+				emsdkPython = "python3"
+				os.Setenv("EMSDK_PYTHON", emsdkPython)
+			}
+			emcc := "emcc.py"
+			if cPlusPlusMode {
+				emcc = "em++.py"
+			}
+			clangArgs = append(clangArgs,
+				"-pthread",
+				"-sSTACK_SIZE=131072",
+				"-sPTHREAD_POOL_SIZE=8",
+				"-sINITIAL_MEMORY=16777216",
+			)
+			allArgs := []string{filepath.Join(toolchainRootDir, "emscripten", emcc)}
+			allArgs = append(allArgs, clangArgs...)
+			allArgs = append(allArgs, inputArgv...)
+			allArgs = append(allArgs, clangLastArgs...)
+			runCommand(emsdkPython, allArgs, nil)
+			return
+		} else if strings.Contains(target, "wamr") {
 			clangArgs = append(clangArgs,
 				"-D__wamr__",
 				"-D_WASI_EMULATED_SIGNAL",

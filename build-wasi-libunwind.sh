@@ -15,7 +15,7 @@ BUILD_DIR=".build-wasi-libunwind"
 (test -d $BUILD_DIR && rm -rf $BUILD_DIR) || true
 mkdir -p $BUILD_DIR
 tar_extractor.py "$SOURCE_DIR/$SOURCE_TARBALL" -C $BUILD_DIR --strip 1
-cd $BUILD_DIR/system/lib/libunwind
+cd $BUILD_DIR && apply_patch emscripten-$EMSCRIPTEN_VERSION && cd system/lib/libunwind
 
 for target in "${CROSS_TARGETS[@]}"; do
     if [[ $target != *"-wasi"* ]]; then

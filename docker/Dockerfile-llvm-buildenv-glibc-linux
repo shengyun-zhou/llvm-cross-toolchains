@@ -47,3 +47,4 @@ RUN ./build-dep-libs.sh && cp -r "${BUILD_DEPS_ROOT}/include/c++" "${TOOLCHAIN_R
 ENV GOPROXY="https://mirrors.aliyun.com/goproxy/" \
     HOST_RUNTIME_LIBS="$HOST_RUNTIME_LIBS ${BUILD_DEPS_ROOT}/lib/libxml2.so.2.10.2"
 RUN update-alternatives --install /usr/bin/llvm-profdata llvm-profdata /usr/bin/llvm-profdata-14 100
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends nodejs npm && npm config set registry https://registry.npmmirror.com

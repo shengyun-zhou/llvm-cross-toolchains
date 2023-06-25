@@ -14,7 +14,7 @@ Supported target platforms:
 
 + BSD: FreeBSD
 
-+ WebAssembly(WASM): [WAMR(with custom extensions)](https://github.com/shengyun-zhou/wamr-wasm-libs)
++ WebAssembly(WASM): Emscripten, [WAMR(with custom extensions)](https://github.com/shengyun-zhou/wamr-wasm-libs)
 
 The toolchain itself works on Linux, Windows and MacOSX now.
 

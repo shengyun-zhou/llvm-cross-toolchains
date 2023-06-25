@@ -9,6 +9,7 @@ source config
 ./build-all-native-tools.sh
 LIBC_STARTFILE_STAGE=1 ./build-musl.sh
 LIBC_STARTFILE_STAGE=1 ./build-mingw.sh
+./build-emscripten.sh
 ./build-wamr-ext-libs.sh
 ./build-compiler-rt.sh
 ./build-musl.sh

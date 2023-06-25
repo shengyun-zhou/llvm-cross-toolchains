@@ -1,0 +1,8 @@
+import os
+import sys
+import _emscripten_config_stub
+LLVM_ROOT = os.path.abspath(os.path.dirname(_emscripten_config_stub.__file__))
+LLVM_ROOT = os.path.join(os.path.dirname(LLVM_ROOT), 'bin')
+BINARYEN_ROOT = os.path.dirname(LLVM_ROOT)
+NODE_JS = os.environ.get('EMSDK_NODE') or 'node'
+JAVA = os.environ.get('EMSDK_JAVA') or 'java'
