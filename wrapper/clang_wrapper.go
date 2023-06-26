@@ -22,6 +22,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	linkerArgs := []string{}
 	cPlusPlusMode := execName == "c++" || execName == "g++" || execName == "clang++"
 	cPreProcessorMode := execName == "cpp"
+	compileOnlyMode := cPreProcessorMode || inArray(inputArgv, "-c") || inArray(inputArgv, "/c") || inArray(inputArgv, "/C")
 	fUseLD := "lld"
 
 	if strings.HasPrefix(arch, "mips") {
@@ -72,13 +73,19 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 				emcc = "em++.py"
 			}
 			clangArgs = append(clangArgs,
+				"-Qunused-arguments",
 				"-pthread",
+			)
+			linkerArgs = append(linkerArgs,
 				"-sSTACK_SIZE=131072",
 				"-sPTHREAD_POOL_SIZE=8",
 				"-sINITIAL_MEMORY=16777216",
 			)
 			allArgs := []string{filepath.Join(toolchainRootDir, "emscripten", emcc)}
 			allArgs = append(allArgs, clangArgs...)
+			if !compileOnlyMode {
+				allArgs = append(allArgs, linkerArgs...)
+			}
 			allArgs = append(allArgs, inputArgv...)
 			allArgs = append(allArgs, clangLastArgs...)
 			runCommand(emsdkPython, allArgs, nil)
@@ -205,10 +212,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		cPlusPlusMode = false
 		cPreProcessorMode = false
 		clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "include"))
-		if !inArray(inputArgv, "-c") && !inArray(inputArgv, "/c") && !inArray(inputArgv, "/C") {
-			// Cannot specify additional library path in compile-only mode.
-			linkerArgs = append(linkerArgs, "/clang:-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
-		}
+		linkerArgs = append(linkerArgs, "/clang:-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
 		for i, arg := range clangArgs {
 			clangArgs[i] = "/clang:" + arg
 		}
@@ -236,7 +240,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		clangArgs = append(clangArgs, "--driver-mode=cpp")
 	}
 	allArgs := clangArgs
-	if !cPreProcessorMode {
+	if !compileOnlyMode {
 		allArgs = append(allArgs, linkerArgs...)
 	}
 	allArgs = append(allArgs, inputArgv...)
