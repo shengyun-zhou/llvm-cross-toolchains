@@ -30,6 +30,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     fi
     COMPILER_RT_CMAKE_FLAGS=""
     COMPILER_RT_CFLAGS=""
+    COMPILER_RT_CXXFLAGS=""
     COMPILER_RT_LDFLAGS=""
     if [[ $target == *"apple"* ]]; then
         if [[ -n "$APPLE_BUILT" ]]; then
@@ -85,6 +86,9 @@ for target in "${CROSS_TARGETS[@]}"; do
     else
         COMPILER_RT_SRC_DIR=".."
         COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_BUILTINS=OFF -DSANITIZER_CXX_ABI=libc++"
+        if [[ $target == *"linux"* ]]; then
+            COMPILER_RT_CXXFLAGS="$COMPILER_RT_CXXFLAGS -D__STDC_FORMAT_MACROS"
+        fi
         if [[ $target == *"musl"* ]]; then
             COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DCOMPILER_RT_BUILD_GWP_ASAN=OFF"
             # Santinizers for MUSL only support aarch64, x86_64 now.
@@ -119,7 +123,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         fi
     fi
 
-    CFLAGS="$COMPILER_RT_CFLAGS" LDFLAGS="$COMPILER_RT_LDFLAGS" "$__CMAKE_WRAPPER" $target $COMPILER_RT_SRC_DIR \
+    CFLAGS="$COMPILER_RT_CFLAGS" CXXFLAGS="$COMPILER_RT_CXXFLAGS" LDFLAGS="$COMPILER_RT_LDFLAGS" "$__CMAKE_WRAPPER" $target $COMPILER_RT_SRC_DIR \
         -DCMAKE_INSTALL_PREFIX="$COMPILER_RT_INSTALL_PREFIX" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \

@@ -1,8 +1,8 @@
-diff --git a/libcxx/src/filesystem/filesystem_common.h b/libcxx/src/filesystem/filesystem_common.h
-index 99bba27..1c2139b 100644
---- a/libcxx/src/filesystem/filesystem_common.h
-+++ b/libcxx/src/filesystem/filesystem_common.h
-@@ -551,8 +551,10 @@ static file_type get_file_type(DirEntT* ent, int) {
+diff --git a/libcxx/src/filesystem/file_descriptor.h b/libcxx/src/filesystem/file_descriptor.h
+index d3a668f..41017cf 100644
+--- a/libcxx/src/filesystem/file_descriptor.h
++++ b/libcxx/src/filesystem/file_descriptor.h
+@@ -54,8 +54,10 @@ file_type get_file_type(DirEntT* ent, int) {
      return file_type::symlink;
    case DT_REG:
      return file_type::regular;
