@@ -21,7 +21,7 @@ ADD ${CROSS_PREFIX}-ct-ng.config /root
 RUN mkdir ct-${CROSS_PREFIX}-build && cd ct-${CROSS_PREFIX}-build && cp ../${CROSS_PREFIX}-ct-ng.config .config && \
     ct-ng build.$(nproc) && cd .. && rm -rf ct-${CROSS_PREFIX}-build
 RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && pip3 install cmake==3.23.3
-RUN wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x ./install-llvm.sh && ./install-llvm.sh 14 && \
+RUN wget https://apt.llvm.org/llvm.sh -O install-llvm.sh && chmod a+x ./install-llvm.sh && ./install-llvm.sh 14 -m https://mirrors.tuna.tsinghua.edu.cn/llvm-apt && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
     update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-14 100
 
