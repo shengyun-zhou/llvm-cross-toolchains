@@ -29,7 +29,7 @@ do
     fi
 done
 # Rename #include <file> to its lowercase
-find .temp_sdk_dir/vc/include .temp_sdk_dir/winsdk/Include -type f -exec $SED -e 's/#include\(.*\)/#include\L\1/g' -i {} \;
+find .temp_sdk_dir/vc/include .temp_sdk_dir/winsdk/Include -type f -exec $SED -E 's/^#include (["<].+)/#include \L\1/g' -i {} \;
 tar cvzf WindowsSDK-$WindowsSDKVersion.tar.gz -C .temp_sdk_dir/winsdk ./
 tar cvzf VC-$VCToolsVersion.tar.gz --exclude=./lib/onecore* --exclude=./lib/*/clang_rt* -C .temp_sdk_dir/vc ./
 rm -rf .temp_sdk_dir
