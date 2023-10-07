@@ -110,7 +110,19 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
 
 ##### (4) Darwin SDKs
 
-**Method 1: (recommended)extract SDKs from installed XCode on MacOSX host**
+**Method 1: (recommended)extract SDKs from `Xcode.xip` package**
+
+1. Download `Xcode.xip` from [official Apple Developer website](https://developer.apple.com/download) 
+
+2. Execute tool:
+
+```shell
+./prebuilt-darwin-sdk/extract_sdks_from_xcode_archive.sh /path/to/Xcode.xip
+```
+
+3. Check and modify values of `MACOSX_VERSION`, `IOS_VERSION`, `APPLE_TVOS_VERSION`, `APPLE_WATCHOS_VERSION` in file `version` to match those of extracted SDKs in dir `prebuilt-darwin-sdk`.
+
+**Method 2: (MacOSX host only)extract SDKs from installed Xcode**
 
 1. Install gnu-tar, it can be installed via homebrew:
 
@@ -126,24 +138,7 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
    prebuilt-darwin-sdk/extract_sdks_from_xcode.sh
    ```
 
-3. Check and modify values of `MACOSX_VERSION`, `IOS_VERSION`, `APPLE_TVOS_VERSION`, `APPLE_WATCHOS_VERSION` in the file `version` to match those in XCode.
-
-**Method 2: package SDKs manually**
-
-1. Download SDKs from Internet or follow [here](https://github.com/tpoechtrager/osxcross#packaging-the-sdk) to package SDKs manually.
-
-   Known download sources(may be invalid):
-
-   + MacOSX SDK: [https://github.com/phracker/MacOSX-SDKs](https://github.com/phracker/MacOSX-SDKs)
-   + iOS SDK: [https://github.com/xybp888/iOS-SDKs](https://github.com/xybp888/iOS-SDKs)
-
-2. Create `.tar.xz` package for each SDK and rename them by name formats:
-   + `MacOSX${MACOS_VERSION}.sdk.tar.xz` (for example, `MacOSX11.3.sdk.tar.xz`)
-   + `iPhoneOS${IOS_VERSION}.sdk.tar.xz`, `iPhoneSimulator${IOS_VERSION}.sdk.tar.xz`
-   + `AppleTVOS${APPLE_TVOS_VERSION}.sdk.tar.xz`, `AppleTVSimulator${APPLE_TVOS_VERSION}.sdk.tar.xz`
-   + `WatchOS${APPLE_WATCHOS_VERSION}.sdk.tar.xz`, `WatchSimulator${APPLE_WATCHOS_VERSION}.sdk.tar.xz`
-   
-1. Put SDK packages in directory `prebuilt-darwin-sdk`.
+3. Check and modify values of `MACOSX_VERSION`, `IOS_VERSION`, `APPLE_TVOS_VERSION`, `APPLE_WATCHOS_VERSION` in file `version` to match those of extracted SDKs in dir `prebuilt-darwin-sdk`.
 
 ##### (5) Apple cctools
 
@@ -176,11 +171,14 @@ Build cctools:
 ##### (6) MSVC
 
 1. Enter Visual Studio Developer Command Prompt first, then enter MSYS2/Cygwin shell.
+
 2. Execute the shell script:
 
 ```shell
 ./prebuilt-msvc-sdk/extract_sdk_from_msvc.sh
 ```
+
+3. Check and modify values of `VC_VERSION`, `WINDOWS_SDK_VERSION` in file `version` to match those of extracted SDKs in dir `prebuilt-msvc-sdk`.
 
 ##### (7) FreeBSD
 
