@@ -1,7 +1,7 @@
 From b6cead27429a6180685f25d541d9e8f5717122c8 Mon Sep 17 00:00:00 2001
 From: Alfred Neumayer <dev.beidl@gmail.com>
 Date: Tue, 19 Sep 2023 21:08:48 +0200
-Subject: [PATCH] core/iwasm/compilation: Support LLVM 17
+Subject: [PATCH 1/2] core/iwasm/compilation: Support LLVM 17
 
 Adapt API usage to new interfaces where applicable, including LLVM function usage,
 obsoleted llvm::Optional type & removal of unavailable headers.
@@ -14,7 +14,7 @@ obsoleted llvm::Optional type & removal of unavailable headers.
  5 files changed, 57 insertions(+), 3 deletions(-)
 
 diff --git a/core/iwasm/compilation/aot_llvm.c b/core/iwasm/compilation/aot_llvm.c
-index f4bc850..6dc3a0f 100644
+index f4bc8500e8..6dc3a0f7d3 100644
 --- a/core/iwasm/compilation/aot_llvm.c
 +++ b/core/iwasm/compilation/aot_llvm.c
 @@ -526,12 +526,18 @@ aot_add_precheck_function(AOTCompContext *comp_ctx, LLVMModuleRef module,
@@ -49,7 +49,7 @@ index f4bc850..6dc3a0f 100644
      /* Init environment of all targets for AOT compiler */
      LLVMInitializeAllTargetInfos();
 diff --git a/core/iwasm/compilation/aot_llvm.h b/core/iwasm/compilation/aot_llvm.h
-index 03994b6..b46ac3b 100644
+index 03994b6c02..b46ac3bd09 100644
 --- a/core/iwasm/compilation/aot_llvm.h
 +++ b/core/iwasm/compilation/aot_llvm.h
 @@ -15,15 +15,18 @@
@@ -73,7 +73,7 @@ index 03994b6..b46ac3b 100644
  #include "llvm-c/LLJIT.h"
  #if WASM_ENABLE_DEBUG_AOT != 0
 diff --git a/core/iwasm/compilation/aot_llvm_extra.cpp b/core/iwasm/compilation/aot_llvm_extra.cpp
-index 898fabd..c13f8e3 100644
+index 898fabd8c4..c13f8e3107 100644
 --- a/core/iwasm/compilation/aot_llvm_extra.cpp
 +++ b/core/iwasm/compilation/aot_llvm_extra.cpp
 @@ -5,11 +5,13 @@
@@ -159,7 +159,7 @@ index 898fabd..c13f8e3 100644
  #ifdef DEBUG_PASS
      PassInstrumentationCallbacks PIC;
 diff --git a/core/iwasm/compilation/aot_llvm_extra2.cpp b/core/iwasm/compilation/aot_llvm_extra2.cpp
-index 42e53dd..8364e5e 100644
+index 42e53ddfae..8364e5ebf4 100644
 --- a/core/iwasm/compilation/aot_llvm_extra2.cpp
 +++ b/core/iwasm/compilation/aot_llvm_extra2.cpp
 @@ -4,8 +4,10 @@
@@ -188,7 +188,7 @@ index 42e53dd..8364e5e 100644
  convert(LLVMRelocMode reloc_mode)
  {
 diff --git a/core/iwasm/compilation/aot_orc_extra.cpp b/core/iwasm/compilation/aot_orc_extra.cpp
-index 9cfe331..51d61bf 100644
+index 9cfe331e51..51d61bf3cf 100644
 --- a/core/iwasm/compilation/aot_orc_extra.cpp
 +++ b/core/iwasm/compilation/aot_orc_extra.cpp
 @@ -8,8 +8,10 @@
@@ -216,6 +216,26 @@ index 9cfe331..51d61bf 100644
  using namespace llvm;
  using namespace llvm::orc;
  using GlobalValueSet = std::set<const GlobalValue *>;
--- 
-2.17.1
 
+From f4757a56b5970e829e9e23fb458788e556d29035 Mon Sep 17 00:00:00 2001
+From: Alfred Neumayer <dev.beidl@gmail.com>
+Date: Sat, 23 Sep 2023 18:01:42 +0200
+Subject: [PATCH 2/2] core/iwasm: Fix Memmove intrinsics on LLVM 17
+
+---
+ core/iwasm/compilation/aot_llvm_extra.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/iwasm/compilation/aot_llvm_extra.cpp b/core/iwasm/compilation/aot_llvm_extra.cpp
+index c13f8e3107..ab6c621a0a 100644
+--- a/core/iwasm/compilation/aot_llvm_extra.cpp
++++ b/core/iwasm/compilation/aot_llvm_extra.cpp
+@@ -125,7 +125,7 @@ ExpandMemoryOpPass::run(Function &F, FunctionAnalysisManager &AM)
+         }
+         else if (MemMoveInst *Memmove = dyn_cast<MemMoveInst>(MemCall)) {
+ #if LLVM_VERSION_MAJOR >= 17
+-            Function *ParentFunc = Memcpy->getParent()->getParent();
++            Function *ParentFunc = Memmove->getParent()->getParent();
+             const TargetTransformInfo &TTI =
+                 AM.getResult<TargetIRAnalysis>(*ParentFunc);
+             expandMemMoveAsLoop(Memmove, TTI);
