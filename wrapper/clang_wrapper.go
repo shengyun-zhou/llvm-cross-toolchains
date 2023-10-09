@@ -22,10 +22,8 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	cPlusPlusMode := execName == "c++" || execName == "g++" || execName == "clang++"
 	cPreProcessorMode := execName == "cpp"
 	compileOnlyMode := cPreProcessorMode || inArray(inputArgv, "-c") || inArray(inputArgv, "/c") || inArray(inputArgv, "/C")
-	fUseLD := "lld"
 
 	if strings.HasPrefix(arch, "mips") {
-		fUseLD = "ld"
 		if !strings.Contains(arch, "64") {
 			// Use mips32r2 ISA by default
 			clangArgs = append(clangArgs, "-mips32r2")
@@ -94,8 +92,6 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 				"-mexec-model=reactor", "-Wl,--export=__main_void,--export=__wasm_call_dtors",
 			)
 		}
-	} else if strings.HasPrefix(arch, "loongarch") {
-		fUseLD = "ld"
 	}
 
 	if !strings.Contains(target, "mingw") && !strings.Contains(target, "windows") && !strings.HasPrefix(arch, "wasm") {
@@ -113,7 +109,6 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		}
 	} else if strings.Contains(target, "apple") {
 		// TODO: Use LLD if it"s mature enough for Apple
-		fUseLD = "ld"
 		sdkMinVersionArg := map[string]string{
 			"MacOSX":           "-mmacosx-version-min=10.9",
 			"iPhoneOS":         "-mios-version-min=9.0",
@@ -187,7 +182,6 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		clangArgs = append(clangArgs, "-fno-integrated-as", "-B", gnuAsDir)
 	}
 	clangArgs = append(clangArgs,
-		"-fuse-ld="+fUseLD,
 		"-target", clangTarget,
 		"-Qunused-arguments",
 	)
