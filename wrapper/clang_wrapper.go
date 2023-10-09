@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
@@ -41,25 +40,10 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		if strings.Contains(target, "linux") {
 			clangArgs = append(clangArgs, "-no-pie")
 		}
-	} else if strings.HasPrefix(arch, "arm64") || strings.HasPrefix(arch, "aarch64") {
-		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "aarch64-linux-android"))
-		}
 	} else if strings.HasPrefix(arch, "arm") {
 		clangArgs = append(clangArgs, "-mthumb", "-Wa,-mimplicit-it=thumb")
 		if arch == "arm" {
 			clangArgs = append(clangArgs, "-march=armv7+nofp")
-		}
-		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "arm-linux-androideabi"))
-		}
-	} else if regexp.MustCompile("^i.86$").MatchString(arch) {
-		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "i686-linux-android"))
-		}
-	} else if strings.HasPrefix(arch, "x86_64") {
-		if strings.Contains(target, "android") {
-			clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "x86_64-linux-android"))
 		}
 	} else if strings.HasPrefix(arch, "wasm") {
 		if strings.Contains(target, "emscripten") {
