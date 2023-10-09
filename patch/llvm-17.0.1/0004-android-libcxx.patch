@@ -1,0 +1,13 @@
+diff --git a/libcxx/include/fstream b/libcxx/include/fstream
+index d30575e..39032b1 100644
+--- a/libcxx/include/fstream
++++ b/libcxx/include/fstream
+@@ -202,7 +202,7 @@ typedef basic_fstream<wchar_t> wfstream;
+ _LIBCPP_PUSH_MACROS
+ #include <__undef_macros>
+ 
+-#if defined(_LIBCPP_MSVCRT) || defined(_NEWLIB_VERSION)
++#if defined(_LIBCPP_MSVCRT) || defined(_NEWLIB_VERSION) || (defined(__ANDROID_API__) && __ANDROID_API__ < 24)
+ #  define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
+ #endif
+ 

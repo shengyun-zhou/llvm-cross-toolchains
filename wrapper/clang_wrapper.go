@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"unicode"
 )
 
 func clangWrapperMain(execDir string, target string, execName string, cmdArgv []string) {
@@ -98,16 +96,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		clangArgs = append(clangArgs, "-fPIC")
 	}
 
-	if strings.Contains(target, "android") {
-		i := len(target) - 1
-		for unicode.IsDigit(rune(target[i-1])) {
-			i--
-		}
-		androidAPI, _ := strconv.Atoi(target[i:])
-		if cPlusPlusMode && androidAPI < 24 {
-			clangArgs = append(clangArgs, "-D_LIBCPP_HAS_NO_OFF_T_FUNCTIONS")
-		}
-	} else if strings.Contains(target, "apple") {
+	if strings.Contains(target, "apple") {
 		// TODO: Use LLD if it"s mature enough for Apple
 		sdkMinVersionArg := map[string]string{
 			"MacOSX":           "-mmacosx-version-min=10.9",
