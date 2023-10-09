@@ -36,7 +36,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		if strings.Contains(target, "linux") {
 			clangArgs = append(clangArgs, "-no-pie")
 		}
-	} else if strings.HasPrefix(arch, "arm") {
+	} else if strings.HasPrefix(arch, "arm") && !strings.HasPrefix(arch, "arm64") {
 		clangArgs = append(clangArgs, "-mthumb", "-Wa,-mimplicit-it=thumb")
 		if arch == "arm" {
 			clangArgs = append(clangArgs, "-march=armv7+nofp")
