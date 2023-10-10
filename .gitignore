@@ -46,6 +46,7 @@ prebuilt-harmonyos/*.gz
 prebuilt-msvc-sdk/*.gz
 prebuilt-freebsd/*.gz
 prebuilt-msvc-sdk/.temp_sdk_dir/
+prebuilt-ohos/*.tar.*
 __pycache__/
 win32-toolchain-extractor/*.tar.*
 win32-toolchain-extractor/*.spec

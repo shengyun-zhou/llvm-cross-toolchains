@@ -174,7 +174,9 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 		"-target", clangTarget,
 		"-Qunused-arguments",
 	)
-
+	if cPlusPlusMode && strings.Contains(target, "ohos") {
+		clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "usr", "include", "c++", "v1"))
+	}
 	if strings.Contains(target, "msvc") {
 		cPlusPlusMode = false
 		cPreProcessorMode = false

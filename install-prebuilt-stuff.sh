@@ -26,6 +26,14 @@ for target in "${CROSS_TARGETS[@]}"; do
         mkdir -p "$(target_install_prefix $target)/include" "$(target_install_prefix $target)/lib"
         tar_extractor.py "prebuilt-bionic/bionic-libs_$target.tar.gz" -C "$(target_install_prefix $target)/lib" --strip 1
         tar_extractor.py prebuilt-bionic/bionic-headers.tar.gz -C "$(target_install_prefix $target)/include" --strip 1
+        # Create dummy libunwind.a and it will be overwrite later
+        touch "$(target_install_prefix $target)/lib/libunwind.a" 
+    elif [[ $target == *"ohos"* ]]; then
+        mkdir -p "$(target_install_prefix $target)/include" "$(target_install_prefix $target)/lib"
+        tar_extractor.py "prebuilt-ohos/ohos-libs_$target.tar.gz" -C "$(target_install_prefix $target)/lib" --strip 1
+        tar_extractor.py prebuilt-ohos/ohos-headers.tar.gz -C "$(target_install_prefix $target)/include" --strip 1
+        # Create dummy libunwind.a and it will be overwrite later
+        touch "$(target_install_prefix $target)/lib/libunwind.a"
     elif [[ $target == *"-linux-gnu"* ]]; then
         mkdir -p "$(target_install_prefix $target)"
         tar_extractor.py prebuilt-glibc/glibc-${GLIBC_VERSION}_$target.tar.gz -C "$(target_install_prefix $target)" --strip 1
@@ -99,7 +107,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             MSVC_SDK_INSTALLED=1
         fi
     fi
-    if [[ $target == *"-linux-"* && $target != *"android"* ]]; then
+    if [[ $target == *"-linux-"* && $target != *"android"* && $target != *"ohos"* ]]; then
         # Extract linux header
         mkdir -p "$(target_install_prefix $target)/include"
         kernel_arch=''

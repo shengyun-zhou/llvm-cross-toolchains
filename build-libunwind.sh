@@ -33,8 +33,6 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DLIBUNWIND_ENABLE_SHARED=OFF
     cmake --build . --target install/strip -- -j$(cpu_count)
     cd ..
-    # Copy header files
-    cp ../libunwind/include/libunwind.h ../libunwind/include/__libunwind_config.h "$(target_install_prefix $target)/include"
     # Merge libunwind into compiler-rt builtins
     if [[ -f "$(target_install_prefix $target)/lib/libunwind.a" ]]; then
         builtins_lib="$("$OUTPUT_DIR/bin/$target-clang" -rtlib=compiler-rt -print-libgcc-file-name)"
