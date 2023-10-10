@@ -57,6 +57,8 @@ for target in "${CROSS_TARGETS[@]}"; do
     arm*)
         if [[ $target == *"mingw"* ]]; then
             COMPILER_RT_COMPILER_TARGET="armv7-w64-mingw32"
+        elif [[ $target == *"-linux-ohos"* ]]; then
+            COMPILER_RT_COMPILER_TARGET="armv7-linux-ohos"
         fi
         ;;
     loongarch*)
@@ -90,7 +92,7 @@ for target in "${CROSS_TARGETS[@]}"; do
             COMPILER_RT_CXXFLAGS="$COMPILER_RT_CXXFLAGS -D__STDC_FORMAT_MACROS"
         fi
         if [[ $target == *"musl"* ]]; then
-            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON -DCOMPILER_RT_BUILD_GWP_ASAN=OFF"
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_GWP_ASAN=OFF"
             # Santinizers for MUSL only support aarch64, x86_64 now.
             case $target in
             arm64*|aarch64*|x86_64*)
@@ -99,6 +101,8 @@ for target in "${CROSS_TARGETS[@]}"; do
                 COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_SANITIZERS=OFF -DCOMPILER_RT_BUILD_XRAY=OFF -DCOMPILER_RT_BUILD_MEMPROF=OFF"
                 ;;
             esac
+        elif [[ $target == *"ohos"* ]]; then
+            COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_BUILD_GWP_ASAN=OFF"
         elif [[ $target == *"mingw"* || $target == *"windows"* || $target == *"bsd"* ]]; then
             # Santinizers on Windows/BSD only support x86 now
             case $target in
@@ -131,6 +135,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DCMAKE_CXX_COMPILER_TARGET=$COMPILER_RT_COMPILER_TARGET \
         -DCMAKE_ASM_COMPILER_TARGET=$COMPILER_RT_COMPILER_TARGET \
         -DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON \
+        -DCOMPILER_RT_USE_LIBCXX=OFF \
         -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON \
         $COMPILER_RT_CMAKE_FLAGS
 

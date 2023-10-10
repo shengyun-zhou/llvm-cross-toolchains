@@ -1,0 +1,42 @@
+diff --git a/compiler-rt/lib/sanitizer_common/sanitizer_linux_libcdep.cpp b/compiler-rt/lib/sanitizer_common/sanitizer_linux_libcdep.cpp
+index 42013f4..46f9caf 100644
+--- a/compiler-rt/lib/sanitizer_common/sanitizer_linux_libcdep.cpp
++++ b/compiler-rt/lib/sanitizer_common/sanitizer_linux_libcdep.cpp
+@@ -171,7 +171,7 @@ bool SetEnv(const char *name, const char *value) {
+ 
+ __attribute__((unused)) static bool GetLibcVersion(int *major, int *minor,
+                                                    int *patch) {
+-#ifdef _CS_GNU_LIBC_VERSION
++#if defined(_CS_GNU_LIBC_VERSION) && !defined(__OHOS__)
+   char buf[64];
+   uptr len = confstr(_CS_GNU_LIBC_VERSION, buf, sizeof(buf));
+   if (len >= sizeof(buf))
+diff --git a/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp b/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
+index 6d61d27..91cfd8b 100644
+--- a/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
++++ b/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
+@@ -10,7 +10,10 @@
+ //
+ // Sizes and layouts of platform-specific POSIX data structures.
+ //===----------------------------------------------------------------------===//
+-
++#ifdef __OHOS__
++#define _UAPI_LINUX_SOCKET_H
++#define _SYS_SYSINFO_H
++#endif
+ #if defined(__linux__) || defined(__APPLE__)
+ // Tests in this file assume that off_t-dependent data structures match the
+ // libc ABI. For example, struct dirent here is what readdir() function (as
+diff --git a/compiler-rt/cmake/config-ix.cmake b/compiler-rt/cmake/config-ix.cmake
+index 8d3dc8d..a7d32da 100644
+--- a/compiler-rt/cmake/config-ix.cmake
++++ b/compiler-rt/cmake/config-ix.cmake
+@@ -742,7 +742,7 @@ endif()
+ 
+ # TODO: Add builtins support.
+ 
+-if (COMPILER_RT_HAS_SANITIZER_COMMON AND DFSAN_SUPPORTED_ARCH AND
++if (COMPILER_RT_HAS_SANITIZER_COMMON AND DFSAN_SUPPORTED_ARCH AND NOT OHOS AND
+     OS_NAME MATCHES "Linux")
+   set(COMPILER_RT_HAS_DFSAN TRUE)
+ else()

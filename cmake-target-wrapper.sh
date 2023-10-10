@@ -43,6 +43,9 @@ case $TARGET in
         exit 1
         ;;    
 esac
+if [[ $TARGET == *"ohos"* ]]; then
+    CMAKE_ARGS+=(-DOHOS=1)
+fi
 shift
 CFLAGS="$TARGET_CFLAGS" CXXFLAGS="$TARGET_CXXFLAGS" cmake -Wno-dev -G Ninja -DCMAKE_BUILD_TYPE=Release "${CMAKE_ARGS[@]}" \
     -DCMAKE_C_COMPILER="$OUTPUT_DIR/bin/$TARGET-clang${EXEC_SUFFIX}" \
