@@ -50,17 +50,7 @@ for target in "${CROSS_TARGETS[@]}"; do
         continue
     fi
     mkdir build-$target && cd build-$target
-    COMPILER_RT_COMPILER_TARGET=$target
     case $target in
-    aarch64*|arm64*)
-        ;;
-    arm*)
-        if [[ $target == *"mingw"* ]]; then
-            COMPILER_RT_COMPILER_TARGET="armv7-w64-mingw32"
-        elif [[ $target == *"-linux-ohos"* ]]; then
-            COMPILER_RT_COMPILER_TARGET="armv7-linux-ohos"
-        fi
-        ;;
     loongarch*)
         COMPILER_RT_CFLAGS="$COMPILER_RT_CFLAGS -fintegrated-as"
         ;;
@@ -118,12 +108,6 @@ for target in "${CROSS_TARGETS[@]}"; do
             if [[ $target != *"msvc"* && $target != *"freebsd"* ]]; then
                 COMPILER_RT_CMAKE_FLAGS="$COMPILER_RT_CMAKE_FLAGS -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE"
             fi
-            if [[ $target != $COMPILER_RT_COMPILER_TARGET ]]; then
-                # symlink target dir temporarily
-                mkdir -p "$COMPILER_RT_INSTALL_PREFIX/lib/$target"
-                ln -sfn $target "$COMPILER_RT_INSTALL_PREFIX/lib/$COMPILER_RT_COMPILER_TARGET"
-                ln -sfn $target "$COMPILER_RT_INSTALL_PREFIX/lib/$("$OUTPUT_DIR/bin/$target-clang" --target=$COMPILER_RT_COMPILER_TARGET --print-target-triple)"
-            fi
         fi
     fi
 
@@ -131,9 +115,9 @@ for target in "${CROSS_TARGETS[@]}"; do
         -DCMAKE_INSTALL_PREFIX="$COMPILER_RT_INSTALL_PREFIX" \
         -DCMAKE_C_COMPILER_WORKS=1 \
         -DCMAKE_CXX_COMPILER_WORKS=1 \
-        -DCMAKE_C_COMPILER_TARGET=$COMPILER_RT_COMPILER_TARGET \
-        -DCMAKE_CXX_COMPILER_TARGET=$COMPILER_RT_COMPILER_TARGET \
-        -DCMAKE_ASM_COMPILER_TARGET=$COMPILER_RT_COMPILER_TARGET \
+        -DCMAKE_C_COMPILER_TARGET=$target \
+        -DCMAKE_CXX_COMPILER_TARGET=$target \
+        -DCMAKE_ASM_COMPILER_TARGET=$target \
         -DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON \
         -DCOMPILER_RT_USE_LIBCXX=OFF \
         -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON \
@@ -145,16 +129,6 @@ for target in "${CROSS_TARGETS[@]}"; do
     else
         # Clang >= 13.0.0 require directory name to be normalized target triple
         # Ref: https://github.com/llvm/llvm-project/commit/36430d44edba9063a08493c89864edf5f071d08c
-        if [[ $target != $COMPILER_RT_COMPILER_TARGET ]]; then
-            if [ -n "$COMPILER_RT_FULL_BUILD" ]; then
-                rm -f "$COMPILER_RT_INSTALL_PREFIX/lib/$COMPILER_RT_COMPILER_TARGET" \
-                      "$COMPILER_RT_INSTALL_PREFIX/lib/$("$OUTPUT_DIR/bin/$target-clang" --target=$COMPILER_RT_COMPILER_TARGET --print-target-triple)"
-            else
-                # Rename target dir
-                rm -rf "$COMPILER_RT_INSTALL_PREFIX/lib/$target" || true
-                mv "$COMPILER_RT_INSTALL_PREFIX/lib/$COMPILER_RT_COMPILER_TARGET" "$COMPILER_RT_INSTALL_PREFIX/lib/$target"
-            fi
-        fi
         normalized_triple=$("$OUTPUT_DIR/bin/$target-clang" --print-target-triple)
         if [[ "$normalized_triple" != "$target" && -d "$COMPILER_RT_INSTALL_PREFIX/lib/$target" ]]; then
             ln -sfn $target "$COMPILER_RT_INSTALL_PREFIX/lib/$normalized_triple"
