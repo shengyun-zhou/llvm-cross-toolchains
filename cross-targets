@@ -80,4 +80,9 @@ export CROSS_TARGETS=(
 
     # WASI
     "wasm32-wamr-wasi-threads"
+
+    # Open harmony OS
+    "armv7a-linux-ohos"
+    "aarch64-linux-ohos"
+    "x86_64-linux-ohos"
 )

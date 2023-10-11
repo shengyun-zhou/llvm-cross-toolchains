@@ -40,3 +40,27 @@ index 8d3dc8d..a7d32da 100644
      OS_NAME MATCHES "Linux")
    set(COMPILER_RT_HAS_DFSAN TRUE)
  else()
+diff --git a/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp b/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
+index 91cfd8b..589e73d 100644
+--- a/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
++++ b/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp
+@@ -139,7 +139,10 @@ typedef struct user_fpregs elf_fpregset_t;
+ #include <linux/mtio.h>
+ #else
+ #include <glob.h>
++#ifndef __OHOS__
++// This file seems to be broken on arm OHOS
+ #include <mqueue.h>
++#endif
+ #include <sys/kd.h>
+ #include <sys/mtio.h>
+ #include <sys/shm.h>
+@@ -299,7 +302,7 @@ namespace __sanitizer {
+   unsigned struct_statvfs64_sz = sizeof(struct statvfs64);
+ #endif // SANITIZER_GLIBC
+ 
+-#if SANITIZER_LINUX && !SANITIZER_ANDROID
++#if SANITIZER_LINUX && !SANITIZER_ANDROID && !defined(__OHOS__)
+   unsigned struct_timex_sz = sizeof(struct timex);
+   unsigned struct_msqid_ds_sz = sizeof(struct msqid_ds);
+   unsigned struct_mq_attr_sz = sizeof(struct mq_attr);
