@@ -180,7 +180,7 @@ func clangWrapperMain(execDir string, target string, execName string, cmdArgv []
 	if strings.Contains(target, "msvc") {
 		cPlusPlusMode = false
 		cPreProcessorMode = false
-		clangArgs = append(clangArgs, "-isystem", filepath.Join(sysrootDir, "include"))
+		clangArgs = append(clangArgs, "-fuse-ld=lld", "-isystem", filepath.Join(sysrootDir, "include"))
 		linkerArgs = append(linkerArgs, "/clang:-Wl,/libpath:"+filepath.Join(sysrootDir, "lib"))
 		for i, arg := range clangArgs {
 			clangArgs[i] = "/clang:" + arg
