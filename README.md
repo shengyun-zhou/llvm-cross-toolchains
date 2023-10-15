@@ -30,7 +30,7 @@ The toolchain itself works on Linux, Windows and MacOSX now.
 
   It can be installed via `pip`:
 
-  ```shell
+  ```sh
   pip install ninja
   ```
 
@@ -75,7 +75,7 @@ You can change `version` and `cross-targets` based on your need.
 
 > NOTE for MacOSX host: Linux kernel header must be built on Linux environment, it's recommended to build in Docker Linux image.
 
-```shell
+```sh
 prebuilt-linux-header/build-linux-header.sh
 ```
 
@@ -92,7 +92,7 @@ Prerequisite development libs:
 | libmpc  | libmpc-devel | libmpc-dev      |
 
 
-```shell
+```sh
 # Build glibc from source, it will take a long time
 prebuilt-glibc/build-glibc.sh
 ```
@@ -101,7 +101,7 @@ prebuilt-glibc/build-glibc.sh
 
 Prerequisite: Android NDK >= r21e
 
-```shell
+```sh
 # Set the installation path of Android NDK
 export ANDROID_NDK_HOME=/path/to/android-ndk
 # Extract Bionic headers and libs from NDK
@@ -116,7 +116,7 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
 
 2. Execute tool:
 
-```shell
+```sh
 ./prebuilt-darwin-sdk/extract_sdks_from_xcode_archive.sh /path/to/Xcode.xip
 ```
 
@@ -126,7 +126,7 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
 
 1. Install gnu-tar, it can be installed via homebrew:
 
-   ```shell
+   ```sh
    brew install gnu-tar
    ```
 
@@ -134,7 +134,7 @@ prebuilt-bionic/extract_bionic_from_ndk.sh
 
 2. Execute tool:
 
-   ```shell
+   ```sh
    prebuilt-darwin-sdk/extract_sdks_from_xcode.sh
    ```
 
@@ -158,13 +158,13 @@ Prerequisite:
 
 Check if the following command works first:
 
-```shell
+```sh
 llvm-config --link-static --libs lto
 ```
 
 Build cctools:
 
-```shell
+```sh
 ./prebuilt-cctools/build-cctools.sh
 ```
 
@@ -174,7 +174,7 @@ Build cctools:
 
 2. Execute the shell script:
 
-```shell
+```sh
 ./prebuilt-msvc-sdk/extract_sdk_from_msvc.sh
 ```
 
@@ -182,15 +182,23 @@ Build cctools:
 
 ##### (7) FreeBSD
 
-```shell
+```sh
 ./prebuilt-freebsd/prepare_sysroot.sh
+```
+##### (8) Open Harmony OS(OHOS)
+
+```sh
+# Set the installation path of OHOS SDK
+export OHOS_SDK_HOME=/path/to/ohos-sdk
+# Extract headers and libs from SDK
+prebuilt-ohos/extract_sdk.sh
 ```
 
 #### 4. Build and Assemble toolchain
 
 Execute the script `build-all.sh` to start building.
 
-```shell
+```sh
 ./build-all.sh
 ```
 
