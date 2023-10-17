@@ -25,6 +25,7 @@ for target in "${CROSS_TARGETS[@]}"; do
     cd runtimes && mkdir build-$target && cd build-$target
     LIBDIR_SUFFIX="$(target_install_libdir_suffix $target)"
     LIBCXX_CMAKE_FLAGS=""
+    LIBCXXABI_CMAKE_FLAGS=""
     if [[ $target == *"musl"* || $target == *"ohos"* ]]; then
         LIBCXX_CMAKE_FLAGS="$LIBCXX_CMAKE_FLAGS -DLIBCXX_HAS_MUSL_LIBC=ON"
     elif [[ $target == *"mingw"* ]]; then
